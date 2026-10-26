@@ -1,0 +1,10 @@
+node_modules/
+example/node_modules/
+.yarn/cache
+.yarn/install-state.gz
+android/build/
+android/.gradle/
+ios/Pods/
+ios/build/
+*.xcuserstate
+.DS_Store

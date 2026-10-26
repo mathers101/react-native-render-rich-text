@@ -1,0 +1,63 @@
+{
+  "name": "react-native-render-rich-text",
+  "version": "0.1.0",
+  "description": "Render TipTap documents with the React Native rich text display path.",
+  "main": "src/index.tsx",
+  "react-native": "src/index.tsx",
+  "source": "src/index.tsx",
+  "types": "src/index.tsx",
+  "files": [
+    "src",
+    "cpp",
+    "ios",
+    "android",
+    "ReactNativeRenderRichText.podspec",
+    "react-native.config.js"
+  ],
+  "license": "MIT",
+  "author": "Software Mansion",
+  "homepage": "https://github.com/mathers101/react-native-render-rich-text",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mathers101/react-native-render-rich-text.git"
+  },
+  "private": true,
+  "workspaces": {
+    "packages": [
+      "example"
+    ],
+    "nohoist": [
+      "render-rich-text-example/react-native-render-rich-text"
+    ]
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test:parser": "g++ -std=c++17 -Wall -Wextra -I cpp/parser -I cpp/vendor -o /tmp/parser_tests cpp/parser/TipTapParser.cpp cpp/tests/parser_tests.cpp && /tmp/parser_tests",
+    "example": "yarn workspace render-rich-text-example start"
+  },
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.0",
+    "react": "19.3.0",
+    "react-native": "0.88.0",
+    "typescript": "^6.0.2"
+  },
+  "codegenConfig": {
+    "name": "RichTextSpec",
+    "type": "components",
+    "jsSrcsDir": "src",
+    "android": {
+      "javaPackageName": "com.renderrichtext"
+    },
+    "ios": {
+      "components": {
+        "EnrichedMarkdownText": {
+          "className": "EnrichedMarkdownText"
+        }
+      }
+    }
+  }
+}

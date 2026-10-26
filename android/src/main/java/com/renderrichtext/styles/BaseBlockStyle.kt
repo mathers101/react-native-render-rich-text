@@ -1,0 +1,11 @@
+package com.renderrichtext.styles
+
+interface BaseBlockStyle {
+  val fontSize: Float
+  val fontFamily: String
+  val fontWeight: String
+  val color: Int
+  val marginTop: Float
+  val marginBottom: Float
+  val lineHeight: Float
+}
