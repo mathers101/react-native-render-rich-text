@@ -37,7 +37,7 @@ class SpoilerOverlayDrawer {
 }
 
 interface SpoilerCapable {
-  var spoilerOverlayDrawer: SpoilerOverlayDrawer?
+  val spoilerOverlayDrawer: SpoilerOverlayDrawer?
 }
 
 fun Spanned.isConcealedBySpoiler(

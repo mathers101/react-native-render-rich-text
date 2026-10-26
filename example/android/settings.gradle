@@ -1,6 +1,19 @@
-pluginManagement { includeBuild("../node_modules/@react-native/gradle-plugin") }
+pluginManagement {
+    // Yarn workspaces hoist dependencies to the repository root, so the plugin
+    // is not always under example/node_modules. pluginManagement only resolves
+    // plugins from a relative includeBuild path.
+    def pluginPath = "../node_modules/@react-native/gradle-plugin"
+    if (!file(pluginPath).exists()) {
+        pluginPath = "../../node_modules/@react-native/gradle-plugin"
+    }
+    includeBuild(pluginPath)
+}
 plugins { id("com.facebook.react.settings") }
 extensions.configure(com.facebook.react.ReactSettingsExtension){ ex -> ex.autolinkLibrariesFromCommand() }
 rootProject.name = 'RenderRichTextExample'
 include ':app'
-includeBuild('../node_modules/@react-native/gradle-plugin')
+def reactNativeGradlePlugin = file("../node_modules/@react-native/gradle-plugin")
+if (!reactNativeGradlePlugin.exists()) {
+    reactNativeGradlePlugin = file("../../node_modules/@react-native/gradle-plugin")
+}
+includeBuild(reactNativeGradlePlugin)
