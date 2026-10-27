@@ -21,7 +21,7 @@
     "type": "git",
     "url": "https://github.com/mathers101/react-native-render-rich-text.git"
   },
-  "private": true,
+  "private": false,
   "workspaces": {
     "packages": [
       "example"
