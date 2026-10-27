@@ -148,7 +148,7 @@ const DEFAULT_NORMALIZED_STYLE = Object.freeze({
     gapWidth: 16,
     backgroundColor: normalizeColor('#F9FAFB')!,
     borderRadius: 0,
-    padding: 0,
+    padding: 10,
     admonitions: resolveAdmonitionColors(undefined),
   },
   list: {

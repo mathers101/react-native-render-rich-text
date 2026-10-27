@@ -56,6 +56,10 @@ interface BlockquoteStyle extends BaseBlockStyle {
   gapWidth?: number;
   backgroundColor?: string;
   borderRadius?: number;
+  /**
+   * Padding inside the quote, on every side.
+   * @default 10
+   */
   padding?: number;
   admonitions?: AdmonitionsStyle;
 }
