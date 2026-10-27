@@ -13,9 +13,10 @@ class UnderlineRenderer(
     builder: SpannableStringBuilder,
     onLinkPress: ((String) -> Unit)?,
     onLinkLongPress: ((String) -> Unit)?,
+    onFactoidPress: ((String) -> Unit)?,
     factory: RendererFactory,
   ) {
-    factory.renderWithSpan(builder, { factory.renderChildren(node, builder, onLinkPress, onLinkLongPress) }) { start, end, _ ->
+    factory.renderWithSpan(builder, { factory.renderChildren(node, builder, onLinkPress, onLinkLongPress, onFactoidPress) }) { start, end, _ ->
       builder.setSpan(
         UnderlineSpan(),
         start,

@@ -22,6 +22,7 @@ class BlockquoteRenderer(
     builder: SpannableStringBuilder,
     onLinkPress: ((String) -> Unit)?,
     onLinkLongPress: ((String) -> Unit)?,
+    onFactoidPress: ((String) -> Unit)?,
     factory: RendererFactory,
   ) {
     if (builder.isNotEmpty() && builder.last() != '\n') {
@@ -38,7 +39,7 @@ class BlockquoteRenderer(
     context.setBlockquoteStyle(style)
 
     try {
-      factory.renderChildren(node, builder, onLinkPress, onLinkLongPress)
+      factory.renderChildren(node, builder, onLinkPress, onLinkLongPress, onFactoidPress)
     } finally {
       context.popBlockStyle()
       context.blockquoteDepth = depth

@@ -16,10 +16,11 @@ abstract class BaselineShiftRenderer : NodeRenderer {
     builder: SpannableStringBuilder,
     onLinkPress: ((String) -> Unit)?,
     onLinkLongPress: ((String) -> Unit)?,
+    onFactoidPress: ((String) -> Unit)?,
     factory: RendererFactory,
   ) {
     val start = builder.length
-    factory.renderChildren(node, builder, onLinkPress, onLinkLongPress)
+    factory.renderChildren(node, builder, onLinkPress, onLinkLongPress, onFactoidPress)
     val end = builder.length
 
     if (end > start) {

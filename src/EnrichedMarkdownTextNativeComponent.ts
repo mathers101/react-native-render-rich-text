@@ -143,6 +143,12 @@ interface CodeStyleInternal {
   borderColor: ColorValue;
 }
 
+interface FactoidStyleInternal {
+  color: ColorValue;
+  backgroundColor: ColorValue;
+  borderColor: ColorValue;
+}
+
 interface ImageStyleInternal {
   height: CodegenTypes.Float;
   maxHeight: CodegenTypes.Float;
@@ -260,6 +266,7 @@ export interface MarkdownStyleInternal {
   strikethrough: StrikethroughStyleInternal;
   underline: UnderlineStyleInternal;
   code: CodeStyleInternal;
+  factoid: FactoidStyleInternal;
   image: ImageStyleInternal;
   video: VideoStyleInternal;
   inlineImage: InlineImageStyleInternal;
@@ -276,6 +283,10 @@ export interface MarkdownStyleInternal {
 
 export interface LinkPressEvent {
   url: string;
+}
+
+export interface FactoidPressEvent {
+  factoidId: string;
 }
 
 export interface LinkLongPressEvent {
@@ -477,6 +488,12 @@ export interface NativeProps extends ViewProps {
    * Receives the URL that was tapped.
    */
   onLinkPress?: CodegenTypes.BubblingEventHandler<LinkPressEvent>;
+  /**
+   * Callback fired when a factoid is pressed.
+   * Receives the factoid's `id`. A factoid that contains a link emits
+   * `onLinkPress` instead, so a single tap never fires both.
+   */
+  onFactoidPress?: CodegenTypes.BubblingEventHandler<FactoidPressEvent>;
   /**
    * Callback fired when a link is long pressed.
    * Receives the URL that was long pressed.

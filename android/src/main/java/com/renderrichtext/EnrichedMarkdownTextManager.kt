@@ -16,6 +16,7 @@ import com.facebook.yoga.YogaMeasureMode
 import com.renderrichtext.spoiler.SpoilerOverlay
 import com.renderrichtext.utils.common.applyReactBorderProps
 import com.renderrichtext.utils.common.emitContextMenuItemPress
+import com.renderrichtext.utils.common.emitFactoidPress
 import com.renderrichtext.utils.common.emitLatexError
 import com.renderrichtext.utils.common.emitLinkLongPress
 import com.renderrichtext.utils.common.emitLinkPress
@@ -49,6 +50,10 @@ class EnrichedMarkdownTextManager :
 
     view.setOnLinkPressCallback { url ->
       emitLinkPress(view, url)
+    }
+
+    view.setOnFactoidPressCallback { factoidId ->
+      emitFactoidPress(view, factoidId)
     }
 
     view.setOnLinkLongPressCallback { url ->

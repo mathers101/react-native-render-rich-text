@@ -161,6 +161,14 @@ class StyleConfig(
     CodeStyle.fromReadableMap(map, styleParser)
   }
 
+  val factoidStyle: FactoidStyle by lazy {
+    val map =
+      requireNotNull(style.getMap("factoid")) {
+        "Factoid style not found. JS should always provide defaults."
+      }
+    FactoidStyle.fromReadableMap(map, styleParser)
+  }
+
   val imageStyle: ImageStyle by lazy {
     val map =
       requireNotNull(style.getMap("image")) {
@@ -340,6 +348,7 @@ class StyleConfig(
       strikethroughStyle == other.strikethroughStyle &&
       underlineStyle == other.underlineStyle &&
       codeStyle == other.codeStyle &&
+      factoidStyle == other.factoidStyle &&
       imageStyle == other.imageStyle &&
       videoStyle == other.videoStyle &&
       inlineImageStyle == other.inlineImageStyle &&
@@ -369,6 +378,7 @@ class StyleConfig(
     result = 31 * result + strikethroughStyle.hashCode()
     result = 31 * result + underlineStyle.hashCode()
     result = 31 * result + codeStyle.hashCode()
+    result = 31 * result + factoidStyle.hashCode()
     result = 31 * result + imageStyle.hashCode()
     result = 31 * result + videoStyle.hashCode()
     result = 31 * result + inlineImageStyle.hashCode()

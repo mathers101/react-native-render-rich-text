@@ -11,9 +11,10 @@ class HighlightRenderer : NodeRenderer {
     builder: SpannableStringBuilder,
     onLinkPress: ((String) -> Unit)?,
     onLinkLongPress: ((String) -> Unit)?,
+    onFactoidPress: ((String) -> Unit)?,
     factory: RendererFactory,
   ) {
-    factory.renderWithSpan(builder, { factory.renderChildren(node, builder, onLinkPress, onLinkLongPress) }) { start, end, blockStyle ->
+    factory.renderWithSpan(builder, { factory.renderChildren(node, builder, onLinkPress, onLinkLongPress, onFactoidPress) }) { start, end, blockStyle ->
       builder.setSpan(
         HighlightSpan(factory.styleCache, blockStyle),
         start,

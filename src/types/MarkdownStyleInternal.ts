@@ -155,6 +155,12 @@ interface CodeStyleInternal {
   borderColor: string;
 }
 
+interface FactoidStyleInternal {
+  color: string;
+  backgroundColor: string;
+  borderColor: string;
+}
+
 interface ImageStyleInternal {
   height: number;
   maxHeight: number;
@@ -271,6 +277,7 @@ export interface MarkdownStyleInternal {
   strikethrough: StrikethroughStyleInternal;
   underline: UnderlineStyleInternal;
   code: CodeStyleInternal;
+  factoid: FactoidStyleInternal;
   image: ImageStyleInternal;
   video: VideoStyleInternal;
   inlineImage: InlineImageStyleInternal;

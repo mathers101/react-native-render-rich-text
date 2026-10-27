@@ -21,12 +21,13 @@ class LinkRenderer(
     builder: SpannableStringBuilder,
     onLinkPress: ((String) -> Unit)?,
     onLinkLongPress: ((String) -> Unit)?,
+    onFactoidPress: ((String) -> Unit)?,
     factory: RendererFactory,
   ) {
     val url = node.getAttribute("url") ?: return
     val recognizedLink = node.getAttribute("recognizedLink") == "true"
 
-    factory.renderWithSpan(builder, { factory.renderChildren(node, builder, onLinkPress, onLinkLongPress) }) { start, end, blockStyle ->
+    factory.renderWithSpan(builder, { factory.renderChildren(node, builder, onLinkPress, onLinkLongPress, onFactoidPress) }) { start, end, blockStyle ->
       val variant = factory.styleCache.resolvedVariantForUrl(url)
       if (variant?.pill != null && canPresentAsPill(builder, start, end)) {
         val fontFamily = variant.fontFamily.ifEmpty { factory.styleCache.linkFontFamily }.ifEmpty { blockStyle.fontFamily }

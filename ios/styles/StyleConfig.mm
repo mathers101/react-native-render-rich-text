@@ -140,6 +140,10 @@ static inline NSString *normalizedFontWeight(NSString *fontWeight)
   RCTUIColor *_codeColor;
   RCTUIColor *_codeBackgroundColor;
   RCTUIColor *_codeBorderColor;
+  // Factoid properties
+  RCTUIColor *_factoidColor;
+  RCTUIColor *_factoidBackgroundColor;
+  RCTUIColor *_factoidBorderColor;
   // Image properties
   CGFloat _imageHeight;
   CGFloat _imageMaxHeight;
@@ -443,6 +447,9 @@ static inline NSString *normalizedFontWeight(NSString *fontWeight)
   copy->_codeColor = [_codeColor copy];
   copy->_codeBackgroundColor = [_codeBackgroundColor copy];
   copy->_codeBorderColor = [_codeBorderColor copy];
+  copy->_factoidColor = [_factoidColor copy];
+  copy->_factoidBackgroundColor = [_factoidBackgroundColor copy];
+  copy->_factoidBorderColor = [_factoidBorderColor copy];
   copy->_imageHeight = _imageHeight;
   copy->_imageMaxHeight = _imageMaxHeight;
   copy->_imageAspectRatio = _imageAspectRatio;
@@ -1549,6 +1556,36 @@ static inline NSString *normalizedFontWeight(NSString *fontWeight)
 - (void)setCodeBorderColor:(RCTUIColor *)newValue
 {
   _codeBorderColor = newValue;
+}
+
+- (RCTUIColor *)factoidColor
+{
+  return _factoidColor;
+}
+
+- (void)setFactoidColor:(RCTUIColor *)newValue
+{
+  _factoidColor = newValue;
+}
+
+- (RCTUIColor *)factoidBackgroundColor
+{
+  return _factoidBackgroundColor;
+}
+
+- (void)setFactoidBackgroundColor:(RCTUIColor *)newValue
+{
+  _factoidBackgroundColor = newValue;
+}
+
+- (RCTUIColor *)factoidBorderColor
+{
+  return _factoidBorderColor;
+}
+
+- (void)setFactoidBorderColor:(RCTUIColor *)newValue
+{
+  _factoidBorderColor = newValue;
 }
 
 - (CGFloat)imageHeight

@@ -44,6 +44,7 @@ import com.renderrichtext.utils.text.view.applySelectionColors
 import com.renderrichtext.utils.text.view.cancelJSTouchForCheckboxTap
 import com.renderrichtext.utils.text.view.cancelJSTouchForLinkTap
 import com.renderrichtext.utils.text.view.createSelectionActionModeCallback
+import com.renderrichtext.utils.text.view.emitFactoidPressEvent
 import com.renderrichtext.utils.text.view.emitImagePressEvent
 import com.renderrichtext.utils.text.view.emitLinkLongPressEvent
 import com.renderrichtext.utils.text.view.emitLinkPressEvent
@@ -70,6 +71,7 @@ class EnrichedMarkdownText
     private val renderer = Renderer()
     private var onLinkPressCallback: ((String) -> Unit)? = null
     private var onLinkLongPressCallback: ((String) -> Unit)? = null
+    private var onFactoidPressCallback: ((String) -> Unit)? = null
     private var onLatexErrorCallback: LatexErrorReporter? = null
 
     private val reportedLatexErrors = HashSet<String>()
@@ -309,7 +311,7 @@ class EnrichedMarkdownText
             }
 
           renderer.configure(style, context, latexErrorReporter)
-          val styledText = renderer.renderDocument(ast, onLinkPressCallback, onLinkLongPressCallback)
+          val styledText = renderer.renderDocument(ast, onLinkPressCallback, onLinkLongPressCallback, onFactoidPressCallback)
 
           mainHandler.post {
             if (renderId == currentRenderId) {
@@ -458,6 +460,10 @@ class EnrichedMarkdownText
       emitLinkPressEvent(url)
     }
 
+    fun emitOnFactoidPress(factoidId: String) {
+      emitFactoidPressEvent(factoidId)
+    }
+
     fun emitOnLinkLongPress(url: String) {
       emitLinkLongPressEvent(url)
     }
@@ -492,6 +498,10 @@ class EnrichedMarkdownText
 
     fun setOnLinkPressCallback(callback: (String) -> Unit) {
       onLinkPressCallback = callback
+    }
+
+    fun setOnFactoidPressCallback(callback: (String) -> Unit) {
+      onFactoidPressCallback = callback
     }
 
     fun setOnLinkLongPressCallback(callback: (String) -> Unit) {

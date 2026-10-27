@@ -21,7 +21,15 @@ export const FIXTURES: {id: FixtureId; label: string; document: TipTapNode}[] =
               {type: 'text', text: 'The trail was '},
               {type: 'text', text: 'quiet', marks: [{type: 'italic'}]},
               {type: 'text', text: ' until a '},
-              {type: 'text', text: 'gust', marks: [{type: 'bold'}]},
+              {
+                type: 'factoid',
+                attrs: {
+                  id: 'saddle-wind',
+                },
+                content: [
+                  {type: 'text', text: 'gust', marks: [{type: 'bold'}]},
+                ],
+              },
               {type: 'text', text: ' came over the saddle. '},
               {
                 type: 'text',

@@ -26,6 +26,10 @@ NSString *_Nullable linkTitleAtIndex(NSAttributedString *text, NSUInteger index)
 NSDictionary<NSString *, NSString *> *_Nullable imageAtTapLocation(ENRMPlatformTextView *textView,
                                                                    ENRMTapRecognizer *recognizer);
 
+/// Returns the tapped factoid's id, an empty string when the factoid has no id, or nil
+/// when the tap did not land on a factoid.
+NSString *_Nullable factoidIdAtTapLocation(ENRMPlatformTextView *textView, ENRMTapRecognizer *recognizer);
+
 /// Returns the tapped code block as @{@"code": ..., @"language": ...}, or nil if
 /// the tap did not land on a commonmark code block.
 NSDictionary<NSString *, NSString *> *_Nullable codeBlockAtTapLocation(ENRMPlatformTextView *textView,

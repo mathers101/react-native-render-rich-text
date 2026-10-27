@@ -14,6 +14,7 @@ import { FIXTURES, type FixtureId } from './fixtures';
 function Gallery() {
   const [fixtureId, setFixtureId] = useState<FixtureId>('mixed');
   const [lastLink, setLastLink] = useState('No link opened yet');
+  const [lastFactoid, setLastFactoid] = useState('No factoid opened yet');
   const fixture = FIXTURES.find(item => item.id === fixtureId) ?? FIXTURES[0];
 
   return (
@@ -54,9 +55,15 @@ function Gallery() {
           <RichText
             document={fixture.document}
             onLinkPress={setLastLink}
+            onFactoidPress={setLastFactoid}
             textStyle={{
               paragraph: { color: '#1c1917', fontSize: 17, lineHeight: 26 },
               link: { color: '#9a3412' },
+              factoid: {
+                color: '#23670d',
+                backgroundColor: '#9bfc6e',
+                borderColor: '#278308',
+              },
               blockquote: {
                 borderColor: '#c2410c',
                 color: '#44403c',
@@ -76,6 +83,12 @@ function Gallery() {
         <Text style={styles.footerLabel}>Last link</Text>
         <Text numberOfLines={1} style={styles.footerValue}>
           {lastLink}
+        </Text>
+        <Text style={[styles.footerLabel, styles.footerLabelSpaced]}>
+          Last factoid
+        </Text>
+        <Text numberOfLines={1} style={styles.footerValue}>
+          {lastFactoid}
         </Text>
       </View>
     </SafeAreaView>
@@ -174,6 +187,9 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     textTransform: 'uppercase',
     letterSpacing: 0.8,
+  },
+  footerLabelSpaced: {
+    marginTop: 10,
   },
   footerValue: {
     color: '#1c1917',

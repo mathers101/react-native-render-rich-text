@@ -207,6 +207,11 @@ const DEFAULT_NORMALIZED_STYLE = Object.freeze({
     backgroundColor: normalizeColor('#FDF2F4')!,
     borderColor: normalizeColor('#F8D7DA')!,
   },
+  factoid: {
+    color: normalizeColor('#205710')!,
+    backgroundColor: normalizeColor('#9bfc6e')!,
+    borderColor: normalizeColor('#23670d')!,
+  },
   image: {
     height: 200,
     maxHeight: 0,

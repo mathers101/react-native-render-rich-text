@@ -41,6 +41,9 @@ class SpanStyleCache(
   val codeFontFamily: String = style.codeStyle.fontFamily
   val codeFontSize: Float = style.codeStyle.fontSize
   val codeColor: Int = style.codeStyle.color
+  val factoidColor: Int = style.factoidStyle.color
+  val factoidBackgroundColor: Int = style.factoidStyle.backgroundColor
+  val factoidBorderColor: Int = style.factoidStyle.borderColor
   val spoilerColor: Int = style.spoilerStyle.color
   val spoilerParticleDensity: Float = style.spoilerStyle.particleDensity
   val spoilerParticleSpeed: Float = style.spoilerStyle.particleSpeed
@@ -73,6 +76,9 @@ class SpanStyleCache(
       style
         .codeStyle
         .color
+        .takeIf { it != 0 && it != paragraphColor }
+        ?.let { add(it) }
+      style.factoidStyle.color
         .takeIf { it != 0 && it != paragraphColor }
         ?.let { add(it) }
       style.taskListStyle.checkedTextColor

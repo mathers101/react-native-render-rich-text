@@ -4,6 +4,7 @@
 #import "CodeBlockRenderer.h"
 #import "CodeRenderer.h"
 #import "EmphasisRenderer.h"
+#import "FactoidRenderer.h"
 
 #import "ENRMFeatureFlags.h"
 

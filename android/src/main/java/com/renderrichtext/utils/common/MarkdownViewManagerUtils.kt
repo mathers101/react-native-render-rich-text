@@ -6,6 +6,7 @@ import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.uimanager.UIManagerHelper
 import com.renderrichtext.accessibility.AccessibilityLabels
 import com.renderrichtext.events.CodeBlockPressEvent
+import com.renderrichtext.events.FactoidPressEvent
 import com.renderrichtext.events.ContextMenuItemPressEvent
 import com.renderrichtext.events.CopyPressEvent
 import com.renderrichtext.events.LatexErrorEvent
@@ -19,6 +20,7 @@ import com.renderrichtext.utils.text.view.SelectionMenuConfig
 fun markdownEventTypeConstants(): MutableMap<String, Any> {
   val map = mutableMapOf<String, Any>()
   map[LinkPressEvent.EVENT_NAME] = mapOf("registrationName" to LinkPressEvent.EVENT_NAME)
+  map[FactoidPressEvent.EVENT_NAME] = mapOf("registrationName" to FactoidPressEvent.EVENT_NAME)
   map[LinkLongPressEvent.EVENT_NAME] =
     mapOf("registrationName" to LinkLongPressEvent.EVENT_NAME)
   map[TaskListItemPressEvent.EVENT_NAME] =
@@ -32,6 +34,16 @@ fun markdownEventTypeConstants(): MutableMap<String, Any> {
   map[LatexErrorEvent.EVENT_NAME] =
     mapOf("registrationName" to LatexErrorEvent.EVENT_NAME)
   return map
+}
+
+fun emitFactoidPress(
+  view: View,
+  factoidId: String,
+) {
+  val context = view.context as com.facebook.react.bridge.ReactContext
+  val surfaceId = UIManagerHelper.getSurfaceId(context)
+  val eventDispatcher = UIManagerHelper.getEventDispatcherForReactTag(context, view.id)
+  eventDispatcher?.dispatchEvent(FactoidPressEvent(surfaceId, view.id, factoidId))
 }
 
 fun emitLinkPress(

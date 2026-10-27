@@ -38,7 +38,8 @@ class Renderer {
     document: MarkdownASTNode,
     onLinkPress: ((String) -> Unit)? = null,
     onLinkLongPress: ((String) -> Unit)? = null,
-  ): SpannableStringBuilder = renderContent(document.children, onLinkPress, onLinkLongPress)
+    onFactoidPress: ((String) -> Unit)? = null,
+  ): SpannableStringBuilder = renderContent(document.children, onLinkPress, onLinkLongPress, onFactoidPress)
 
   /**
    * Renders a flat list of sibling nodes into a fresh buffer and hands over
@@ -61,6 +62,7 @@ class Renderer {
     nodes: List<MarkdownASTNode>,
     onLinkPress: ((String) -> Unit)? = null,
     onLinkLongPress: ((String) -> Unit)? = null,
+    onFactoidPress: ((String) -> Unit)? = null,
     block: BlockquoteTextRenderer? = null,
   ): SpannableStringBuilder {
     val factory =
@@ -76,7 +78,7 @@ class Renderer {
 
     block?.push(factory.blockStyleContext)
     try {
-      factory.renderNodes(nodes, builder, onLinkPress, onLinkLongPress)
+      factory.renderNodes(nodes, builder, onLinkPress, onLinkLongPress, onFactoidPress)
     } finally {
       block?.pop(factory.blockStyleContext)
     }

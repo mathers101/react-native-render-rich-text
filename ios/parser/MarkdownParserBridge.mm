@@ -116,6 +116,9 @@ static MarkdownASTNode *convertCppASTToObjC(std::shared_ptr<Markdown::MarkdownAS
     case Markdown::NodeType::Video:
       objcType = MarkdownNodeTypeVideo;
       break;
+    case Markdown::NodeType::Factoid:
+      objcType = MarkdownNodeTypeFactoid;
+      break;
   }
 
   MarkdownASTNode *objcNode = [[MarkdownASTNode alloc] initWithType:objcType];

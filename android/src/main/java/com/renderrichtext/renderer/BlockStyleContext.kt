@@ -137,6 +137,20 @@ class BlockStyleContext {
     }
   }
 
+  /** Same font as the current block, with [color] as the base text color for nested inline nodes. */
+  fun pushInlineColor(color: Int) {
+    val current =
+      blockStyleStack.lastOrNull()
+        ?: throw IllegalStateException(
+          "BlockStyle is null. Inline renderers must be used within a block context.",
+        )
+    blockStyleStack.addLast(current.copy(blockStyle = current.blockStyle.copy(color = color)))
+  }
+
+  fun popInlineColor() {
+    popBlockStyle()
+  }
+
   fun requireBlockStyle(): BlockStyle {
     val entry = blockStyleStack.lastOrNull()
     return entry?.blockStyle

@@ -10,6 +10,7 @@ import android.view.ViewConfiguration
 import android.view.ViewParent
 import android.widget.TextView
 import com.renderrichtext.spans.CodeBlockSpan
+import com.renderrichtext.spans.FactoidSpan
 import com.renderrichtext.spans.ImageSpan
 import com.renderrichtext.spans.LinkSpan
 import com.renderrichtext.spans.SpoilerSpan
@@ -33,6 +34,7 @@ class LinkLongPressMovementMethod : ArrowKeyMovementMethod() {
   private var startY = 0f
   private var pressedLink: LinkSpan? = null
   private var pressedImage: ImageSpan? = null
+  private var pressedFactoid: FactoidSpan? = null
   private var pressedCodeBlock: CodeBlockSpan? = null
 
   var isLinkTouchActive: Boolean = false
@@ -57,9 +59,16 @@ class LinkLongPressMovementMethod : ArrowKeyMovementMethod() {
           } else {
             null
           }
+        pressedFactoid =
+          if (pressedLink == null && pressedImage == null) {
+            findFactoidSpan(widget, buffer, event)
+          } else {
+            null
+          }
         pressedCodeBlock =
           if (pressedLink == null &&
             pressedImage == null &&
+            pressedFactoid == null &&
             // Skip while text is selected so the tap clears the selection
             // instead of firing the press (matches the web guard).
             !widget.hasSelection() &&
@@ -69,8 +78,7 @@ class LinkLongPressMovementMethod : ArrowKeyMovementMethod() {
           } else {
             null
           }
-        isLinkTouchActive = pressedLink != null || pressedImage != null || pressedCodeBlock != null
-        isTouchWithinTextBounds = charOffsetAt(widget, event) != null || pressedCodeBlock != null
+        isLinkTouchActive = pressedLink != null || pressedImage != null || pressedFactoid != null || pressedCodeBlock != null
         pressedLink?.let { scheduleLongPress(widget, it) }
         // Keeps RNGH Pressable and scrolling parents from stealing the press before ACTION_UP.
         disallowsParentIntercept = isLinkTouchActive
@@ -86,6 +94,7 @@ class LinkLongPressMovementMethod : ArrowKeyMovementMethod() {
           isLinkTouchActive = false
           pressedLink = null
           pressedImage = null
+          pressedFactoid = null
           pressedCodeBlock = null
           releaseParentIntercept(widget)
         }
@@ -95,10 +104,12 @@ class LinkLongPressMovementMethod : ArrowKeyMovementMethod() {
         cancelLongPress()
         val tappedLink = pressedLink
         val tappedImage = pressedImage
+        val tappedFactoid = pressedFactoid
         val tappedCodeBlock = pressedCodeBlock
         isLinkTouchActive = false
         pressedLink = null
         pressedImage = null
+        pressedFactoid = null
         pressedCodeBlock = null
         releaseParentIntercept(widget)
 
@@ -119,6 +130,11 @@ class LinkLongPressMovementMethod : ArrowKeyMovementMethod() {
           return true
         }
 
+        if (tappedFactoid != null && findFactoidSpan(widget, buffer, event) === tappedFactoid) {
+          tappedFactoid.onClick(widget)
+          return true
+        }
+
         if (tappedCodeBlock != null && findCodeBlockSpan(widget, buffer, event) === tappedCodeBlock) {
           codeBlockPressHost(widget)?.emitOnCodeBlockPress(tappedCodeBlock.code, tappedCodeBlock.language)
           return true
@@ -131,6 +147,7 @@ class LinkLongPressMovementMethod : ArrowKeyMovementMethod() {
         pressedLink = null
         pressedImage = null
         pressedCodeBlock = null
+        pressedFactoid = null
         releaseParentIntercept(widget)
       }
     }
@@ -215,6 +232,17 @@ class LinkLongPressMovementMethod : ArrowKeyMovementMethod() {
   ): LinkSpan? {
     val offset = charOffsetAt(widget, event) ?: return null
     return buffer.getSpans(offset, offset, LinkSpan::class.java).firstOrNull()
+  }
+
+  private fun findFactoidSpan(
+    widget: TextView,
+    buffer: Spannable,
+    event: MotionEvent,
+  ): FactoidSpan? {
+    val offset = charOffsetAt(widget, event) ?: return null
+    return buffer
+      .getSpans(offset, offset, FactoidSpan::class.java)
+      .minByOrNull { buffer.getSpanEnd(it) - buffer.getSpanStart(it) }
   }
 
   private fun findImageSpan(

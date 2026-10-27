@@ -2,6 +2,7 @@
 #import "ENRMLinkPillAttachment.h"
 #import "ENRMSpoilerTapUtils.h"
 #import "ENRMTextHitTest.h"
+#import "FactoidBackground.h"
 
 NSString *_Nullable linkURLAtTapLocation(ENRMPlatformTextView *textView, ENRMTapRecognizer *recognizer)
 {
@@ -63,6 +64,22 @@ NSDictionary<NSString *, NSString *> *_Nullable imageAtTapLocation(ENRMPlatformT
   return @{@"url" : url, @"altText" : altText ?: @""};
 }
 
+NSString *_Nullable factoidIdAtTapLocation(ENRMPlatformTextView *textView, ENRMTapRecognizer *recognizer)
+{
+  NSUInteger characterIndex = ENRMCharacterIndexForTap(textView, recognizer);
+  if (characterIndex == NSNotFound)
+    return nil;
+
+  NSAttributedString *attrText = ENRMGetAttributedText(textView);
+  if (characterIndex >= attrText.length)
+    return nil;
+  if ([attrText attribute:FactoidAttributeName atIndex:characterIndex effectiveRange:NULL] == nil)
+    return nil;
+
+  NSString *factoidId = [attrText attribute:FactoidIdAttributeName atIndex:characterIndex effectiveRange:NULL];
+  return factoidId ?: @"";
+}
+
 NSDictionary<NSString *, NSString *> *_Nullable codeBlockAtTapLocation(ENRMPlatformTextView *textView,
                                                                        ENRMTapRecognizer *recognizer)
 {
@@ -87,7 +104,8 @@ BOOL isPointOnInteractiveElement(ENRMPlatformTextView *textView, CGPoint point, 
     return NO;
 
   NSDictionary *attrs = [ENRMGetAttributedText(textView) attributesAtIndex:charIndex effectiveRange:NULL];
-  if (attrs[@"linkURL"] != nil || [attrs[@"TaskItem"] boolValue] || attrs[SpoilerAttributeName] != nil)
+  if (attrs[@"linkURL"] != nil || [attrs[@"TaskItem"] boolValue] || attrs[SpoilerAttributeName] != nil ||
+      attrs[FactoidAttributeName] != nil)
     return YES;
 
   if (includeImages && attrs[@"imageURL"] != nil)

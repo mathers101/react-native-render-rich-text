@@ -26,7 +26,8 @@ class BlockquoteTextRenderer(
     nodes: List<MarkdownASTNode>,
     onLinkPress: ((String) -> Unit)?,
     onLinkLongPress: ((String) -> Unit)?,
-  ): SpannableStringBuilder = renderer.renderContent(nodes, onLinkPress, onLinkLongPress, block = this)
+    onFactoidPress: ((String) -> Unit)?,
+  ): SpannableStringBuilder = renderer.renderContent(nodes, onLinkPress, onLinkLongPress, onFactoidPress, block = this)
 
   fun push(context: BlockStyleContext) {
     context.blockquoteDepth += 1

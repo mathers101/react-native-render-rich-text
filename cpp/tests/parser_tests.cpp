@@ -1,8 +1,11 @@
 #include "TipTapParser.hpp"
 
+#include <algorithm>
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <utility>
+#include <vector>
 
 using Markdown::MarkdownASTNode;
 using Markdown::NodeType;
@@ -52,6 +55,8 @@ const char *typeName(NodeType type) {
       return "ThematicBreak";
     case NodeType::Highlight:
       return "Highlight";
+    case NodeType::Factoid:
+      return "Factoid";
     default:
       return "Other";
   }
@@ -62,7 +67,9 @@ void dump(const MarkdownASTNode &node, std::ostream &out, int indent) {
   if (!node.content.empty()) {
     out << " \"" << node.content << "\"";
   }
-  for (const auto &entry : node.attributes) {
+  std::vector<std::pair<std::string, std::string>> attributes(node.attributes.begin(), node.attributes.end());
+  std::sort(attributes.begin(), attributes.end());
+  for (const auto &entry : attributes) {
     out << " " << entry.first << "=" << entry.second;
   }
   out << "\n";
@@ -214,6 +221,41 @@ int main() {
            "    Text \"kept \"\n"
            "    Text \"plain\"\n"
            "    Text \" tail\"\n");
+  }
+
+  {
+    auto ast = parseTipTapDocument(R"({
+      "type": "doc",
+      "content": [{
+        "type": "paragraph",
+        "content": [
+          {"type": "text", "text": "A "},
+          {
+            "type": "factoid",
+            "attrs": {
+              "id": "saddle-wind",
+              "color": "#7c2d12",
+              "backgroundColor": "#ffedd5",
+              "borderColor": "#fdba74"
+            },
+            "content": [
+              {"type": "text", "text": "gust", "marks": [{"type": "bold"}]},
+              {"type": "text", "text": " of wind"}
+            ]
+          },
+          {"type": "text", "text": "."}
+        ]
+      }]
+    })");
+    expect("factoid inline content", dump(*ast),
+           "Document\n"
+           "  Paragraph\n"
+           "    Text \"A \"\n"
+           "    Factoid backgroundColor=#ffedd5 borderColor=#fdba74 color=#7c2d12 id=saddle-wind\n"
+           "      Strong\n"
+           "        Text \"gust\"\n"
+           "      Text \" of wind\"\n"
+           "    Text \".\"\n");
   }
 
   if (g_failed != 0) {

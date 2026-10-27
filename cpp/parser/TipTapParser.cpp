@@ -118,6 +118,22 @@ int intAttr(const json &node, const char *key, int fallback) {
   return fallback;
 }
 
+void copyAttributes(MarkdownASTNode &target, const json &node) {
+  if (!node.contains("attrs") || !node["attrs"].is_object()) {
+    return;
+  }
+  for (auto it = node["attrs"].begin(); it != node["attrs"].end(); ++it) {
+    const auto &value = it.value();
+    if (value.is_string()) {
+      target.setAttribute(it.key(), value.get<std::string>());
+    } else if (value.is_number_integer()) {
+      target.setAttribute(it.key(), std::to_string(value.get<long long>()));
+    } else if (value.is_boolean()) {
+      target.setAttribute(it.key(), value.get<bool>() ? "true" : "false");
+    }
+  }
+}
+
 std::string stringAttr(const json &node, const char *key) {
   if (!node.contains("attrs") || !node["attrs"].is_object()) {
     return "";
@@ -174,6 +190,10 @@ std::shared_ptr<MarkdownASTNode> parseNode(const json &node) {
     }
   } else if (type == "horizontalRule") {
     parsed = makeNode(NodeType::ThematicBreak);
+  } else if (type == "factoid") {
+    // Inline node whose children are themselves inline (text, marks, links).
+    parsed = makeNode(NodeType::Factoid);
+    copyAttributes(*parsed, node);
   } else {
     // Tables, images, task lists, and anything else are skipped with their children.
     return nullptr;

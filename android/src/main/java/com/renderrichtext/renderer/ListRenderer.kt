@@ -19,6 +19,7 @@ class ListRenderer(
     builder: SpannableStringBuilder,
     onLinkPress: ((String) -> Unit)?,
     onLinkLongPress: ((String) -> Unit)?,
+    onFactoidPress: ((String) -> Unit)?,
     factory: RendererFactory,
   ) {
     val start = builder.length
@@ -50,7 +51,7 @@ class ListRenderer(
     }
 
     try {
-      factory.renderChildren(node, builder, onLinkPress, onLinkLongPress)
+      factory.renderChildren(node, builder, onLinkPress, onLinkLongPress, onFactoidPress)
     } finally {
       contextManager.exitList(entryState)
     }

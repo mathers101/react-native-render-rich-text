@@ -21,6 +21,7 @@ class ListItemRenderer(
     builder: SpannableStringBuilder,
     onLinkPress: ((String) -> Unit)?,
     onLinkLongPress: ((String) -> Unit)?,
+    onFactoidPress: ((String) -> Unit)?,
     factory: RendererFactory,
   ) {
     val styleContext = factory.blockStyleContext
@@ -94,7 +95,7 @@ class ListItemRenderer(
     val prevIndent = styleContext.accumulatedIndent
     styleContext.accumulatedIndent = prevIndent + markerSpan.getLeadingMargin(false)
     try {
-      factory.renderChildren(node, builder, onLinkPress, onLinkLongPress)
+      factory.renderChildren(node, builder, onLinkPress, onLinkLongPress, onFactoidPress)
     } finally {
       styleContext.accumulatedIndent = prevIndent
       styleContext.listItemMarkerExtra = previousMarkerExtra

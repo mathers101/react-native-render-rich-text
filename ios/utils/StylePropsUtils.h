@@ -747,6 +747,38 @@ BOOL applyMarkdownStyleToConfig(StyleConfig *config, const MarkdownStyle &newSty
     changed = YES;
   }
 
+  // ── Factoid ────────────────────────────────────────────────────────────────
+
+  if (newStyle.factoid.color != oldStyle.factoid.color) {
+    if (newStyle.factoid.color) {
+      RCTUIColor *factoidColor = RCTUIColorFromSharedColor(newStyle.factoid.color);
+      [config setFactoidColor:factoidColor];
+    } else {
+      [config setFactoidColor:nullptr];
+    }
+    changed = YES;
+  }
+
+  if (newStyle.factoid.backgroundColor != oldStyle.factoid.backgroundColor) {
+    if (newStyle.factoid.backgroundColor) {
+      RCTUIColor *factoidBackgroundColor = RCTUIColorFromSharedColor(newStyle.factoid.backgroundColor);
+      [config setFactoidBackgroundColor:factoidBackgroundColor];
+    } else {
+      [config setFactoidBackgroundColor:nullptr];
+    }
+    changed = YES;
+  }
+
+  if (newStyle.factoid.borderColor != oldStyle.factoid.borderColor) {
+    if (newStyle.factoid.borderColor) {
+      RCTUIColor *factoidBorderColor = RCTUIColorFromSharedColor(newStyle.factoid.borderColor);
+      [config setFactoidBorderColor:factoidBorderColor];
+    } else {
+      [config setFactoidBorderColor:nullptr];
+    }
+    changed = YES;
+  }
+
   // ── Image ──────────────────────────────────────────────────────────────────
 
   if (newStyle.image.height != oldStyle.image.height) {

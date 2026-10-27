@@ -1,10 +1,7 @@
 import { useMemo } from 'react';
-import {
-  type NativeSyntheticEvent,
-  type StyleProp,
-  type ViewStyle,
-} from 'react-native';
+import { type NativeSyntheticEvent, type StyleProp, type ViewStyle } from 'react-native';
 import NativeRichText, {
+  type FactoidPressEvent,
   type LinkPressEvent,
   type Md4cFlagsInternal,
   type SelectionMenuConfig,
@@ -70,6 +67,8 @@ export type RichTextProps = {
   /** Partial style for the nodes this library renders. Missing keys use defaults. */
   textStyle?: MarkdownStyle;
   onLinkPress?: (url: string) => void;
+  /** Called with the factoid's `id`. A factoid that contains a link emits `onLinkPress` instead. */
+  onFactoidPress?: (factoidId: string) => void;
   selectable?: boolean;
   allowFontScaling?: boolean;
   maxFontSizeMultiplier?: number;
@@ -84,17 +83,14 @@ export function RichText({
   onLinkPress,
   selectable = true,
   allowFontScaling = true,
+  onFactoidPress,
   maxFontSizeMultiplier,
   numberOfLines,
   ellipsizeMode,
   style,
 }: RichTextProps) {
-  const documentJson =
-    typeof document === 'string' ? document : JSON.stringify(document);
-  const markdownStyle = useMemo(
-    () => normalizeMarkdownStyle(textStyle ?? {}),
-    [textStyle]
-  );
+  const documentJson = typeof document === 'string' ? document : JSON.stringify(document);
+  const markdownStyle = useMemo(() => normalizeMarkdownStyle(textStyle ?? {}), [textStyle]);
   const handleLinkPress = useMemo(() => {
     if (!onLinkPress) {
       return undefined;
@@ -103,6 +99,14 @@ export function RichText({
       onLinkPress(event.nativeEvent.url);
     };
   }, [onLinkPress]);
+  const handleFactoidPress = useMemo(() => {
+    if (!onFactoidPress) {
+      return undefined;
+    }
+    return (event: NativeSyntheticEvent<FactoidPressEvent>) => {
+      onFactoidPress(event.nativeEvent.factoidId);
+    };
+  }, [onFactoidPress]);
 
   return (
     <NativeRichText
@@ -114,6 +118,7 @@ export function RichText({
       onLinkPress={handleLinkPress}
       selectable={selectable}
       allowFontScaling={allowFontScaling}
+      onFactoidPress={handleFactoidPress}
       maxFontSizeMultiplier={maxFontSizeMultiplier}
       numberOfLines={numberOfLines}
       ellipsizeMode={ellipsizeMode}

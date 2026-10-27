@@ -41,6 +41,7 @@ data class MarkdownASTNode(
     BlankLine,
     Admonition,
     Video,
+    Factoid,
   }
 
   fun getAttribute(key: String): String? = attributes[key]

@@ -234,6 +234,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setCodeBackgroundColor:(RCTUIColor *)newValue;
 - (RCTUIColor *)codeBorderColor;
 - (void)setCodeBorderColor:(RCTUIColor *)newValue;
+// Factoid properties
+- (RCTUIColor *)factoidColor;
+- (void)setFactoidColor:(RCTUIColor *)newValue;
+- (RCTUIColor *)factoidBackgroundColor;
+- (void)setFactoidBackgroundColor:(RCTUIColor *)newValue;
+- (RCTUIColor *)factoidBorderColor;
+- (void)setFactoidBorderColor:(RCTUIColor *)newValue;
 // Image properties
 - (CGFloat)imageHeight;
 - (void)setImageHeight:(CGFloat)newValue;

@@ -18,13 +18,14 @@ class ParagraphRenderer(
     builder: SpannableStringBuilder,
     onLinkPress: ((String) -> Unit)?,
     onLinkLongPress: ((String) -> Unit)?,
+    onFactoidPress: ((String) -> Unit)?,
     factory: RendererFactory,
   ) {
     val context = factory.blockStyleContext
 
     // Inside a list, render tight with a single newline - lists own their item spacing.
     if (context.listDepth > 0) {
-      factory.renderChildren(node, builder, onLinkPress, onLinkLongPress)
+      factory.renderChildren(node, builder, onLinkPress, onLinkLongPress, onFactoidPress)
       builder.append("\n")
       return
     }
@@ -37,7 +38,7 @@ class ParagraphRenderer(
     // spacing between blocks matches the top-level document (a heading defaults to
     // marginTop 0, so the gap before it comes from the preceding paragraph's marginBottom).
     if (context.blockquoteDepth > 0) {
-      factory.renderChildren(node, builder, onLinkPress, onLinkLongPress)
+      factory.renderChildren(node, builder, onLinkPress, onLinkLongPress, onFactoidPress)
       if (builder.length > start) {
         val marginTop = if (node.containsBlockImage()) config.style.imageStyle.marginTop else style.marginTop
         applyMarginTop(builder, start, marginTop)
@@ -49,7 +50,7 @@ class ParagraphRenderer(
 
     context.setParagraphStyle(style)
     try {
-      factory.renderChildren(node, builder, onLinkPress, onLinkLongPress)
+      factory.renderChildren(node, builder, onLinkPress, onLinkLongPress, onFactoidPress)
     } finally {
       context.popBlockStyle()
     }

@@ -34,7 +34,8 @@ typedef NS_ENUM(NSInteger, MarkdownNodeType) {
   MarkdownNodeTypeSoftBreak,
   MarkdownNodeTypeBlankLine,
   MarkdownNodeTypeAdmonition,
-  MarkdownNodeTypeVideo
+  MarkdownNodeTypeVideo,
+  MarkdownNodeTypeFactoid
 };
 
 @interface MarkdownASTNode : NSObject

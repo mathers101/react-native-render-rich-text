@@ -17,6 +17,7 @@ class BlankLineRenderer(
     builder: SpannableStringBuilder,
     onLinkPress: ((String) -> Unit)?,
     onLinkLongPress: ((String) -> Unit)?,
+    onFactoidPress: ((String) -> Unit)?,
     factory: RendererFactory,
   ) {
     val count = node.getAttribute("count")?.toIntOrNull() ?: 0

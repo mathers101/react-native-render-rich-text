@@ -202,6 +202,24 @@ interface CodeStyle {
   borderColor?: string;
 }
 
+interface FactoidStyle {
+  /**
+   * Text color. A `color` attribute on the factoid node replaces this.
+   * @default '#205710'
+   */
+  color?: string;
+  /**
+   * Background color. A `backgroundColor` attribute on the node replaces this.
+   * @default '#9bfc6e'
+   */
+  backgroundColor?: string;
+  /**
+   * Border color. A `borderColor` attribute on the node replaces this.
+   * @default '#23670d'
+   */
+  borderColor?: string;
+}
+
 interface ImageStyle {
   height?: number;
   /**
@@ -404,6 +422,7 @@ export interface MarkdownStyle {
   strikethrough?: StrikethroughStyle;
   underline?: UnderlineStyle;
   code?: CodeStyle;
+  factoid?: FactoidStyle;
   image?: ImageStyle;
   video?: VideoStyle;
   inlineImage?: InlineImageStyle;

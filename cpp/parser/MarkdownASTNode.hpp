@@ -41,7 +41,8 @@ enum class NodeType {
   SoftBreak,
   BlankLine,
   Admonition,
-  Video
+  Video,
+  Factoid
 };
 
 struct MarkdownASTNode {

@@ -1,6 +1,7 @@
 #import "TextViewLayoutManager.h"
 #import "BlockquoteBorder.h"
 #import "CodeBackground.h"
+#import "FactoidBackground.h"
 #import "CodeBlockBackground.h"
 #import "ListMarkerDrawer.h"
 #import "RuntimeKeys.h"
@@ -33,6 +34,9 @@
 
   CodeBackground *codeBg = [self getCodeBackgroundWithConfig:config];
   [codeBg drawBackgroundsForGlyphRange:glyphsToShow layoutManager:self textContainer:textContainer atPoint:origin];
+
+  FactoidBackground *factoidBg = [self getFactoidBackground];
+  [factoidBg drawBackgroundsForGlyphRange:glyphsToShow layoutManager:self textContainer:textContainer atPoint:origin];
 
   CodeBlockBackground *codeBlockBg = [self getCodeBlockBackgroundWithConfig:config];
   [codeBlockBg drawBackgroundsForGlyphRange:glyphsToShow layoutManager:self textContainer:textContainer atPoint:origin];
@@ -105,6 +109,16 @@
 
 // We split these into explicit methods to avoid the 'code 257' pointer corruption
 // that can happen with generic 'id' factory blocks.
+
+- (FactoidBackground *)getFactoidBackground
+{
+  FactoidBackground *obj = objc_getAssociatedObject(self, kFactoidBackgroundKey);
+  if (!obj) {
+    obj = [FactoidBackground new];
+    objc_setAssociatedObject(self, kFactoidBackgroundKey, obj, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+  }
+  return obj;
+}
 
 - (CodeBackground *)getCodeBackgroundWithConfig:(StyleConfig *)config
 {

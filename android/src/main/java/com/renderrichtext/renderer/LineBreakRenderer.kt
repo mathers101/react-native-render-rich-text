@@ -9,6 +9,7 @@ class LineBreakRenderer : NodeRenderer {
     builder: SpannableStringBuilder,
     onLinkPress: ((String) -> Unit)?,
     onLinkLongPress: ((String) -> Unit)?,
+    onFactoidPress: ((String) -> Unit)?,
     factory: RendererFactory,
   ) {
     builder.append("\n")

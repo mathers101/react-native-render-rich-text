@@ -16,6 +16,7 @@ interface NodeRenderer {
     builder: SpannableStringBuilder,
     onLinkPress: ((String) -> Unit)?,
     onLinkLongPress: ((String) -> Unit)?,
+    onFactoidPress: ((String) -> Unit)?,
     factory: RendererFactory,
   )
 }
@@ -132,6 +133,7 @@ class RendererFactory(
       put(MarkdownASTNode.NodeType.Underline, UnderlineRenderer(config))
       put(MarkdownASTNode.NodeType.Highlight, HighlightRenderer())
       put(MarkdownASTNode.NodeType.Code, CodeRenderer(config))
+      put(MarkdownASTNode.NodeType.Factoid, FactoidRenderer(config))
       put(MarkdownASTNode.NodeType.LineBreak, lineBreakRenderer)
       put(MarkdownASTNode.NodeType.SoftBreak, softBreakRenderer)
       put(MarkdownASTNode.NodeType.ThematicBreak, ThematicBreakRenderer(config))
@@ -157,8 +159,9 @@ class RendererFactory(
     builder: SpannableStringBuilder,
     onLinkPress: ((String) -> Unit)?,
     onLinkLongPress: ((String) -> Unit)?,
+    onFactoidPress: ((String) -> Unit)?,
   ) {
-    renderNodes(node.children, builder, onLinkPress, onLinkLongPress)
+    renderNodes(node.children, builder, onLinkPress, onLinkLongPress, onFactoidPress)
   }
 
   /**
@@ -172,9 +175,10 @@ class RendererFactory(
     builder: SpannableStringBuilder,
     onLinkPress: ((String) -> Unit)?,
     onLinkLongPress: ((String) -> Unit)?,
+    onFactoidPress: ((String) -> Unit)?,
   ) {
     nodes.forEach { node ->
-      getRenderer(node).render(node, builder, onLinkPress, onLinkLongPress, this)
+      getRenderer(node).render(node, builder, onLinkPress, onLinkLongPress, onFactoidPress, this)
     }
   }
 

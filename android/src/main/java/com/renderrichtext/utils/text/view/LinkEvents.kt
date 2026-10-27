@@ -6,9 +6,17 @@ import android.widget.TextView
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.uimanager.UIManagerHelper
 import com.facebook.react.uimanager.events.NativeGestureUtil
+import com.renderrichtext.events.FactoidPressEvent
 import com.renderrichtext.events.ImagePressEvent
 import com.renderrichtext.events.LinkLongPressEvent
 import com.renderrichtext.events.LinkPressEvent
+
+fun View.emitFactoidPressEvent(factoidId: String) {
+  val reactContext = context as? ReactContext ?: return
+  val surfaceId = UIManagerHelper.getSurfaceId(reactContext)
+  val dispatcher = UIManagerHelper.getEventDispatcherForReactTag(reactContext, id)
+  dispatcher?.dispatchEvent(FactoidPressEvent(surfaceId, id, factoidId))
+}
 
 fun View.emitLinkPressEvent(url: String) {
   val reactContext = context as? ReactContext ?: return

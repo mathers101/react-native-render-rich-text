@@ -65,6 +65,7 @@ typedef NS_OPTIONS(NSUInteger, ENRMDirtyFlags) {
 - (void)textTapped:(ENRMTapRecognizer *)recognizer;
 - (void)setupLayoutManager;
 - (void)emitLinkPress:(NSString *)url;
+- (void)emitFactoidPress:(NSString *)factoidId;
 - (void)emitLinkLongPress:(NSString *)url;
 - (void)emitLinkContextMenuItemPress:(NSString *)itemText pattern:(NSString *)pattern url:(NSString *)url;
 - (void)emitImagePress:(NSString *)url altText:(NSString *)altText;

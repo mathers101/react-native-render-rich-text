@@ -20,6 +20,9 @@ extern void *kStyleConfigKey;
 // Used by TextViewLayoutManager for code background drawing
 extern void *kCodeBackgroundKey;
 
+// Key for storing FactoidBackground instance on NSLayoutManager
+extern void *kFactoidBackgroundKey;
+
 // Key for storing BlockquoteBorder instance on NSLayoutManager
 // Used by TextViewLayoutManager for blockquote border drawing
 extern void *kBlockquoteBorderKey;
