@@ -101,7 +101,7 @@ class CodeBlockSpan(
     if (spanStart !in 0 until spanEnd) return
 
     val isFirstLine = start == spanStart
-    val isLastLine = end == spanEnd || (spanEnd <= end && (spanEnd == text.length || text[spanEnd - 1] == '\n'))
+    val isLastLine = isLastDrawnLine(text, end, spanEnd)
 
     val inset = codeBlockStyle.borderWidth / 2f
 
@@ -193,4 +193,24 @@ class CodeBlockSpan(
 
     tp.applyColorPreserving(codeBlockStyle.color, *styleCache.colorsToPreserve)
   }
+}
+
+/**
+ * True when [lineEnd] is the last drawn line of a span ending at [spanEnd].
+ *
+ * The span range can include a trailing '\n' that belongs to the last content
+ * line rather than forming a line of its own, and the margin newline after the
+ * span can push the line end past getSpanEnd. Compare against the end of the
+ * visible content, same as [BlockquoteSpan]'s last-line check.
+ */
+internal fun isLastDrawnLine(
+  text: CharSequence,
+  lineEnd: Int,
+  spanEnd: Int,
+): Boolean {
+  var visibleEnd = spanEnd.coerceAtMost(text.length)
+  while (visibleEnd > 0 && text[visibleEnd - 1] == '\n') {
+    visibleEnd--
+  }
+  return lineEnd >= visibleEnd
 }

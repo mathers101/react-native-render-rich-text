@@ -6,6 +6,7 @@ import android.text.Spanned
 import android.text.style.LineHeightSpan
 import com.renderrichtext.parser.MarkdownASTNode
 import com.renderrichtext.spans.BlockquoteSpan
+import com.renderrichtext.spans.MarginBottomSpan
 import com.renderrichtext.utils.text.span.SPAN_FLAGS_EXCLUSIVE_EXCLUSIVE
 import com.renderrichtext.utils.text.span.SPAN_FLAGS_EXCLUSIVE_EXCLUSIVE_PRIORITY
 import com.renderrichtext.utils.text.span.SPAN_FLAGS_LINE_HEIGHT_PRIORITY
@@ -44,7 +45,15 @@ class BlockquoteRenderer(
     }
 
     if (builder.length == start) return
-    var end = builder.length
+    // The last child's margin sits on its terminating newline, so the extra
+    // descent is part of the last content line and the quote background paints
+    // it. That reads as a large gap under the text. Lift it off the box.
+    var end = detachTrailingContentMargin(builder, start, depth)
+    if (end == start) return
+    if (depth == 0 && end == builder.length && builder[end - 1] != '\n') {
+      builder.append('\n')
+      end = builder.length
+    }
     val padding = style.padding.toInt()
 
     var contentStart = start
@@ -94,6 +103,61 @@ class BlockquoteRenderer(
       applyMarginTop(builder, start, style.marginTop)
       applyMarginBottom(builder, style.marginBottom)
     }
+  }
+
+  /**
+   * The last block inside the quote ends with a [MarginBottomSpan] on its
+   * terminating newline. That span adds its margin to the content line's descent,
+   * and the quote background fills the whole line, so the margin shows up as
+   * extra space under the text.
+   *
+   * A root quote drops that margin and keeps a bare newline, so the quote's own
+   * margin (applied after the box) is a separate spacer line outside the
+   * background. A nested quote keeps the margin, but on a following spacer line
+   * the box does not cover, so the parent still gets a gap before the next sibling.
+   *
+   * Returns the exclusive end index the quote box should use.
+   */
+  private fun detachTrailingContentMargin(
+    builder: SpannableStringBuilder,
+    start: Int,
+    depth: Int,
+  ): Int {
+    val end = builder.length
+    if (end <= start || builder[end - 1] != '\n') return end
+
+    val newline = end - 1
+    val marginSpans =
+      builder.getSpans(newline, end, MarginBottomSpan::class.java).filter {
+        builder.getSpanStart(it) == newline && builder.getSpanEnd(it) == end
+      }
+    if (marginSpans.isEmpty()) return end
+
+    val margin = marginSpans.maxOf { it.marginBottom }
+    val spacerLine = newline == start || builder[newline - 1] == '\n'
+
+    if (spacerLine) {
+      if (depth == 0) {
+        marginSpans.forEach { builder.removeSpan(it) }
+        builder.delete(newline, end)
+        return newline
+      }
+      return newline
+    }
+
+    marginSpans.forEach { builder.removeSpan(it) }
+    if (depth > 0 && margin > 0f) {
+      val spacer = builder.length
+      builder.append('\n')
+      builder.setSpan(
+        MarginBottomSpan(margin),
+        spacer,
+        builder.length,
+        SPAN_FLAGS_EXCLUSIVE_EXCLUSIVE,
+      )
+      return end
+    }
+    return builder.length
   }
 
   /**

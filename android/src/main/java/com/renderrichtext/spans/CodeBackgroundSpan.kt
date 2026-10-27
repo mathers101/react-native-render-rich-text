@@ -15,7 +15,7 @@ class CodeBackgroundSpan(
   private val styleConfig: StyleConfig,
 ) : LineBackgroundSpan {
   companion object {
-    private const val CORNER_RADIUS = 6.0f
+    private const val CORNER_RADIUS = 10.0f
     private const val BORDER_WIDTH = 1.0f
 
     private val sharedBackgroundPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.FILL }

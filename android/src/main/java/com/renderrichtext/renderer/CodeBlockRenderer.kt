@@ -7,6 +7,7 @@ import android.text.style.LineHeightSpan
 import com.renderrichtext.parser.MarkdownASTNode
 import com.renderrichtext.spans.CodeBlockSpan
 import com.renderrichtext.spans.MarginBottomSpan
+import com.renderrichtext.spans.isLastDrawnLine
 import com.renderrichtext.utils.common.CodeBlockHighlighter
 import com.renderrichtext.utils.common.CodeBlockNode
 import com.renderrichtext.utils.text.span.SPAN_FLAGS_EXCLUSIVE_EXCLUSIVE
@@ -45,8 +46,6 @@ class CodeBlockRenderer(
 
     if (builder.length == contentStart) return
 
-    val end = builder.length
-
     CodeBlockHighlighter.highlight(
       builder,
       CodeBlockNode.extractCode(node),
@@ -55,6 +54,15 @@ class CodeBlockRenderer(
       contentStart,
     )
 
+    // Terminate the content so the margin newline below is its own line. Sharing
+    // the last code line makes that line's descent grow by marginBottom, and the
+    // background paints the whole line — the bottom edge is then the margin, and
+    // it is not recognized as the last line, so the bottom corners stay square.
+    if (builder.last() != '\n') {
+      builder.append('\n')
+    }
+
+    val end = builder.length
     val padding = style.padding.toInt()
 
     // Apply background, borders, and horizontal padding to content only
@@ -115,9 +123,9 @@ class CodeBlockRenderer(
         fm.top -= padding
       }
 
-      // Adjust descent/bottom for the last line (handling trailing newlines)
-      val isLastLine = endLine == spanEnd || (spanEnd <= endLine && text[spanEnd - 1] == '\n')
-      if (isLastLine) {
+      // Same last-line test as CodeBlockSpan, so the bottom padding lands on the
+      // line that draws the bottom corners.
+      if (isLastDrawnLine(text, endLine, spanEnd)) {
         fm.descent += padding
         fm.bottom += padding
       }

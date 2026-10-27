@@ -1,4 +1,4 @@
-import {useState} from 'react';
+import { useState } from 'react';
 import {
   Pressable,
   ScrollView,
@@ -7,9 +7,9 @@ import {
   Text,
   View,
 } from 'react-native';
-import {SafeAreaProvider, SafeAreaView} from 'react-native-safe-area-context';
-import {RichText} from 'react-native-render-rich-text';
-import {FIXTURES, type FixtureId} from './fixtures';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { RichText } from 'react-native-render-rich-text';
+import { FIXTURES, type FixtureId } from './fixtures';
 
 function Gallery() {
   const [fixtureId, setFixtureId] = useState<FixtureId>('mixed');
@@ -33,10 +33,13 @@ function Gallery() {
             <Pressable
               key={item.id}
               accessibilityRole="button"
-              accessibilityState={{selected}}
+              accessibilityState={{ selected }}
               onPress={() => setFixtureId(item.id)}
-              style={[styles.tab, selected && styles.tabSelected]}>
-              <Text style={[styles.tabLabel, selected && styles.tabLabelSelected]}>
+              style={[styles.tab, selected && styles.tabSelected]}
+            >
+              <Text
+                style={[styles.tabLabel, selected && styles.tabLabelSelected]}
+              >
                 {item.label}
               </Text>
             </Pressable>
@@ -45,19 +48,21 @@ function Gallery() {
       </View>
       <ScrollView
         contentContainerStyle={styles.scroll}
-        style={styles.scrollView}>
+        style={styles.scrollView}
+      >
         <View style={styles.sheet}>
           <RichText
             document={fixture.document}
             onLinkPress={setLastLink}
             textStyle={{
-              paragraph: {color: '#1c1917', fontSize: 17, lineHeight: 26},
-              link: {color: '#9a3412'},
+              paragraph: { color: '#1c1917', fontSize: 17, lineHeight: 26 },
+              link: { color: '#9a3412' },
               blockquote: {
                 borderColor: '#c2410c',
                 color: '#44403c',
+                padding: 10,
               },
-              code: {color: '#7c2d12', backgroundColor: '#ffedd5'},
+              code: { color: '#7c2d12', backgroundColor: '#ffedd5' },
               codeBlock: {
                 color: '#f5f5f4',
                 backgroundColor: '#292524',

@@ -11,6 +11,14 @@ pluginManagement {
 plugins { id("com.facebook.react.settings") }
 extensions.configure(com.facebook.react.ReactSettingsExtension){ ex -> ex.autolinkLibrariesFromCommand() }
 rootProject.name = 'RenderRichTextExample'
+
+// Resolve autolinked project dirs through any Yarn/Windows symlink so Kotlin
+// incremental compilation sees the same path the editor saves to.
+gradle.settingsEvaluated {
+    rootProject.children.each { proj ->
+        proj.projectDir = proj.projectDir.canonicalFile
+    }
+}
 include ':app'
 def reactNativeGradlePlugin = file("../node_modules/@react-native/gradle-plugin")
 if (!reactNativeGradlePlugin.exists()) {
