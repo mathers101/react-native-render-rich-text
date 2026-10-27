@@ -42,7 +42,8 @@ class UnorderedListSpan(
 
   private val radius: Float = listStyle.bulletSize / 2f
   private val ringStrokeWidth: Float = radius * 0.3f
-  private val markerColumnWidth: Float = listStyle.effectiveMarkerWidth(radius)
+  // Same column an ordered list reserves for `99.`, so both lists indent equally.
+  private val markerColumnWidth: Float = OrderedListSpan.defaultMarkerColumnWidth(listStyle, context)
 
   private fun configureBulletPaint(): Paint =
     sharedBulletPaint.apply {
@@ -65,11 +66,9 @@ class UnorderedListSpan(
     start: Int,
   ) {
     val bulletPaint = configureBulletPaint()
-    // Center the bullet at the right edge of the reserved marker column so
-    // it hugs the gap before the text — matches iOS behavior and stays
-    // visually flush-left when the column width equals the bullet radius
-    // (the default).
-    val bulletX = x + (depth * marginLeft + ancestorMarkerOffset + markerColumnWidth) * dir
+    // Right-align the bullet in the same column as a number, so its right edge
+    // meets the gap instead of sitting halfway into it.
+    val bulletX = x + (depth * marginLeft + ancestorMarkerOffset + markerColumnWidth - radius) * dir
     val bulletY = baseline + (markerFontMetrics.ascent + markerFontMetrics.descent) / 2f
 
     when (depth) {

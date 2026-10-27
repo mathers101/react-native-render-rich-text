@@ -83,10 +83,10 @@ NSString *const TaskIndexAttribute = @"TaskIndex";
 
   // currentDepth - 1 handles the horizontal offset for nested lists
   const NSInteger nestingLevel = currentDepth - 1;
+  // Bullets share the ordered-list `99.` column so both lists indent equally.
   // A task in a widened ordered list moves with its numbered siblings.
   const CGFloat baseMarkerWidth = isTask ? [_config effectiveListMarginLeftForTask] + context.listMarkerExtra
-                                  : (context.listType == ListTypeOrdered) ? context.listMarkerWidth
-                                                                          : [_config effectiveListMarginLeftForBullet];
+                                         : context.listMarkerWidth;
 
   const CGFloat blockquoteIndent =
       blockquoteIndentForDepth(context.blockquoteDepth, [_config blockquoteBorderWidth] + [_config blockquoteGapWidth]);

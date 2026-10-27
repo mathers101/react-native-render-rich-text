@@ -2109,11 +2109,6 @@ static const CGFloat kDefaultMinGap = 4.0;
   return MAX(_listStyleGapWidth, kDefaultMinGap);
 }
 
-- (CGFloat)effectiveListMarginLeftForBullet
-{
-  return MAX(_listStyleMarkerMinWidth, _listStyleBulletSize / 2.0);
-}
-
 - (CGFloat)effectiveListMarginLeftForNumber:(NSInteger)number
 {
   UIFont *font = [self listMarkerFont];

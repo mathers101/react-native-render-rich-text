@@ -43,6 +43,15 @@ class OrderedListSpan(
   companion object {
     private val sharedMarkerPaint = TextPaint().apply { isAntiAlias = true }
 
+    /** Column every bullet and numbered list reserves, wide enough for `99.`. */
+    fun defaultMarkerColumnWidth(
+      listStyle: ListStyle,
+      context: Context,
+    ): Float {
+      val paint = markerPaint(listStyle, markerTypeface(listStyle, context))
+      return listStyle.effectiveMarkerWidth(paint.measureText("99."))
+    }
+
     /**
      * How far the `99.` column every ordered list reserves must grow to fit each of [numbers].
      * Whole pixels, so the Int leading margins and the float marker positions agree at every depth.
@@ -82,7 +91,7 @@ class OrderedListSpan(
   }
 
   private val markerTypeface = markerTypeface(listStyle, context)
-  private val defaultMarkerWidth = listStyle.effectiveMarkerWidth(markerPaint(listStyle, markerTypeface).measureText("99."))
+  private val defaultMarkerWidth = defaultMarkerColumnWidth(listStyle, context)
 
   override fun getMarkerWidth(): Float = defaultMarkerWidth + markerExtraWidth
 

@@ -68,8 +68,10 @@ interface ListStyle extends BaseBlockStyle {
   bulletColor?: string;
   bulletSize?: number;
   /**
-   * Minimum reserved marker column width applied uniformly to UL/OL/task lists.
-   * `0` (the default) means no minimum — each list uses its natural marker width.
+   * Minimum reserved marker column width applied uniformly to bullet, numbered,
+   * and task lists. `0` (the default) means no minimum: bullet and numbered
+   * lists share the width of a two-digit marker (`99.`), and task lists use
+   * the checkbox width.
    */
   markerMinWidth?: number;
   markerColor?: string;

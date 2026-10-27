@@ -19,6 +19,7 @@ class FactoidBackgroundSpan(
   companion object {
     private const val CORNER_RADIUS = 10.0f
     private const val BORDER_WIDTH = 1.0f
+    private const val HORIZONTAL_OUTSET = 4.0f
 
     private val sharedBackgroundPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.FILL }
     private val sharedBorderPaint =
@@ -80,6 +81,7 @@ class FactoidBackgroundSpan(
       val endX = InlineBackgroundGeometry.horizontalOffset(text, start, end, glyphEnd, p, leadingMargin) + left
 
       rect.set(min(startX, endX), top.toFloat(), max(startX, endX), finalBottom.toFloat())
+      rect.inset(-HORIZONTAL_OUTSET, 0f)
 
       val factoidStyle = styleConfig.factoidStyle
       sharedBackgroundPaint.color = backgroundColorOverride ?: factoidStyle.backgroundColor

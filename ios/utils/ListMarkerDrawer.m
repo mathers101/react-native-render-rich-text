@@ -107,7 +107,10 @@ static NSString *const kAppleColorEmojiFontName = @"AppleColorEmoji";
                                                    centerY:baselineY - (font.capHeight / 2.0)
                                                    checked:marker.isChecked];
                                    } else if (marker.listType == ListTypeUnordered) {
-                                     [self drawBulletAtX:markerX
+                                     // Right-align in the shared number column, same as the checkbox.
+                                     const CGFloat bulletSize = [_config listStyleBulletSize];
+                                     CGFloat bulletX = isRTL ? markerX + bulletSize / 2.0 : markerX - bulletSize / 2.0;
+                                     [self drawBulletAtX:bulletX
                                                  centerY:baselineY - (font.xHeight + font.capHeight) / 4.0
                                                    depth:marker.depth];
                                    } else {
