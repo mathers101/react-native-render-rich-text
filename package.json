@@ -1,5 +1,5 @@
 {
-  "name": "react-native-render-rich-text",
+  "name": "@mathers101/react-native-render-rich-text",
   "version": "0.1.0",
   "description": "Render TipTap documents with the React Native rich text display path.",
   "main": "src/index.tsx",
@@ -8,9 +8,12 @@
   "types": "src/index.tsx",
   "files": [
     "src",
-    "cpp",
+    "cpp/parser",
+    "cpp/vendor",
     "ios",
-    "android",
+    "android/src",
+    "android/build.gradle",
+    "android/consumer-rules.pro",
     "ReactNativeRenderRichText.podspec",
     "react-native.config.js"
   ],
