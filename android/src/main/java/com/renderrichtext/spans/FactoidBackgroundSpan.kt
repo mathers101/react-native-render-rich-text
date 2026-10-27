@@ -1,6 +1,7 @@
 package com.renderrichtext.spans
 
 import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.RectF
@@ -20,6 +21,7 @@ class FactoidBackgroundSpan(
     private const val CORNER_RADIUS = 10.0f
     private const val BORDER_WIDTH = 1.0f
     private const val HORIZONTAL_OUTSET = 4.0f
+    private const val PRESSED_DARKEN = 0.82f
 
     private val sharedBackgroundPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.FILL }
     private val sharedBorderPaint =
@@ -84,7 +86,9 @@ class FactoidBackgroundSpan(
       rect.inset(-HORIZONTAL_OUTSET, 0f)
 
       val factoidStyle = styleConfig.factoidStyle
-      sharedBackgroundPaint.color = backgroundColorOverride ?: factoidStyle.backgroundColor
+      var fill = backgroundColorOverride ?: factoidStyle.backgroundColor
+      if (isPressed(text)) fill = darken(fill)
+      sharedBackgroundPaint.color = fill
       sharedBorderPaint.color = borderColorOverride ?: factoidStyle.borderColor
       drawShapes(canvas, isFirst, isLast)
     }
@@ -183,6 +187,22 @@ class FactoidBackgroundSpan(
       floatArrayOf(0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f)
     }
   }
+
+  private fun isPressed(text: Spanned): Boolean {
+    val spanStart = text.getSpanStart(this)
+    val spanEnd = text.getSpanEnd(this)
+    return text.getSpans(spanStart, spanEnd, FactoidSpan::class.java).any { span ->
+      span.pressed && text.getSpanStart(span) == spanStart && text.getSpanEnd(span) == spanEnd
+    }
+  }
+
+  private fun darken(color: Int): Int =
+    Color.argb(
+      Color.alpha(color),
+      (Color.red(color) * PRESSED_DARKEN).toInt(),
+      (Color.green(color) * PRESSED_DARKEN).toInt(),
+      (Color.blue(color) * PRESSED_DARKEN).toInt(),
+    )
 
   /** End of the visible glyphs on this line, before the break and any trailing space. */
   private fun lastGlyphOffset(

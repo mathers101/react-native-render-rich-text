@@ -79,6 +79,7 @@ class LinkLongPressMovementMethod : ArrowKeyMovementMethod() {
             null
           }
         isLinkTouchActive = pressedLink != null || pressedImage != null || pressedFactoid != null || pressedCodeBlock != null
+        setFactoidPressed(widget, pressedFactoid, pressed = true)
         pressedLink?.let { scheduleLongPress(widget, it) }
         // Keeps RNGH Pressable and scrolling parents from stealing the press before ACTION_UP.
         disallowsParentIntercept = isLinkTouchActive
@@ -92,11 +93,14 @@ class LinkLongPressMovementMethod : ArrowKeyMovementMethod() {
         ) {
           cancelLongPress()
           isLinkTouchActive = false
+          setFactoidPressed(widget, pressedFactoid, pressed = false)
           pressedLink = null
           pressedImage = null
           pressedFactoid = null
           pressedCodeBlock = null
           releaseParentIntercept(widget)
+        } else if (pressedFactoid != null) {
+          setFactoidPressed(widget, pressedFactoid, findFactoidSpan(widget, buffer, event) === pressedFactoid)
         }
       }
 
@@ -107,6 +111,7 @@ class LinkLongPressMovementMethod : ArrowKeyMovementMethod() {
         val tappedFactoid = pressedFactoid
         val tappedCodeBlock = pressedCodeBlock
         isLinkTouchActive = false
+        setFactoidPressed(widget, tappedFactoid, pressed = false)
         pressedLink = null
         pressedImage = null
         pressedFactoid = null
@@ -144,6 +149,7 @@ class LinkLongPressMovementMethod : ArrowKeyMovementMethod() {
       MotionEvent.ACTION_CANCEL -> {
         cancelLongPress()
         isLinkTouchActive = false
+        setFactoidPressed(widget, pressedFactoid, pressed = false)
         pressedLink = null
         pressedImage = null
         pressedCodeBlock = null
@@ -161,6 +167,16 @@ class LinkLongPressMovementMethod : ArrowKeyMovementMethod() {
     }
 
     return super.onTouchEvent(widget, buffer, event)
+  }
+
+  private fun setFactoidPressed(
+    widget: TextView,
+    span: FactoidSpan?,
+    pressed: Boolean,
+  ) {
+    if (span == null || span.pressed == pressed) return
+    span.pressed = pressed
+    widget.invalidate()
   }
 
   private fun scheduleLongPress(

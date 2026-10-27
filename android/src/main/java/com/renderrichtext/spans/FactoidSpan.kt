@@ -17,6 +17,9 @@ class FactoidSpan(
   private val onFactoidPress: ((String) -> Unit)?,
   private val textColorOverride: Int? = null,
 ) : ClickableSpan() {
+  /** True while a finger is down on this factoid. The background span reads it while drawing. */
+  var pressed: Boolean = false
+
   override fun onClick(widget: View) {
     onFactoidPress?.invoke(factoidId) ?: (widget as? EnrichedMarkdownText)?.emitOnFactoidPress(factoidId)
   }
