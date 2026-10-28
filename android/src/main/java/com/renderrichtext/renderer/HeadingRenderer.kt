@@ -2,7 +2,7 @@ package com.renderrichtext.renderer
 
 import android.text.SpannableStringBuilder
 import android.text.style.AlignmentSpan
-import com.renderrichtext.parser.MarkdownASTNode
+import com.renderrichtext.parser.TiptapASTNode
 import com.renderrichtext.spans.HeadingSpan
 import com.renderrichtext.utils.text.span.SPAN_FLAGS_EXCLUSIVE_EXCLUSIVE
 import com.renderrichtext.utils.text.span.SPAN_FLAGS_EXCLUSIVE_EXCLUSIVE_PRIORITY
@@ -15,7 +15,7 @@ class HeadingRenderer(
   private val config: RendererConfig,
 ) : NodeRenderer {
   override fun render(
-    node: MarkdownASTNode,
+    node: TiptapASTNode,
     builder: SpannableStringBuilder,
     onLinkPress: ((String) -> Unit)?,
     onLinkLongPress: ((String) -> Unit)?,

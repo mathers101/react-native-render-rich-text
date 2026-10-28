@@ -24,13 +24,13 @@ struct HashUtils {
   }
 };
 
-enum class MarkdownFlavor : uint8_t {
+enum class TiptapFlavor : uint8_t {
   CommonMark = 0,
   GitHub = 1,
 };
 
 struct MeasurementCacheKey {
-  std::string markdown;
+  std::string tiptap;
   CGFloat maxWidth;
   bool allowTrailingMargin;
   bool allowFontScaling;
@@ -48,7 +48,7 @@ struct MeasurementCacheKey {
   // Code blocks the user wrapped (view state, not props); 0 when none.
   size_t wrappedCodeBlocksFingerprint;
   CGFloat fontScale;
-  MarkdownFlavor flavor;
+  TiptapFlavor flavor;
   std::string lineBreakStrategyIOS;
   std::string writingDirection;
   int numberOfLines;
@@ -58,13 +58,13 @@ struct MeasurementCacheKey {
 
   bool operator==(const MeasurementCacheKey &other) const
   {
-    return std::tie(markdown, maxWidth, allowTrailingMargin, allowFontScaling, maxFontSizeMultiplier,
+    return std::tie(tiptap, maxWidth, allowTrailingMargin, allowFontScaling, maxFontSizeMultiplier,
                     md4cFlagsUnderline, md4cFlagsSuperscript, md4cFlagsSubscript, md4cFlagsHighlight,
                     md4cFlagsLatexMath, md4cFlagsHardSoftBreaks, md4cFlagsPreserveBlankLines, md4cFlagsAdmonitions,
                     styleFingerprint, linkPillContentFingerprint, wrappedCodeBlocksFingerprint, fontScale, flavor,
                     lineBreakStrategyIOS, writingDirection, numberOfLines, ellipsizeMode, linkRegexKey,
                     inlineCodeLinkRegexKey) ==
-           std::tie(other.markdown, other.maxWidth, other.allowTrailingMargin, other.allowFontScaling,
+           std::tie(other.tiptap, other.maxWidth, other.allowTrailingMargin, other.allowFontScaling,
                     other.maxFontSizeMultiplier, other.md4cFlagsUnderline, other.md4cFlagsSuperscript,
                     other.md4cFlagsSubscript, other.md4cFlagsHighlight, other.md4cFlagsLatexMath,
                     other.md4cFlagsHardSoftBreaks, other.md4cFlagsPreserveBlankLines, other.md4cFlagsAdmonitions,
@@ -78,7 +78,7 @@ struct MeasurementCacheKeyHash {
   size_t operator()(const MeasurementCacheKey &key) const
   {
     size_t h = 0;
-    HashUtils::hash_one(h, key.markdown);
+    HashUtils::hash_one(h, key.tiptap);
     HashUtils::hash_one(h, key.maxWidth);
     HashUtils::hash_one(h, key.allowTrailingMargin);
     HashUtils::hash_one(h, key.allowFontScaling);
@@ -198,10 +198,10 @@ template <typename RegexProps> inline std::string buildLinkRecognitionCacheKey(c
 
 template <typename PropsType>
 inline MeasurementCacheKey buildMeasurementCacheKey(const PropsType &props, CGFloat maxWidth, CGFloat fontScale,
-                                                    MarkdownFlavor flavor, size_t wrappedCodeBlocksFingerprint = 0)
+                                                    TiptapFlavor flavor, size_t wrappedCodeBlocksFingerprint = 0)
 {
   return MeasurementCacheKey{
-      .markdown = props.document,
+      .tiptap = props.document,
       .maxWidth = maxWidth,
       .allowTrailingMargin = props.allowTrailingMargin,
       .allowFontScaling = props.allowFontScaling,
@@ -214,7 +214,7 @@ inline MeasurementCacheKey buildMeasurementCacheKey(const PropsType &props, CGFl
       .md4cFlagsHardSoftBreaks = props.md4cFlags.hardSoftBreaks,
       .md4cFlagsPreserveBlankLines = props.md4cFlags.preserveBlankLines,
       .md4cFlagsAdmonitions = props.md4cFlags.admonitions,
-      .styleFingerprint = computeStyleFingerprint(props.markdownStyle),
+      .styleFingerprint = computeStyleFingerprint(props.tiptapStyle),
       .linkPillContentFingerprint = computeLinkPillContentFingerprint(props.linkPillContent),
       .wrappedCodeBlocksFingerprint = wrappedCodeBlocksFingerprint,
       .fontScale = fontScale,
@@ -281,12 +281,12 @@ public:
     }
   }
 
-  void removeMatchingMarkdown(const std::string &markdown)
+  void removeMatchingTiptap(const std::string &tiptap)
   {
     std::lock_guard<std::mutex> lock(mutex_);
 
     for (auto it = list_.begin(); it != list_.end();) {
-      if (it->key.markdown == markdown) {
+      if (it->key.tiptap == tiptap) {
         map_.erase(it->key);
         it = list_.erase(it);
       } else {

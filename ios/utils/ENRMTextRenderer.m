@@ -9,7 +9,7 @@
 @implementation ENRMRenderResult
 @end
 
-static ENRMRenderResult *ENRMRenderASTNodesCore(NSArray<MarkdownASTNode *> *nodes, StyleConfig *config,
+static ENRMRenderResult *ENRMRenderASTNodesCore(NSArray<TiptapASTNode *> *nodes, StyleConfig *config,
                                                 BOOL allowTrailingMargin, BOOL allowFontScaling,
                                                 CGFloat maxFontSizeMultiplier, NSLineBreakStrategy lineBreakStrategy,
                                                 ENRMBlockquoteTextRenderer *block)
@@ -36,7 +36,7 @@ static ENRMRenderResult *ENRMRenderASTNodesCore(NSArray<MarkdownASTNode *> *node
   return result;
 }
 
-ENRMRenderResult *ENRMRenderASTNodes(NSArray<MarkdownASTNode *> *nodes, StyleConfig *config, BOOL allowTrailingMargin,
+ENRMRenderResult *ENRMRenderASTNodes(NSArray<TiptapASTNode *> *nodes, StyleConfig *config, BOOL allowTrailingMargin,
                                      BOOL allowFontScaling, CGFloat maxFontSizeMultiplier,
                                      NSLineBreakStrategy lineBreakStrategy)
 {
@@ -44,7 +44,7 @@ ENRMRenderResult *ENRMRenderASTNodes(NSArray<MarkdownASTNode *> *nodes, StyleCon
                                 lineBreakStrategy, /*block*/ nil);
 }
 
-ENRMRenderResult *ENRMRenderBlockquoteContentNodes(NSArray<MarkdownASTNode *> *nodes, StyleConfig *config,
+ENRMRenderResult *ENRMRenderBlockquoteContentNodes(NSArray<TiptapASTNode *> *nodes, StyleConfig *config,
                                                    BOOL allowFontScaling, CGFloat maxFontSizeMultiplier,
                                                    NSLineBreakStrategy lineBreakStrategy)
 {

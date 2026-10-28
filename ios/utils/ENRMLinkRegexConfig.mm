@@ -31,7 +31,7 @@
                                                                            options:[self options]
                                                                              error:&error];
     if (error) {
-      RCTLogWarn(@"[EnrichedMarkdown]: The link regex '%@' is not a valid NSRegularExpression and is ignored.",
+      RCTLogWarn(@"[EnrichedTiptap]: The link regex '%@' is not a valid NSRegularExpression and is ignored.",
                  _pattern);
     } else {
       _parsedRegex = regex;

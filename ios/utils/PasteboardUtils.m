@@ -2,7 +2,7 @@
 #import "ENRMImageAttachment.h"
 #import "ENRMLinkPillText.h"
 #import "HTMLGenerator.h"
-#import "MarkdownExtractor.h"
+#import "TiptapExtractor.h"
 #import "RTFExportUtils.h"
 #import "StyleConfig.h"
 #include <TargetConditionals.h>
@@ -85,7 +85,7 @@ void copyItemsToPasteboard(NSDictionary<NSString *, id> *items)
 #endif
 }
 
-void copyAttributedStringToPasteboard(NSAttributedString *attributedString, NSString *_Nullable markdown,
+void copyAttributedStringToPasteboard(NSAttributedString *attributedString, NSString *_Nullable tiptap,
                                       StyleConfig *_Nullable styleConfig)
 {
   if (!attributedString || attributedString.length == 0)
@@ -98,8 +98,8 @@ void copyAttributedStringToPasteboard(NSAttributedString *attributedString, NSSt
 
   items[kUTIPlainText] = attributedString.string;
 
-  if (markdown.length > 0) {
-    items[kUTIMarkdown] = markdown;
+  if (tiptap.length > 0) {
+    items[kUTITiptap] = tiptap;
   }
 
   if (styleConfig) {
@@ -118,10 +118,10 @@ void copyAttributedStringToPasteboard(NSAttributedString *attributedString, NSSt
 
 #pragma mark - Content Extraction
 
-NSString *_Nullable markdownForRange(NSAttributedString *attributedText, NSRange range,
-                                     NSString *_Nullable cachedMarkdown)
+NSString *_Nullable tiptapForRange(NSAttributedString *attributedText, NSRange range,
+                                     NSString *_Nullable cachedTiptap)
 {
-  if (!cachedMarkdown || range.length == 0)
+  if (!cachedTiptap || range.length == 0)
     return nil;
 
   if (!attributedText || range.location >= attributedText.length)
@@ -129,14 +129,14 @@ NSString *_Nullable markdownForRange(NSAttributedString *attributedText, NSRange
 
   range.length = MIN(range.length, attributedText.length - range.location);
 
-  // Full selection: use cached markdown directly
+  // Full selection: use cached tiptap directly
   BOOL isFullSelection = (range.location == 0 && range.length >= attributedText.length - 1);
   if (isFullSelection) {
-    return cachedMarkdown;
+    return cachedTiptap;
   }
 
   // Partial selection: reverse-engineer from attributes
-  return extractMarkdownFromAttributedString(attributedText, range);
+  return extractTiptapFromAttributedString(attributedText, range);
 }
 
 NSArray<NSString *> *imageURLsInRange(NSAttributedString *attributedText, NSRange range)

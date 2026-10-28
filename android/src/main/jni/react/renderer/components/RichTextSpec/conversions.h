@@ -7,10 +7,10 @@
 namespace facebook::react {
 
 #ifdef RN_SERIALIZABLE_STATE
-inline folly::dynamic toDynamic(const EnrichedMarkdownTextProps &props) {
+inline folly::dynamic toDynamic(const EnrichedTiptapTextProps &props) {
   folly::dynamic serializedProps = folly::dynamic::object();
   serializedProps["document"] = props.document;
-  serializedProps["markdownStyle"] = toDynamic(props.markdownStyle);
+  serializedProps["tiptapStyle"] = toDynamic(props.tiptapStyle);
   serializedProps["md4cFlags"] = toDynamic(props.md4cFlags);
   serializedProps["allowFontScaling"] = props.allowFontScaling;
   serializedProps["maxFontSizeMultiplier"] = props.maxFontSizeMultiplier;

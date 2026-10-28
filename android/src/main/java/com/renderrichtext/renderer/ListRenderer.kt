@@ -1,7 +1,7 @@
 package com.renderrichtext.renderer
 
 import android.text.SpannableStringBuilder
-import com.renderrichtext.parser.MarkdownASTNode
+import com.renderrichtext.parser.TiptapASTNode
 import com.renderrichtext.spans.ListItemSpacingSpan
 import com.renderrichtext.spans.MarginBottomSpan
 import com.renderrichtext.spans.OrderedListSpan
@@ -15,7 +15,7 @@ class ListRenderer(
   private val isOrdered: Boolean,
 ) : NodeRenderer {
   override fun render(
-    node: MarkdownASTNode,
+    node: TiptapASTNode,
     builder: SpannableStringBuilder,
     onLinkPress: ((String) -> Unit)?,
     onLinkLongPress: ((String) -> Unit)?,
@@ -63,7 +63,7 @@ class ListRenderer(
 
   /** Lists under 100 keep the `99.` column, so only numbers from 100 on widen it. Task items draw a checkbox. */
   private fun markerExtraWidth(
-    node: MarkdownASTNode,
+    node: TiptapASTNode,
     listStyle: ListStyle,
     startNumber: Int,
     factory: RendererFactory,
@@ -71,7 +71,7 @@ class ListRenderer(
     val wideNumbers = mutableListOf<Int>()
     var number = startNumber
     for (item in node.children) {
-      if (item.type != MarkdownASTNode.NodeType.ListItem) continue
+      if (item.type != TiptapASTNode.NodeType.ListItem) continue
       if (number >= 100 && item.attributes["isTask"] != "true") wideNumbers += number
       number++
     }

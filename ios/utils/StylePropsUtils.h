@@ -4,18 +4,15 @@
 /**
  * StylePropsHelper.h
  *
- * C++ template that maps codegen-generated markdownStyle props → StyleConfig setters.
- * Both EnrichedMarkdownText and EnrichedMarkdown share identical markdownStyle fields
- * but codegen produces two distinct C++ struct types. A template lets us write the
- * mapping once and instantiate it for each type.
+ * C++ template that maps codegen-generated tiptapStyle props to StyleConfig setters.
  */
 
 #import "ParagraphStyleUtils.h"
 #import "StyleConfig.h"
 #import <React/RCTConversions.h>
 
-template <typename MarkdownStyle>
-BOOL applyMarkdownStyleToConfig(StyleConfig *config, const MarkdownStyle &newStyle, const MarkdownStyle &oldStyle)
+template <typename TiptapStyle>
+BOOL applyTiptapStyleToConfig(StyleConfig *config, const TiptapStyle &newStyle, const TiptapStyle &oldStyle)
 {
   BOOL changed = NO;
 

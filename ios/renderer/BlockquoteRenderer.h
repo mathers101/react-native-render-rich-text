@@ -1,5 +1,5 @@
 #import "BaseRenderer.h"
-#import "MarkdownASTNode.h"
+#import "TiptapASTNode.h"
 #import "RenderContext.h"
 
 @interface BlockquoteRenderer : BaseRenderer

@@ -3,7 +3,7 @@ package com.renderrichtext.renderer
 import android.text.SpannableStringBuilder
 import android.text.style.ForegroundColorSpan
 import android.text.style.StrikethroughSpan
-import com.renderrichtext.parser.MarkdownASTNode
+import com.renderrichtext.parser.TiptapASTNode
 import com.renderrichtext.spans.BaseListSpan
 import com.renderrichtext.spans.CodeBlockSpan
 import com.renderrichtext.spans.ListMarkerAnchorSpan
@@ -17,7 +17,7 @@ class ListItemRenderer(
   private val config: RendererConfig,
 ) : NodeRenderer {
   override fun render(
-    node: MarkdownASTNode,
+    node: TiptapASTNode,
     builder: SpannableStringBuilder,
     onLinkPress: ((String) -> Unit)?,
     onLinkLongPress: ((String) -> Unit)?,

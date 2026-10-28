@@ -19,12 +19,12 @@ import android.text.style.LeadingMarginSpan
 import android.text.style.ReplacementSpan
 import android.view.View
 import android.widget.TextView
-import com.renderrichtext.EnrichedMarkdownText
+import com.renderrichtext.EnrichedTiptapText
 import com.renderrichtext.spoiler.isConcealedBySpoiler
 import com.renderrichtext.styles.LinkPillContent
 import com.renderrichtext.styles.LinkPillStyle
 import com.renderrichtext.styles.LinkVariantEntry
-import com.renderrichtext.utils.common.findEnrichedMarkdownTextAncestor
+import com.renderrichtext.utils.common.findEnrichedTiptapTextAncestor
 import java.lang.ref.WeakReference
 import kotlin.math.ceil
 import kotlin.math.max
@@ -177,10 +177,10 @@ class LinkPillSpan(
         it()
         return@withHosts
       }
-      if (host is EnrichedMarkdownText) {
+      if (host is EnrichedTiptapText) {
         host.layoutManager.invalidateLayout()
       } else {
-        host.findEnrichedMarkdownTextAncestor()?.layoutManager?.invalidateLayout() ?: host.invalidate()
+        host.findEnrichedTiptapTextAncestor()?.layoutManager?.invalidateLayout() ?: host.invalidate()
       }
     }
   }

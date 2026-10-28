@@ -2,7 +2,7 @@
 #import <Foundation/Foundation.h>
 
 @class AccessibilityInfo;
-@class MarkdownASTNode;
+@class TiptapASTNode;
 @class RenderContext;
 @class StyleConfig;
 
@@ -19,7 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 extern "C" {
 #endif
 
-ENRMRenderResult *ENRMRenderASTNodes(NSArray<MarkdownASTNode *> *nodes, StyleConfig *config, BOOL allowTrailingMargin,
+ENRMRenderResult *ENRMRenderASTNodes(NSArray<TiptapASTNode *> *nodes, StyleConfig *config, BOOL allowTrailingMargin,
                                      BOOL allowFontScaling, CGFloat maxFontSizeMultiplier,
                                      NSLineBreakStrategy lineBreakStrategy);
 
@@ -27,7 +27,7 @@ ENRMRenderResult *ENRMRenderASTNodes(NSArray<MarkdownASTNode *> *nodes, StyleCon
 // (tight paragraphs, quote font/color) and the quote's line height applied over the result. Draws
 // no box - the ENRMBlockquoteContainerView draws the border/background/padding. Mirrors Android's
 // BlockquoteTextRenderer.
-ENRMRenderResult *ENRMRenderBlockquoteContentNodes(NSArray<MarkdownASTNode *> *nodes, StyleConfig *config,
+ENRMRenderResult *ENRMRenderBlockquoteContentNodes(NSArray<TiptapASTNode *> *nodes, StyleConfig *config,
                                                    BOOL allowFontScaling, CGFloat maxFontSizeMultiplier,
                                                    NSLineBreakStrategy lineBreakStrategy);
 

@@ -2,7 +2,7 @@
 
 #import <Foundation/Foundation.h>
 
-@class MarkdownASTNode;
+@class TiptapASTNode;
 @class StyleConfig;
 
 NS_ASSUME_NONNULL_BEGIN
@@ -11,16 +11,16 @@ NS_ASSUME_NONNULL_BEGIN
 extern "C" {
 #endif
 
-/// Shared code block node semantics, used by both markdown flavors so the
+/// Shared code block node semantics, used by both tiptap flavors so the
 /// meaning of a CodeBlock AST node (its text, language, fence) is defined in
 /// one place. Language display names come from the shared C++ core
 /// (cpp/highlight/CodeBlockLanguages.hpp) so all platforms label fences
 /// identically.
 
-NSString *ENRMCodeBlockExtractCode(MarkdownASTNode *node);
-NSString *_Nullable ENRMCodeBlockLanguage(MarkdownASTNode *node);
-NSString *ENRMCodeBlockFenceChar(MarkdownASTNode *node);
-NSString *ENRMCodeBlockFencedMarkdown(NSString *code, NSString *_Nullable language, NSString *fenceChar);
+NSString *ENRMCodeBlockExtractCode(TiptapASTNode *node);
+NSString *_Nullable ENRMCodeBlockLanguage(TiptapASTNode *node);
+NSString *ENRMCodeBlockFenceChar(TiptapASTNode *node);
+NSString *ENRMCodeBlockFencedTiptap(NSString *code, NSString *_Nullable language, NSString *fenceChar);
 NSString *ENRMCodeBlockDisplayLanguageName(NSString *_Nullable language);
 
 /// Applies the flavor-independent code block text attributes (code font,

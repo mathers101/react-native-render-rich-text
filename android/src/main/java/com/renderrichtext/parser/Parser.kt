@@ -25,34 +25,34 @@ class Parser {
       try {
         System.loadLibrary("react_codegen_RichTextSpec")
       } catch (e: UnsatisfiedLinkError) {
-        Log.e("MarkdownParser", "Failed to load native library", e)
+        Log.e("TiptapParser", "Failed to load native library", e)
       }
     }
 
     @JvmStatic
-    private external fun nativeParseDocument(document: String): MarkdownASTNode?
+    private external fun nativeParseDocument(document: String): TiptapASTNode?
 
     val shared: Parser = Parser()
   }
 
   /**
-   * Parses a TipTap document JSON string. Flag and regex arguments are kept so
-   * copied call sites compile; the TipTap parser ignores them.
+   * Parses a Tiptap document JSON string. Flag and regex arguments are kept so
+   * copied call sites compile; the Tiptap parser ignores them.
    */
-  fun parseMarkdown(
-    markdown: String,
+  fun parseTiptap(
+    tiptap: String,
     flags: Md4cFlags = Md4cFlags.DEFAULT,
     isGFM: Boolean = true,
     linkRegex: LinkRegexConfig? = null,
     inlineCodeLinkRegex: LinkRegexConfig? = null,
-  ): MarkdownASTNode? {
-    if (markdown.isBlank()) {
+  ): TiptapASTNode? {
+    if (tiptap.isBlank()) {
       return null
     }
     try {
-      return nativeParseDocument(markdown)
+      return nativeParseDocument(tiptap)
     } catch (e: Exception) {
-      Log.e("MarkdownParser", "TipTap parsing failed: ${e.message}", e)
+      Log.e("TiptapParser", "Tiptap parsing failed: ${e.message}", e)
       return null
     }
   }

@@ -4,7 +4,7 @@
 @class RendererFactory;
 @class StyleConfig;
 @class RenderContext;
-@class MarkdownASTNode;
+@class TiptapASTNode;
 
 /// Shared base for all node renderers — provides `_rendererFactory` and `_config`
 /// as protected ivars and the common designated initializer.
@@ -20,7 +20,7 @@
 
 - (instancetype)initWithRendererFactory:(id)rendererFactory config:(id)config;
 
-- (void)renderNodeContent:(MarkdownASTNode *)node
+- (void)renderNodeContent:(TiptapASTNode *)node
                      into:(NSMutableAttributedString *)output
                   context:(RenderContext *)context;
 

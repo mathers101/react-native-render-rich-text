@@ -5,7 +5,7 @@
 #import "LastElementUtils.h"
 #import <React/RCTI18nUtil.h>
 
-#if ENRICHED_MARKDOWN_MATH
+#if ENRICHED_TIPTAP_MATH
 #import "ENRMMathInlineAttachment.h"
 #endif
 
@@ -303,9 +303,8 @@ void ENRMPinLineMetricsToStyledFonts(NSMutableAttributedString *output, NSRange 
 }
 
 // Floor, not clamp: minimumLineHeight keeps short lines at lineHeight, while maximumLineHeight = 0 lets
-// a line grow to fit a taller run (large inline code, math, images) instead of clipping it, e.g.
-// https://github.com/software-mansion/enriched-markdown/issues/827. We can diverge from RN's clamp
-// because we measure the real laid-out height, so grown lines are reserved.
+// a line grow to fit a taller run (large inline code, math, images) instead of clipping it.
+// We can diverge from RN's clamp because we measure the real laid-out height, so grown lines are reserved.
 void ENRMApplyLineHeightToParagraphStyle(NSMutableParagraphStyle *style, CGFloat lineHeight)
 {
   if (lineHeight <= 0) {
@@ -356,14 +355,14 @@ CGFloat calculateBaselineOffset(NSAttributedString *output, NSRange range)
 
   // Center on real text; on a math-only line center the math box instead of its font.
   __block CGFloat textLineHeight = 0;
-#if ENRICHED_MARKDOWN_MATH
+#if ENRICHED_TIPTAP_MATH
   __block BOOL hasMath = NO;
 #endif
   [output enumerateAttributesInRange:range
                              options:0
                           usingBlock:^(NSDictionary<NSAttributedStringKey, id> *attrs, __unused NSRange subrange,
                                        __unused BOOL *stop) {
-#if ENRICHED_MARKDOWN_MATH
+#if ENRICHED_TIPTAP_MATH
                             if ([attrs[NSAttachmentAttributeName] isKindOfClass:[ENRMMathInlineAttachment class]]) {
                               hasMath = YES;
                               return;
@@ -388,7 +387,7 @@ CGFloat calculateBaselineOffset(NSAttributedString *output, NSRange range)
   contentLineHeight = MAX(contentLineHeight, pillBoxHeight);
 #endif
 
-#if ENRICHED_MARKDOWN_MATH
+#if ENRICHED_TIPTAP_MATH
   // Math only grows the content height, so measure it (parsing LaTeX) only when text
   // alone wouldn't already fill the line.
   if (hasMath && targetLineHeight > textLineHeight) {

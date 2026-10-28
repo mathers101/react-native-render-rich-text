@@ -1,9 +1,9 @@
-#include "TipTapParser.hpp"
+#include "TiptapParser.hpp"
 #include <android/log.h>
 #include <jni.h>
 #include <string>
 
-using namespace Markdown;
+using namespace Tiptap;
 
 #ifdef LOG_TAG
 #undef LOG_TAG
@@ -88,25 +88,25 @@ static jint nodeTypeToJavaOrdinal(NodeType type) {
   }
 }
 
-static jobject createJavaNode(JNIEnv *env, const std::shared_ptr<MarkdownASTNode> &node) {
+static jobject createJavaNode(JNIEnv *env, const std::shared_ptr<TiptapASTNode> &node) {
   if (!node) {
     return nullptr;
   }
 
-  jclass nodeClass = env->FindClass("com/renderrichtext/parser/MarkdownASTNode");
+  jclass nodeClass = env->FindClass("com/renderrichtext/parser/TiptapASTNode");
   if (!nodeClass) {
-    LOGE("Failed to find MarkdownASTNode class");
+    LOGE("Failed to find TiptapASTNode class");
     return nullptr;
   }
 
-  jclass nodeTypeClass = env->FindClass("com/renderrichtext/parser/MarkdownASTNode$NodeType");
+  jclass nodeTypeClass = env->FindClass("com/renderrichtext/parser/TiptapASTNode$NodeType");
   if (!nodeTypeClass) {
     LOGE("Failed to find NodeType enum class");
     return nullptr;
   }
 
   jmethodID valuesMethod = env->GetStaticMethodID(
-      nodeTypeClass, "values", "()[Lcom/renderrichtext/parser/MarkdownASTNode$NodeType;");
+      nodeTypeClass, "values", "()[Lcom/renderrichtext/parser/TiptapASTNode$NodeType;");
   if (!valuesMethod) {
     LOGE("Failed to find NodeType.values() method");
     return nullptr;
@@ -153,9 +153,9 @@ static jobject createJavaNode(JNIEnv *env, const std::shared_ptr<MarkdownASTNode
 
   jmethodID constructor = env->GetMethodID(
       nodeClass, "<init>",
-      "(Lcom/renderrichtext/parser/MarkdownASTNode$NodeType;Ljava/lang/String;Ljava/util/Map;Ljava/util/List;)V");
+      "(Lcom/renderrichtext/parser/TiptapASTNode$NodeType;Ljava/lang/String;Ljava/util/Map;Ljava/util/List;)V");
   if (!constructor) {
-    LOGE("Failed to find MarkdownASTNode constructor");
+    LOGE("Failed to find TiptapASTNode constructor");
     return nullptr;
   }
 
@@ -184,6 +184,6 @@ extern "C" JNIEXPORT jobject JNICALL Java_com_renderrichtext_parser_Parser_nativ
   }
   std::string json(utf8);
   env->ReleaseStringUTFChars(document, utf8);
-  auto ast = parseTipTapDocument(json);
+  auto ast = parseTiptapDocument(json);
   return createJavaNode(env, ast);
 }

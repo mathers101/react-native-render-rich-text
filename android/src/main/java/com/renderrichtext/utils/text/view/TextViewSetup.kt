@@ -9,7 +9,7 @@ import android.text.SpannableStringBuilder
 import android.view.textclassifier.TextClassifier
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.view.ViewCompat
-import com.renderrichtext.accessibility.AccessibleMarkdownTextView
+import com.renderrichtext.accessibility.AccessibleTiptapTextView
 
 /**
  * Adopts the renderer's buffer instead of copying it: the default factory's copy is
@@ -85,7 +85,7 @@ private class InsertionOrderedSpannable(
   override fun toString(): String = buffer.toString()
 }
 
-fun AccessibleMarkdownTextView.setupAsMarkdownTextView() {
+fun AccessibleTiptapTextView.setupAsTiptapTextView() {
   setBackgroundColor(Color.TRANSPARENT)
   setSpannableFactory(NoCopySpannableFactory)
   includeFontPadding = false
@@ -102,7 +102,7 @@ fun AccessibleMarkdownTextView.setupAsMarkdownTextView() {
   // TODO: Add an Android-only `enableSmartTextSelection` prop that skips this
   // NO_OP override. This would let users who don't render images opt in to
   // entity detection. The prop should default to false and its docs should
-  // warn that enabling it with markdown containing images will crash.
+  // warn that enabling it with tiptap containing images will crash.
   if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
     setTextClassifier(TextClassifier.NO_OP)
   }

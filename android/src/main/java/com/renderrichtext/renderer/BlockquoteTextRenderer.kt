@@ -1,7 +1,7 @@
 package com.renderrichtext.renderer
 
 import android.text.SpannableStringBuilder
-import com.renderrichtext.parser.MarkdownASTNode
+import com.renderrichtext.parser.TiptapASTNode
 import com.renderrichtext.styles.BlockquoteStyle
 import com.renderrichtext.utils.text.span.SPAN_FLAGS_LINE_HEIGHT_PRIORITY
 import com.renderrichtext.utils.text.span.applyLineHeightSkippingImages
@@ -23,7 +23,7 @@ class BlockquoteTextRenderer(
 ) {
   fun render(
     renderer: Renderer,
-    nodes: List<MarkdownASTNode>,
+    nodes: List<TiptapASTNode>,
     onLinkPress: ((String) -> Unit)?,
     onLinkLongPress: ((String) -> Unit)?,
     onFactoidPress: ((String) -> Unit)?,

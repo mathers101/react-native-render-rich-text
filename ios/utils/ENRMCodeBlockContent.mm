@@ -1,20 +1,20 @@
 #import "ENRMCodeBlockContent.h"
 #import "ENRMUIKit.h"
-#import "MarkdownASTNode.h"
+#import "TiptapASTNode.h"
 #import "ParagraphStyleUtils.h"
 #import "StyleConfig.h"
 
-static void ENRMAppendNodeContent(MarkdownASTNode *node, NSMutableString *output)
+static void ENRMAppendNodeContent(TiptapASTNode *node, NSMutableString *output)
 {
   if (node.content.length > 0) {
     [output appendString:node.content];
   }
-  for (MarkdownASTNode *child in node.children) {
+  for (TiptapASTNode *child in node.children) {
     ENRMAppendNodeContent(child, output);
   }
 }
 
-NSString *ENRMCodeBlockExtractCode(MarkdownASTNode *node)
+NSString *ENRMCodeBlockExtractCode(TiptapASTNode *node)
 {
   NSMutableString *code = [NSMutableString string];
   ENRMAppendNodeContent(node, code);
@@ -25,19 +25,19 @@ NSString *ENRMCodeBlockExtractCode(MarkdownASTNode *node)
   return [code substringToIndex:end];
 }
 
-NSString *ENRMCodeBlockLanguage(MarkdownASTNode *node)
+NSString *ENRMCodeBlockLanguage(TiptapASTNode *node)
 {
   NSString *language = node.attributes[@"language"];
   return language.length > 0 ? language : nil;
 }
 
-NSString *ENRMCodeBlockFenceChar(MarkdownASTNode *node)
+NSString *ENRMCodeBlockFenceChar(TiptapASTNode *node)
 {
   NSString *fenceChar = node.attributes[@"fenceChar"];
   return fenceChar.length > 0 ? fenceChar : @"`";
 }
 
-NSString *ENRMCodeBlockFencedMarkdown(NSString *code, NSString *language, NSString *fenceChar)
+NSString *ENRMCodeBlockFencedTiptap(NSString *code, NSString *language, NSString *fenceChar)
 {
   NSString *fence = [@"" stringByPaddingToLength:3 withString:fenceChar startingAtIndex:0];
   return [NSString stringWithFormat:@"%@%@\n%@\n%@", fence, language ?: @"", code, fence];

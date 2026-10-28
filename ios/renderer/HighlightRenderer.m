@@ -1,16 +1,16 @@
 #import "HighlightRenderer.h"
-#import "MarkdownASTNode.h"
+#import "TiptapASTNode.h"
 #import "RenderContext.h"
 #import "RendererFactory.h"
 #import "StyleConfig.h"
 
-NSString *const HighlightAttributeName = @"EnrichedMarkdownHighlight";
+NSString *const HighlightAttributeName = @"EnrichedTiptapHighlight";
 
 @implementation HighlightRenderer
 
 #pragma mark - Rendering
 
-- (void)renderNodeContent:(MarkdownASTNode *)node
+- (void)renderNodeContent:(TiptapASTNode *)node
                      into:(NSMutableAttributedString *)output
                   context:(RenderContext *)context
 {

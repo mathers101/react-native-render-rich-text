@@ -2,18 +2,18 @@
 
 #import "ENRMFeatureFlags.h"
 #import "ENRMLinkRegexProps.h"
-#import "ENRMMarkdownParser.h"
+#import "ENRMTiptapParser.h"
 #import "ENRMTextRenderer.h"
 #import "ENRMTextViewSetup.h"
 #import "ImageRequestHeaderUtils.h"
 #import "LinkPillContentUtils.h"
-#import "MarkdownASTNode.h"
+#import "TiptapASTNode.h"
 #import "ParagraphStyleUtils.h"
 #import "StylePropsUtils.h"
 #include <type_traits>
 
 /**
- * View-free markdown measurement (issue #550).
+ * View-free tiptap measurement (issue #550).
  *
  * The previous measurement path built throwaway component views on the main
  * thread via `dispatch_sync` — a deadlock when `measureContent` runs under
@@ -26,11 +26,11 @@
  * measures every `<Text>` this way in production) and this library's own
  * Android `MeasurementStore`:
  *
- * - `ENRMMeasureMarkdownViewFree` (EnrichedMarkdownText): parse (md4c) →
+ * - `ENRMMeasureTiptapViewFree` (EnrichedTiptapText): parse (md4c) →
  *   `ENRMRenderASTNodes` (the SAME renderer the visible view uses, so
  *   measured layout ≡ rendered layout) → a fresh per-call
  *   NSTextStorage/NSLayoutManager/NSTextContainer stack → shared finalize.
- * - `ENRMMeasureSegmentedMarkdownViewFree` (EnrichedMarkdown): the iOS
+ * - `ENRMMeasureSegmentedTiptapViewFree` (EnrichedTiptap): the iOS
  *   counterpart of Android's `MeasurementStore.measureAndCacheSplit` — split
  *   the AST into segments via the same `ENRMRenderSegmentsFromAST` the view
  *   uses, then walk them exactly like the view's
@@ -53,7 +53,7 @@
  * - The resolved layout direction comes from `LayoutConstraints::layoutDirection`,
  *   never from `RCTI18nUtil`.
  * - The geometry config must match the visible view's
- *   (`ENRMConfigureMarkdownTextView`): zero insets, `lineFragmentPadding = 0`,
+ *   (`ENRMConfigureTiptapTextView`): zero insets, `lineFragmentPadding = 0`,
  *   `allowsNonContiguousLayout = NO`. The view's custom `TextViewLayoutManager`
  *   subclass only draws backgrounds and does not affect geometry.
  * - Each entry point drains its own `@autoreleasepool`. The calling JS/layout
@@ -97,9 +97,9 @@ template <typename PropsT>
 static inline StyleConfig *ENRMStyleConfigFromProps(const PropsT &typedProps, CGFloat fontScale)
 {
   StyleConfig *config = [[StyleConfig alloc] init];
-  using StyleT = std::remove_cv_t<std::remove_reference_t<decltype(typedProps.markdownStyle)>>;
+  using StyleT = std::remove_cv_t<std::remove_reference_t<decltype(typedProps.tiptapStyle)>>;
   static const StyleT kDefaultStyle{};
-  applyMarkdownStyleToConfig(config, typedProps.markdownStyle, kDefaultStyle);
+  applyTiptapStyleToConfig(config, typedProps.tiptapStyle, kDefaultStyle);
   [config setFontScaleMultiplier:fontScale];
   [config setMaxFontSizeMultiplier:typedProps.maxFontSizeMultiplier];
   [config setImageRequestHeaders:ENRMImageRequestHeadersFromProps(typedProps.imageRequestHeaders)];
@@ -149,14 +149,14 @@ static inline CGSize ENRMMeasureAttributedTextViewFree(NSAttributedString *text,
 }
 
 /**
- * Measures EnrichedMarkdownText content from props alone, on the calling
+ * Measures EnrichedTiptapText content from props alone, on the calling
  * thread. The line-break strategy and writing-direction mode are resolved
  * from the props exactly as `updateProps:` resolves them. Falls back to
- * (maxWidth × system-16 line height) for empty markdown, parse failures, and
+ * (maxWidth × system-16 line height) for empty tiptap, parse failures, and
  * empty render output — the same fallback `measureSize:` produced.
  */
 template <typename PropsT>
-static inline CGSize ENRMMeasureMarkdownViewFree(const PropsT &typedProps, CGFloat maxWidth, CGFloat fontScale,
+static inline CGSize ENRMMeasureTiptapViewFree(const PropsT &typedProps, CGFloat maxWidth, CGFloat fontScale,
                                                  CGFloat pointScaleFactor, NSWritingDirection resolvedLayoutDirection)
 {
   @autoreleasepool {
@@ -165,12 +165,12 @@ static inline CGSize ENRMMeasureMarkdownViewFree(const PropsT &typedProps, CGFlo
       return fallback;
     }
 
-    NSString *markdown = [[NSString alloc] initWithUTF8String:typedProps.document.c_str()];
+    NSString *tiptap = [[NSString alloc] initWithUTF8String:typedProps.document.c_str()];
     StyleConfig *config = ENRMStyleConfigFromProps(typedProps, fontScale);
 
     ENRMMd4cFlags *flags = ENRMMd4cFlagsFromProps(typedProps.md4cFlags);
-    ENRMMarkdownParser *parser = [[ENRMMarkdownParser alloc] init];
-    MarkdownASTNode *ast = [parser parseMarkdown:markdown
+    ENRMTiptapParser *parser = [[ENRMTiptapParser alloc] init];
+    TiptapASTNode *ast = [parser parseTiptap:tiptap
                                            flags:flags
                                            isGFM:typedProps.isGFM
                                        linkRegex:ENRMLinkRegexConfigFromProps(typedProps.linkRecognition.text)

@@ -3,7 +3,7 @@ package com.renderrichtext.renderer
 import android.text.SpannableStringBuilder
 import android.text.TextPaint
 import android.text.style.ReplacementSpan
-import com.renderrichtext.parser.MarkdownASTNode
+import com.renderrichtext.parser.TiptapASTNode
 import com.renderrichtext.spans.LinkPillSpan
 import com.renderrichtext.spans.LinkSpan
 import com.renderrichtext.spans.SpoilerSpan
@@ -17,7 +17,7 @@ class LinkRenderer(
   private val fontProbe = TextPaint()
 
   override fun render(
-    node: MarkdownASTNode,
+    node: TiptapASTNode,
     builder: SpannableStringBuilder,
     onLinkPress: ((String) -> Unit)?,
     onLinkLongPress: ((String) -> Unit)?,
@@ -57,7 +57,7 @@ class LinkRenderer(
           blockStyle,
           factory.context,
           recognizedLink = recognizedLink,
-          keepsCodeFont = recognizedLink && node.children.any { it.type == MarkdownASTNode.NodeType.Code },
+          keepsCodeFont = recognizedLink && node.children.any { it.type == TiptapASTNode.NodeType.Code },
         ),
         start,
         end,

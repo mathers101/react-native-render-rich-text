@@ -6,7 +6,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * Container for accessibility-related data extracted from RenderContext.
- * Used by MarkdownAccessibilityElementBuilder to build VoiceOver elements.
+ * Used by TiptapAccessibilityElementBuilder to build VoiceOver elements.
  */
 @interface AccessibilityInfo : NSObject
 

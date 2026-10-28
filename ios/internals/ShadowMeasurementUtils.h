@@ -18,10 +18,10 @@ namespace facebook::react {
 // Any dispatch_sync to main from this path can therefore deadlock: JS waits
 // for main, main waits for the mutex JS holds (watchdog kill 0x8BADF00D).
 // Nothing in the measurement path may wait on the main thread.
-// EnrichedMarkdownText and EnrichedMarkdown both measure view-free
+// EnrichedTiptapText and EnrichedTiptap both measure view-free
 // (ENRMViewFreeMeasurement.h) and comply fully. The one known remaining
 // violation is the text input's own measureContent
-// (EnrichedMarkdownTextInputShadowNode.mm), which measures live editable
+// (EnrichedTiptapTextInputShadowNode.mm), which measures live editable
 // UITextView state and needs its own strategy.
 
 /**
@@ -71,18 +71,18 @@ static inline bool ENRMPropsNeedExactStreamingMeasurement(const PropsT &oldProps
          oldProps.md4cFlags.hardSoftBreaks != newProps.md4cFlags.hardSoftBreaks ||
          oldProps.md4cFlags.preserveBlankLines != newProps.md4cFlags.preserveBlankLines ||
          oldProps.isGFM != newProps.isGFM || oldProps.md4cFlags.admonitions != newProps.md4cFlags.admonitions ||
-         computeStyleFingerprint(oldProps.markdownStyle) != computeStyleFingerprint(newProps.markdownStyle);
+         computeStyleFingerprint(oldProps.tiptapStyle) != computeStyleFingerprint(newProps.tiptapStyle);
 }
 
 /**
- * Shared measureContent implementation for the markdown component views.
+ * Shared measureContent implementation for the tiptap component views.
  *
  * Owns the thread-safe layers — the streaming fast path (lock-free
  * `ENRMAtomicSize` mailbox published by `updateLayoutMetrics:`), the
  * LRU measurement cache, and the `layoutContext`-sourced font scale — then
  * delegates cache misses to `measureUncached`, through which both components
- * plug their view-free pipeline (`ENRMMeasureMarkdownViewFree` /
- * `ENRMMeasureSegmentedMarkdownViewFree`); the resolved view is still handed
+ * plug their view-free pipeline (`ENRMMeasureTiptapViewFree` /
+ * `ENRMMeasureSegmentedTiptapViewFree`); the resolved view is still handed
  * to the block for strategies that can use it. `fontScale` handed to the
  * block is the real multiplier even when streaming skips the cache —
  * rendering must always use it. `wrappedCodeBlocksFingerprint` folds view
@@ -91,8 +91,8 @@ static inline bool ENRMPropsNeedExactStreamingMeasurement(const PropsT &oldProps
  */
 template <typename PropsT, typename ViewT>
 static inline Size
-ENRMMeasureMarkdownContent(const PropsT &typedProps, const std::shared_ptr<void> &componentViewRef, int receivedCounter,
-                           int &lastExactMeasurementCounter, CGSize &lastExactMeasurementSize, MarkdownFlavor flavor,
+ENRMMeasureTiptapContent(const PropsT &typedProps, const std::shared_ptr<void> &componentViewRef, int receivedCounter,
+                           int &lastExactMeasurementCounter, CGSize &lastExactMeasurementSize, TiptapFlavor flavor,
                            const LayoutContext &layoutContext, const LayoutConstraints &layoutConstraints,
                            CGSize (^measureUncached)(ViewT *view, CGFloat maxWidth, CGFloat fontScale),
                            size_t wrappedCodeBlocksFingerprint = 0)

@@ -5,7 +5,7 @@
 #import "ENRMImageAttachment.h"
 #import "ENRMLinkPillText.h"
 #import "HighlightRenderer.h"
-#if ENRICHED_MARKDOWN_MATH
+#if ENRICHED_TIPTAP_MATH
 #import "ENRMMathInlineAttachment.h"
 #endif
 #import "LastElementUtils.h"
@@ -356,15 +356,15 @@ static ParagraphType getParagraphType(NSDictionary *attrs)
   if ([isCodeBlock boolValue])
     return ParagraphTypeCodeBlock;
 
-  NSString *markdownType = attrs[MarkdownTypeAttributeName];
-  if (markdownType) {
-    if ([markdownType hasPrefix:@"heading-"]) {
-      NSInteger level = [[markdownType substringFromIndex:8] integerValue];
+  NSString *tiptapType = attrs[TiptapTypeAttributeName];
+  if (tiptapType) {
+    if ([tiptapType hasPrefix:@"heading-"]) {
+      NSInteger level = [[tiptapType substringFromIndex:8] integerValue];
       if (level >= 1 && level <= 6) {
         return ParagraphTypeHeading1 + (level - 1);
       }
     }
-    if ([markdownType isEqualToString:@"code-block"])
+    if ([tiptapType isEqualToString:@"code-block"])
       return ParagraphTypeCodeBlock;
   }
 
@@ -504,7 +504,7 @@ static void generateInlineHTML(NSMutableString *html, NSAttributedString *attrib
                                       @"margin: %.0fpx 0 %.0fpx 0;\"><p>",
                                       styles.thematicBreakHeight, styles.thematicBreakColor,
                                       styles.thematicBreakMarginTop, styles.thematicBreakMarginBottom];
-#if ENRICHED_MARKDOWN_MATH
+#if ENRICHED_TIPTAP_MATH
                           } else if ([attachment isKindOfClass:[ENRMMathInlineAttachment class]]) {
                             ENRMMathInlineAttachment *math = (ENRMMathInlineAttachment *)attachment;
                             if (math.latex.length > 0) {

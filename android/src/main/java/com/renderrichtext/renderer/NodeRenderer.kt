@@ -5,14 +5,14 @@ import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.style.MetricAffectingSpan
 import com.renderrichtext.math.LatexErrorReporter
-import com.renderrichtext.parser.MarkdownASTNode
+import com.renderrichtext.parser.TiptapASTNode
 import com.renderrichtext.spans.ImageSpan
 import com.renderrichtext.styles.StyleConfig
 import com.renderrichtext.utils.text.span.SPAN_FLAGS_EXCLUSIVE_EXCLUSIVE
 
 interface NodeRenderer {
   fun render(
-    node: MarkdownASTNode,
+    node: TiptapASTNode,
     builder: SpannableStringBuilder,
     onLinkPress: ((String) -> Unit)?,
     onLinkLongPress: ((String) -> Unit)?,
@@ -113,31 +113,31 @@ class RendererFactory(
   private val lineBreakRenderer = LineBreakRenderer()
   private val softBreakRenderer = SoftBreakRenderer()
 
-  private val renderers: Map<MarkdownASTNode.NodeType, NodeRenderer> by lazy {
+  private val renderers: Map<TiptapASTNode.NodeType, NodeRenderer> by lazy {
     buildMap {
-      put(MarkdownASTNode.NodeType.Paragraph, ParagraphRenderer(config))
-      put(MarkdownASTNode.NodeType.Heading, HeadingRenderer(config))
-      put(MarkdownASTNode.NodeType.Blockquote, BlockquoteRenderer(config))
+      put(TiptapASTNode.NodeType.Paragraph, ParagraphRenderer(config))
+      put(TiptapASTNode.NodeType.Heading, HeadingRenderer(config))
+      put(TiptapASTNode.NodeType.Blockquote, BlockquoteRenderer(config))
       // A list-nested admonition falls back to the inline blockquote renderer
       // (no themed header); top-level admonitions use the segment container path.
-      put(MarkdownASTNode.NodeType.Admonition, BlockquoteRenderer(config))
-      put(MarkdownASTNode.NodeType.CodeBlock, CodeBlockRenderer(config))
-      put(MarkdownASTNode.NodeType.UnorderedList, ListRenderer(config, isOrdered = false))
-      put(MarkdownASTNode.NodeType.OrderedList, ListRenderer(config, isOrdered = true))
-      put(MarkdownASTNode.NodeType.ListItem, ListItemRenderer(config))
-      put(MarkdownASTNode.NodeType.Text, textRenderer)
-      put(MarkdownASTNode.NodeType.Link, LinkRenderer(config))
-      put(MarkdownASTNode.NodeType.Strong, StrongRenderer(config))
-      put(MarkdownASTNode.NodeType.Emphasis, EmphasisRenderer(config))
-      put(MarkdownASTNode.NodeType.Strikethrough, StrikethroughRenderer(config))
-      put(MarkdownASTNode.NodeType.Underline, UnderlineRenderer(config))
-      put(MarkdownASTNode.NodeType.Highlight, HighlightRenderer())
-      put(MarkdownASTNode.NodeType.Code, CodeRenderer(config))
-      put(MarkdownASTNode.NodeType.Factoid, FactoidRenderer(config))
-      put(MarkdownASTNode.NodeType.LineBreak, lineBreakRenderer)
-      put(MarkdownASTNode.NodeType.SoftBreak, softBreakRenderer)
-      put(MarkdownASTNode.NodeType.ThematicBreak, ThematicBreakRenderer(config))
-      put(MarkdownASTNode.NodeType.BlankLine, BlankLineRenderer(config))
+      put(TiptapASTNode.NodeType.Admonition, BlockquoteRenderer(config))
+      put(TiptapASTNode.NodeType.CodeBlock, CodeBlockRenderer(config))
+      put(TiptapASTNode.NodeType.UnorderedList, ListRenderer(config, isOrdered = false))
+      put(TiptapASTNode.NodeType.OrderedList, ListRenderer(config, isOrdered = true))
+      put(TiptapASTNode.NodeType.ListItem, ListItemRenderer(config))
+      put(TiptapASTNode.NodeType.Text, textRenderer)
+      put(TiptapASTNode.NodeType.Link, LinkRenderer(config))
+      put(TiptapASTNode.NodeType.Strong, StrongRenderer(config))
+      put(TiptapASTNode.NodeType.Emphasis, EmphasisRenderer(config))
+      put(TiptapASTNode.NodeType.Strikethrough, StrikethroughRenderer(config))
+      put(TiptapASTNode.NodeType.Underline, UnderlineRenderer(config))
+      put(TiptapASTNode.NodeType.Highlight, HighlightRenderer())
+      put(TiptapASTNode.NodeType.Code, CodeRenderer(config))
+      put(TiptapASTNode.NodeType.Factoid, FactoidRenderer(config))
+      put(TiptapASTNode.NodeType.LineBreak, lineBreakRenderer)
+      put(TiptapASTNode.NodeType.SoftBreak, softBreakRenderer)
+      put(TiptapASTNode.NodeType.ThematicBreak, ThematicBreakRenderer(config))
+      put(TiptapASTNode.NodeType.BlankLine, BlankLineRenderer(config))
     }
   }
 
@@ -148,14 +148,14 @@ class RendererFactory(
     onImageSpanCreated(span)
   }
 
-  fun getRenderer(node: MarkdownASTNode): NodeRenderer =
+  fun getRenderer(node: TiptapASTNode): NodeRenderer =
     renderers[node.type] ?: run {
       android.util.Log.w("RendererFactory", "No renderer for: ${node.type}")
       textRenderer
     }
 
   fun renderChildren(
-    node: MarkdownASTNode,
+    node: TiptapASTNode,
     builder: SpannableStringBuilder,
     onLinkPress: ((String) -> Unit)?,
     onLinkLongPress: ((String) -> Unit)?,
@@ -171,7 +171,7 @@ class RendererFactory(
    * without wrapping it in a synthetic root node.
    */
   fun renderNodes(
-    nodes: List<MarkdownASTNode>,
+    nodes: List<TiptapASTNode>,
     builder: SpannableStringBuilder,
     onLinkPress: ((String) -> Unit)?,
     onLinkLongPress: ((String) -> Unit)?,

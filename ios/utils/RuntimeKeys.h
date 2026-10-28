@@ -35,7 +35,7 @@ extern void *kListMarkerDrawerKey;
 // Used by TextViewLayoutManager for code block background drawing
 extern void *kCodeBlockBackgroundKey;
 
-// Custom attribute keys for markdown type tracking (used for Copy Markdown)
-extern NSString *const MarkdownTypeAttributeName;
+// Custom attribute keys for tiptap type tracking (used for Copy Tiptap)
+extern NSString *const TiptapTypeAttributeName;
 
 NS_ASSUME_NONNULL_END

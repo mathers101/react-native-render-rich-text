@@ -9,9 +9,9 @@ import com.facebook.react.views.text.ReactTypefaceUtils.applyStyles
 import com.facebook.react.views.text.ReactTypefaceUtils.parseFontWeight
 
 /**
- * Main style configuration class that parses and caches all markdown element styles.
+ * Main style configuration class that parses and caches all tiptap element styles.
  * Uses lazy initialization to defer parsing until styles are actually needed,
- * improving startup time for documents that don't use all markdown features.
+ * improving startup time for documents that don't use all tiptap features.
  */
 class StyleConfig(
   private val style: ReadableMap,

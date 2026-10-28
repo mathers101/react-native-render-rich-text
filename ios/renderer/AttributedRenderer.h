@@ -1,7 +1,7 @@
 #import <Foundation/Foundation.h>
 
 @class ENRMBlockquoteTextRenderer;
-@class MarkdownASTNode;
+@class TiptapASTNode;
 @class RenderContext;
 
 NS_ASSUME_NONNULL_BEGIN
@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 // a blockquote's own content (blockquote baseline + the quote's line height applied over the run);
 // it draws no box - the ENRMBlockquoteContainerView draws the border/background/padding. See
 // ENRMBlockquoteTextRenderer.
-- (NSMutableAttributedString *)renderNodes:(NSArray<MarkdownASTNode *> *)nodes
+- (NSMutableAttributedString *)renderNodes:(NSArray<TiptapASTNode *> *)nodes
                                    context:(RenderContext *)context
                                      block:(nullable ENRMBlockquoteTextRenderer *)block;
 - (CGFloat)getLastElementMarginBottom;

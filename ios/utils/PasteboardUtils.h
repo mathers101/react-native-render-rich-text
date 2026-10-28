@@ -6,7 +6,7 @@
 
 static NSString *const kUTIPlainText = @"public.utf8-plain-text";
 static NSString *const kUTIHTML = @"public.html";
-static NSString *const kUTIMarkdown = @"net.daringfireball.markdown";
+static NSString *const kUTITiptap = @"net.daringfireball.tiptap";
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -24,17 +24,17 @@ void copyItemsToPasteboard(NSDictionary<NSString *, id> *items);
 
 /**
  * Copies attributed string to pasteboard with multiple representations
- * (plain text, Markdown, HTML, RTFD, RTF). Receiving apps pick the richest format they support.
+ * (plain text, Tiptap, HTML, RTFD, RTF). Receiving apps pick the richest format they support.
  */
-void copyAttributedStringToPasteboard(NSAttributedString *attributedString, NSString *_Nullable markdown,
+void copyAttributedStringToPasteboard(NSAttributedString *attributedString, NSString *_Nullable tiptap,
                                       StyleConfig *_Nullable styleConfig);
 
 /**
- * Extracts markdown for the given range.
- * Full selection returns cached markdown; partial selection reverse-engineers from attributes.
+ * Extracts tiptap for the given range.
+ * Full selection returns cached tiptap; partial selection reverse-engineers from attributes.
  */
-NSString *_Nullable markdownForRange(NSAttributedString *attributedText, NSRange range,
-                                     NSString *_Nullable cachedMarkdown);
+NSString *_Nullable tiptapForRange(NSAttributedString *attributedText, NSRange range,
+                                     NSString *_Nullable cachedTiptap);
 
 /**
  * Returns remote image URLs (http/https only) from ENRMImageAttachments in the given range.

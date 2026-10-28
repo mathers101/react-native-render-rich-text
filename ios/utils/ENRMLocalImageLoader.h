@@ -4,7 +4,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * Local (non-network) image loading for markdown sources (issue #377).
+ * Local (non-network) image loading for tiptap sources (issue #377).
  *
  * React Native's asset system resolves `require('./img.png')` to a Metro http
  * URL in dev, but to a `file://` URL near the app bundle in release builds

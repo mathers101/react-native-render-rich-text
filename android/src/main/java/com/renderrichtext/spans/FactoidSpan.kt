@@ -3,7 +3,7 @@ package com.renderrichtext.spans
 import android.text.TextPaint
 import android.text.style.ClickableSpan
 import android.view.View
-import com.renderrichtext.EnrichedMarkdownText
+import com.renderrichtext.EnrichedTiptapText
 import com.renderrichtext.renderer.SpanStyleCache
 
 /**
@@ -21,7 +21,7 @@ class FactoidSpan(
   var pressed: Boolean = false
 
   override fun onClick(widget: View) {
-    onFactoidPress?.invoke(factoidId) ?: (widget as? EnrichedMarkdownText)?.emitOnFactoidPress(factoidId)
+    onFactoidPress?.invoke(factoidId) ?: (widget as? EnrichedTiptapText)?.emitOnFactoidPress(factoidId)
   }
 
   override fun updateDrawState(textPaint: TextPaint) {

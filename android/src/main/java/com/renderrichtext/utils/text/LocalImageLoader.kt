@@ -9,7 +9,7 @@ import java.io.FileNotFoundException
 import java.io.InputStream
 
 /**
- * Loads markdown images from non-network sources (issue #377).
+ * Loads tiptap images from non-network sources (issue #377).
  *
  * React Native's asset system produces different URI shapes for the same
  * `require('./img.png')` depending on environment, and none of them are plain

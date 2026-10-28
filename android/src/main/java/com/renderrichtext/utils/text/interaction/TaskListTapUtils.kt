@@ -24,19 +24,19 @@ object TaskListToggleUtils {
   private val TASK_PATTERN = Regex("""^([ \t]*[-*+][ \t]+)\[[ xX]]""", RegexOption.MULTILINE)
 
   fun toggleAtIndex(
-    markdown: String,
+    tiptap: String,
     index: Int,
     checked: Boolean,
   ): String {
-    val matches = TASK_PATTERN.findAll(markdown).toList()
-    if (index < 0 || index >= matches.size) return markdown
+    val matches = TASK_PATTERN.findAll(tiptap).toList()
+    if (index < 0 || index >= matches.size) return tiptap
 
     val match = matches[index]
     val prefix = match.groupValues[1]
 
     val replacement = "$prefix[${if (checked) "x" else " "}]"
 
-    return markdown.replaceRange(match.range, replacement)
+    return tiptap.replaceRange(match.range, replacement)
   }
 }
 

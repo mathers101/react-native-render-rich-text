@@ -63,7 +63,7 @@ static NSRange ENRMCollapseLinkIntoPill(NSMutableAttributedString *output, NSRan
 
 #pragma mark - Rendering
 
-- (void)renderNodeContent:(MarkdownASTNode *)node
+- (void)renderNodeContent:(TiptapASTNode *)node
                      into:(NSMutableAttributedString *)output
                   context:(RenderContext *)context
 {

@@ -2,7 +2,7 @@
 #import "BlockquoteBorder.h"
 #import "ENRMUIKit.h"
 #import "LastElementUtils.h"
-#import "MarkdownASTNode.h"
+#import "TiptapASTNode.h"
 #import "ParagraphStyleUtils.h"
 #import "RenderContext.h"
 #import "RendererFactory.h"
@@ -62,7 +62,7 @@ NSString *const TaskIndexAttribute = @"TaskIndex";
 
 @implementation ListItemRenderer
 
-- (void)renderNodeContent:(MarkdownASTNode *)node
+- (void)renderNodeContent:(TiptapASTNode *)node
                      into:(NSMutableAttributedString *)output
                   context:(RenderContext *)context
 {
@@ -117,7 +117,7 @@ NSString *const TaskIndexAttribute = @"TaskIndex";
   if (itemRange.length == 0)
     return;
 
-  // Informs MarkdownAccessibilityElementBuilder about the specific boundaries of this list item
+  // Informs TiptapAccessibilityElementBuilder about the specific boundaries of this list item
   [context registerListItemRange:itemRange
                         position:currentPosition
                            depth:currentDepth

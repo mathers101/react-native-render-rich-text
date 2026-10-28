@@ -3,7 +3,7 @@ module.exports = {
     platforms: {
       android: {
         cmakeListsPath: 'src/main/jni/CMakeLists.txt',
-        componentDescriptors: ['EnrichedMarkdownTextComponentDescriptor'],
+        componentDescriptors: ['EnrichedTiptapTextComponentDescriptor'],
       },
     },
   },

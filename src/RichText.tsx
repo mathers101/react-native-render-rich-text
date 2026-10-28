@@ -6,21 +6,21 @@ import NativeRichText, {
   type Md4cFlagsInternal,
   type SelectionMenuConfig,
   type AccessibilityLabelsProps,
-} from './EnrichedMarkdownTextNativeComponent';
-import { normalizeMarkdownStyle } from './normalizeMarkdownStyle';
-import type { MarkdownStyle } from './types/MarkdownStyle';
+} from './EnrichedTiptapTextNativeComponent';
+import { normalizeTiptapStyle } from './normalizeTiptapStyle';
+import type { TiptapStyle } from './types/TiptapStyle';
 
-export type TipTapMark = {
+export type TiptapMark = {
   type: string;
   attrs?: Record<string, unknown>;
 };
 
-export type TipTapNode = {
+export type TiptapNode = {
   type: string;
   text?: string;
   attrs?: Record<string, unknown>;
-  marks?: TipTapMark[];
-  content?: TipTapNode[];
+  marks?: TiptapMark[];
+  content?: TiptapNode[];
 };
 
 const IGNORED_PARSER_FLAGS: Md4cFlagsInternal = {
@@ -35,10 +35,10 @@ const IGNORED_PARSER_FLAGS: Md4cFlagsInternal = {
 };
 
 const SELECTION_MENU: SelectionMenuConfig = {
-  copyAsMarkdown: false,
+  copyAsTiptap: false,
   copyImageUrl: false,
   copyLabel: 'Copy',
-  copyAsMarkdownLabel: 'Copy as Markdown',
+  copyAsTiptapLabel: 'Copy as Tiptap',
   copyImageUrlLabel: 'Copy Image URL',
   copyImageUrlsLabel: 'Copy {count} Image URLs',
   copyImageUrlPluralTemplates: [],
@@ -62,10 +62,10 @@ const ACCESSIBILITY_LABELS: AccessibilityLabelsProps = {
 };
 
 export type RichTextProps = {
-  /** TipTap document, or the same document already encoded as JSON. */
-  document: TipTapNode | string;
+  /** Tiptap document, or the same document already encoded as JSON. */
+  document: TiptapNode | string;
   /** Partial style for the nodes this library renders. Missing keys use defaults. */
-  textStyle?: MarkdownStyle;
+  textStyle?: TiptapStyle;
   onLinkPress?: (url: string) => void;
   /** Called with the factoid's `id`. A factoid that contains a link emits `onLinkPress` instead. */
   onFactoidPress?: (factoidId: string) => void;
@@ -90,7 +90,7 @@ export function RichText({
   style,
 }: RichTextProps) {
   const documentJson = typeof document === 'string' ? document : JSON.stringify(document);
-  const markdownStyle = useMemo(() => normalizeMarkdownStyle(textStyle ?? {}), [textStyle]);
+  const tiptapStyle = useMemo(() => normalizeTiptapStyle(textStyle ?? {}), [textStyle]);
   const handleLinkPress = useMemo(() => {
     if (!onLinkPress) {
       return undefined;
@@ -111,7 +111,7 @@ export function RichText({
   return (
     <NativeRichText
       document={documentJson}
-      markdownStyle={markdownStyle}
+      tiptapStyle={tiptapStyle}
       md4cFlags={IGNORED_PARSER_FLAGS}
       selectionMenuConfig={SELECTION_MENU}
       accessibilityLabels={ACCESSIBILITY_LABELS}

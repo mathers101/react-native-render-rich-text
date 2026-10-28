@@ -1,11 +1,11 @@
-import type { TipTapNode } from 'react-native-render-rich-text';
+import type { TiptapNode } from 'react-native-render-rich-text';
 
 export type FixtureId = 'mixed' | 'lists' | 'code' | 'links';
 
 export const FIXTURES: {
   id: FixtureId;
   label: string;
-  document: TipTapNode;
+  document: TiptapNode;
 }[] = [
   {
     id: 'mixed',

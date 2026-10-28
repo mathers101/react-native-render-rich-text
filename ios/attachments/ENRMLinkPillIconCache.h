@@ -6,7 +6,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// Pill icons, kept small in one bounded cache. Local files decode synchronously, so a bundled
 /// icon is there on the first layout; every other source goes through the shared image
-/// downloader, like markdown images, and arrives asynchronously.
+/// downloader, like tiptap images, and arrives asynchronously.
 
 /// A local file icon, or nil when the source is not a readable local file.
 FOUNDATION_EXPORT UIImage *_Nullable ENRMLoadLinkPillIcon(NSString *_Nullable iconUri);

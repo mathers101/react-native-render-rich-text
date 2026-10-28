@@ -18,9 +18,9 @@ import androidx.core.graphics.createBitmap
 import androidx.core.graphics.drawable.toDrawable
 import androidx.core.graphics.withClip
 import androidx.core.graphics.withSave
-import com.renderrichtext.EnrichedMarkdownText
+import com.renderrichtext.EnrichedTiptapText
 import com.renderrichtext.styles.StyleConfig
-import com.renderrichtext.utils.common.findEnrichedMarkdownTextAncestor
+import com.renderrichtext.utils.common.findEnrichedTiptapTextAncestor
 import com.renderrichtext.utils.text.ImageCache
 import com.renderrichtext.utils.text.ImageDownloader
 import com.renderrichtext.utils.text.LocalImageLoader
@@ -190,11 +190,11 @@ class ImageSpan(
       it()
       return
     }
-    if (view is EnrichedMarkdownText) {
+    if (view is EnrichedTiptapText) {
       view.layoutManager.invalidateLayout()
       return
     }
-    view.findEnrichedMarkdownTextAncestor()?.layoutManager?.invalidateLayout()
+    view.findEnrichedTiptapTextAncestor()?.layoutManager?.invalidateLayout()
   }
 
   fun registerTextView(

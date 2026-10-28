@@ -1,5 +1,5 @@
 import { normalizeColor } from './styleUtils';
-import type { AdmonitionsStyle } from './types/MarkdownStyle';
+import type { AdmonitionsStyle } from './types/TiptapStyle';
 
 // The five GitHub-flavored admonition/alert types, in the order md4c reports
 // them (see MD_ADMONITION_TAGS). The `admonitionType` attribute emitted by the
@@ -16,7 +16,7 @@ export type AdmonitionType = (typeof ADMONITION_TYPES)[number];
 
 // GitHub alert palette. Each `color` tints the left accent bar, the title label
 // and the icon for that type. Backgrounds default to transparent (no fill) per
-// the issue; users opt into a tint via markdownStyle.blockquote.admonitions.
+// the issue; users opt into a tint via tiptapStyle.blockquote.admonitions.
 const ADMONITION_COLOR_DEFAULTS: Record<AdmonitionType, string> = {
   note: '#0969DA',
   tip: '#1A7F37',

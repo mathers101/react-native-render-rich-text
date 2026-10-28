@@ -1,5 +1,5 @@
 #import "ThematicBreakRenderer.h"
-#import "MarkdownASTNode.h"
+#import "TiptapASTNode.h"
 #import "StyleConfig.h"
 #import "ThematicBreakAttachment.h"
 
@@ -7,7 +7,7 @@
 
 @implementation ThematicBreakRenderer
 
-- (void)renderNodeContent:(MarkdownASTNode *)node
+- (void)renderNodeContent:(TiptapASTNode *)node
                      into:(NSMutableAttributedString *)output
                   context:(RenderContext *)context
 {

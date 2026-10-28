@@ -1,5 +1,5 @@
-import type { LinkPillContentInternal } from './EnrichedMarkdownTextNativeComponent';
-import type { LinkVariantStyle } from './types/MarkdownStyle';
+import type { LinkPillContentInternal } from './EnrichedTiptapTextNativeComponent';
+import type { LinkVariantStyle } from './types/TiptapStyle';
 import type { LinkPillContent } from './types/linkPill';
 import { normalizeColor } from './styleUtils';
 import { isDev } from './utils/isDev';
@@ -56,7 +56,7 @@ export function normalizeLinkVariantEntries(
 ): LinkPatternEntry<LinkVariantStyle>[] {
   return normalizeLinkPatternEntries(
     linkVariants,
-    '[MarkdownStyle] linkVariants'
+    '[TiptapStyle] linkVariants'
   );
 }
 

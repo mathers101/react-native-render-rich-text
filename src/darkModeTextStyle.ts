@@ -1,4 +1,4 @@
-import type { MarkdownStyle } from './types/MarkdownStyle';
+import type { TiptapStyle } from './types/TiptapStyle';
 
 const text = '#E6EDF3';
 const textStrong = '#F0F6FC';
@@ -13,7 +13,7 @@ const canvas = '#0D1117';
  * Colors only: font sizes, spacing, and other geometry stay on the built-in defaults.
  * Bold and italic are omitted so they keep inheriting the surrounding text color.
  */
-export const darkModeTextStyle: MarkdownStyle = {
+export const darkModeTextStyle: TiptapStyle = {
   paragraph: { color: text },
   h1: { color: textStrong },
   h2: { color: textStrong },

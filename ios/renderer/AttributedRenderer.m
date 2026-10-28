@@ -4,7 +4,7 @@
 #import "ENRMBlockquoteTextRenderer.h"
 #import "ENRMLinkPillText.h"
 #import "LastElementUtils.h"
-#import "MarkdownASTNode.h"
+#import "TiptapASTNode.h"
 #import "NodeRenderer.h"
 #import "ParagraphStyleUtils.h"
 #import "RenderContext.h"
@@ -37,7 +37,7 @@
  * render and post-processes the finished string - letting a caller render content as e.g. blockquote
  * text without this class knowing anything block-specific. See ENRMBlockquoteTextRenderer.
  */
-- (NSMutableAttributedString *)renderNodes:(NSArray<MarkdownASTNode *> *)nodes
+- (NSMutableAttributedString *)renderNodes:(NSArray<TiptapASTNode *> *)nodes
                                    context:(RenderContext *)context
                                      block:(ENRMBlockquoteTextRenderer *)block
 {
@@ -54,7 +54,7 @@
   NSMutableAttributedString *output = [[NSMutableAttributedString alloc] init];
 
   // 2. Iterate through the sibling nodes.
-  for (MarkdownASTNode *node in nodes) {
+  for (TiptapASTNode *node in nodes) {
     [self renderNodeRecursive:node into:output context:context];
   }
 
@@ -206,7 +206,7 @@
  * Orchestrates the recursive traversal of the AST.
  * If a specialized renderer exists for a node type, it takes full control.
  */
-- (void)renderNodeRecursive:(MarkdownASTNode *)node
+- (void)renderNodeRecursive:(TiptapASTNode *)node
                        into:(NSMutableAttributedString *)out
                     context:(RenderContext *)context
 {
@@ -220,7 +220,7 @@
     [renderer renderNode:node into:out context:context];
   } else {
     // Fallback: Default to deep-first traversal for unhandled container nodes.
-    for (MarkdownASTNode *child in node.children) {
+    for (TiptapASTNode *child in node.children) {
       [self renderNodeRecursive:child into:out context:context];
     }
   }

@@ -1,9 +1,9 @@
 package com.renderrichtext.utils.common
 
-import com.renderrichtext.parser.MarkdownASTNode
+import com.renderrichtext.parser.TiptapASTNode
 
 /**
- * Shared code block node semantics, used by both markdown flavors so the
+ * Shared code block node semantics, used by both tiptap flavors so the
  * meaning of a CodeBlock AST node (its text, language, fence) is defined in
  * one place. Language display names come from the shared C++ core
  * (cpp/highlight/CodeBlockLanguages.hpp) so all platforms label fences
@@ -11,10 +11,10 @@ import com.renderrichtext.parser.MarkdownASTNode
  * is shown instead.
  */
 object CodeBlockNode {
-  fun extractCode(node: MarkdownASTNode): String {
+  fun extractCode(node: TiptapASTNode): String {
     val builder = StringBuilder()
 
-    fun append(current: MarkdownASTNode) {
+    fun append(current: TiptapASTNode) {
       builder.append(current.content)
       current.children.forEach { append(it) }
     }
@@ -22,11 +22,11 @@ object CodeBlockNode {
     return builder.toString().trimEnd('\n')
   }
 
-  fun language(node: MarkdownASTNode): String? = node.getAttribute("language")?.takeIf { it.isNotEmpty() }
+  fun language(node: TiptapASTNode): String? = node.getAttribute("language")?.takeIf { it.isNotEmpty() }
 
-  fun fenceChar(node: MarkdownASTNode): String = node.getAttribute("fenceChar")?.takeIf { it.isNotEmpty() } ?: "`"
+  fun fenceChar(node: TiptapASTNode): String = node.getAttribute("fenceChar")?.takeIf { it.isNotEmpty() } ?: "`"
 
-  fun fencedMarkdown(
+  fun fencedTiptap(
     code: String,
     language: String?,
     fenceChar: String,

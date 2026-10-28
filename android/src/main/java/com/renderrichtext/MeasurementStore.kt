@@ -20,11 +20,8 @@ import com.renderrichtext.spans.MarginBottomSpan
 import com.renderrichtext.styles.LinkPillContent
 import com.renderrichtext.styles.StyleConfig
 import com.renderrichtext.utils.common.BreakStrategyUtils
-import com.renderrichtext.utils.common.CodeBlockStreamingMode
 import com.renderrichtext.utils.common.EllipsizeUtils
 import com.renderrichtext.utils.common.LinkRegexConfig
-import com.renderrichtext.utils.common.StreamingMarkdownFilter
-import com.renderrichtext.utils.common.TableStreamingMode
 import com.renderrichtext.utils.common.getArrayOrNull
 import com.renderrichtext.utils.common.getBooleanOrDefault
 import com.renderrichtext.utils.common.getIntOrDefault
@@ -39,7 +36,7 @@ import kotlin.math.ceil
 
 /**
  * Manages text measurements for ShadowNode layout.
- * Parses and renders markdown to Spannable at measure time for accurate height calculation.
+ * Parses and renders tiptap to Spannable at measure time for accurate height calculation.
  */
 object MeasurementStore {
   private const val TAG = "MeasurementStore"
@@ -54,7 +51,7 @@ object MeasurementStore {
     val cachedSize: Long,
     val spannable: CharSequence?,
     val paintParams: PaintParams,
-    val markdownHash: Int,
+    val tiptapHash: Int,
   )
 
   private val data = ConcurrentHashMap<Int, MeasurementParams>()
@@ -73,10 +70,6 @@ object MeasurementStore {
   private val numberOfLinesByViewId = ConcurrentHashMap<Int, Int>()
 
   private val ellipsizeModeByViewId = ConcurrentHashMap<Int, String>()
-
-  private val streamingTableModes = ConcurrentHashMap<Int, TableStreamingMode>()
-
-  private val streamingCodeBlockModes = ConcurrentHashMap<Int, CodeBlockStreamingMode>()
 
   // Code blocks the user wrapped, by document-order index across nesting (see CodeBlockWrapState).
   private val wrappedCodeBlocks = ConcurrentHashMap<Int, Set<Int>>()
@@ -114,7 +107,7 @@ object MeasurementStore {
     val cached = data[id]
     val width = cached?.cachedWidth ?: 0f
     val oldSize = cached?.cachedSize ?: 0L
-    val existingHash = cached?.markdownHash ?: 0
+    val existingHash = cached?.tiptapHash ?: 0
     val paintParams = PaintParams(paint.typeface ?: Typeface.DEFAULT, paint.textSize)
 
     var newSize = measure(width, spannable, paint, id)
@@ -161,11 +154,11 @@ object MeasurementStore {
     heightMode: YogaMeasureMode?,
     props: ReadableMap?,
   ): Long {
-    // Early exit for empty markdown. Honor widthMode here too: empty content has
+    // Early exit for empty tiptap. Honor widthMode here too: empty content has
     // zero intrinsic width, so only fill when the width is EXACTLY assigned -
     // otherwise an empty view would claim all available horizontal space.
-    val markdown = props.getStringOrDefault("document", "")
-    if (markdown.isEmpty()) {
+    val tiptap = props.getStringOrDefault("document", "")
+    if (tiptap.isEmpty()) {
       val emptyWidth = if (widthMode === YogaMeasureMode.EXACTLY) PixelUtil.toDIPFromPixel(width) else 0f
       return YogaMeasureOutput.make(emptyWidth, 0f)
     }
@@ -252,28 +245,6 @@ object MeasurementStore {
   private fun resolveEllipsize(viewId: Int?): TruncateAt? =
     EllipsizeUtils.resolveTruncateAt(viewId?.let { ellipsizeModeByViewId[it] } ?: EllipsizeUtils.DEFAULT_MODE)
 
-  fun updateStreamingTableMode(
-    viewId: Int,
-    mode: TableStreamingMode,
-  ) {
-    streamingTableModes[viewId] = mode
-  }
-
-  fun clearStreamingTableMode(viewId: Int) {
-    streamingTableModes.remove(viewId)
-  }
-
-  fun updateStreamingCodeBlockMode(
-    viewId: Int,
-    mode: CodeBlockStreamingMode,
-  ) {
-    streamingCodeBlockModes[viewId] = mode
-  }
-
-  fun clearStreamingCodeBlockMode(viewId: Int) {
-    streamingCodeBlockModes.remove(viewId)
-  }
-
   private fun getMeasureByIdInternal(
     context: Context,
     id: Int?,
@@ -289,7 +260,7 @@ object MeasurementStore {
 
     val currentHash = computePropsHash(props, allowFontScaling, fontScale, maxFontSizeMultiplier)
 
-    if (cached.markdownHash != currentHash) {
+    if (cached.tiptapHash != currentHash) {
       return measureAndCache(context, safeId, width, props, allowFontScaling, fontScale, maxFontSizeMultiplier)
     }
 
@@ -309,23 +280,23 @@ object MeasurementStore {
     fontScale: Float,
     maxFontSizeMultiplier: Float,
   ): Int {
-    val markdown = props.getStringOrDefault("document", "")
-    return computePropsHashForMarkdown(markdown, props, allowFontScaling, fontScale, maxFontSizeMultiplier)
+    val tiptap = props.getStringOrDefault("document", "")
+    return computePropsHashForTiptap(tiptap, props, allowFontScaling, fontScale, maxFontSizeMultiplier)
   }
 
-  private fun computePropsHashForMarkdown(
-    markdown: String,
+  private fun computePropsHashForTiptap(
+    tiptap: String,
     props: ReadableMap?,
     allowFontScaling: Boolean,
     fontScale: Float,
     maxFontSizeMultiplier: Float,
   ): Int {
-    val styleMap = props.getMapOrNull("markdownStyle")
+    val styleMap = props.getMapOrNull("tiptapStyle")
     val md4cFlagsMap = props.getMapOrNull("md4cFlags")
     val allowTrailingMargin = props.getBooleanOrDefault("allowTrailingMargin", false)
     val imageRequestHeaders = parseImageRequestHeaders(props.getArrayOrNull("imageRequestHeaders"))
     val linkPillContent = parseLinkPillContent(props.getArrayOrNull("linkPillContent"))
-    var result = markdown.hashCode()
+    var result = tiptap.hashCode()
     result = 31 * result + (styleMap?.hashCode() ?: 0)
     result = 31 * result + (md4cFlagsMap?.hashCode() ?: 0)
     result = 31 * result + parseLinkRecognition(props.getMapOrNull("linkRecognition")).hashCode()
@@ -376,8 +347,8 @@ object MeasurementStore {
     maxFontSizeMultiplier: Float,
   ): Long {
     // 1. Extract Props & Setup
-    val markdown = props.getStringOrDefault("document", "")
-    val styleMap = props.getMapOrNull("markdownStyle")
+    val tiptap = props.getStringOrDefault("document", "")
+    val styleMap = props.getMapOrNull("tiptapStyle")
     val md4cFlags =
       Md4cFlags(
         underline = props.getMapOrNull("md4cFlags").getBooleanOrDefault("underline", false),
@@ -399,8 +370,8 @@ object MeasurementStore {
     val imageRequestHeaders = parseImageRequestHeaders(props.getArrayOrNull("imageRequestHeaders"))
     val linkRecognition = parseLinkRecognition(props.getMapOrNull("linkRecognition"))
     val spannable =
-      tryRenderMarkdown(
-        markdown,
+      tryRenderTiptap(
+        tiptap,
         styleMap,
         context,
         md4cFlags,
@@ -412,7 +383,7 @@ object MeasurementStore {
         linkRecognition.text,
         linkRecognition.inlineCode,
       )
-    val textToMeasure = spannable ?: markdown
+    val textToMeasure = spannable ?: tiptap
     val (size, _) = measureWithLayout(width, textToMeasure, measurePaint, id)
 
     // 3. Calculate Margin
@@ -459,8 +430,8 @@ object MeasurementStore {
       }.build()
   }
 
-  private fun tryRenderMarkdown(
-    markdown: String,
+  private fun tryRenderTiptap(
+    tiptap: String,
     styleMap: ReadableMap?,
     context: Context,
     md4cFlags: Md4cFlags,
@@ -475,14 +446,14 @@ object MeasurementStore {
     if (styleMap == null) return null
 
     return try {
-      val ast = Parser.shared.parseMarkdown(markdown, md4cFlags, isGFM, linkRegex, inlineCodeLinkRegex) ?: return null
+      val ast = Parser.shared.parseTiptap(tiptap, md4cFlags, isGFM, linkRegex, inlineCodeLinkRegex) ?: return null
       val style = StyleConfig(styleMap, context, allowFontScaling, maxFontSizeMultiplier)
       style.imageRequestHeaders = imageRequestHeaders
       style.linkPillContent = linkPillContent
       measureRenderer.configure(style, context)
       measureRenderer.renderDocument(ast, null)
     } catch (e: Exception) {
-      Log.w(TAG, "Failed to render markdown for measurement, falling back to raw text", e)
+      Log.w(TAG, "Failed to render tiptap for measurement, falling back to raw text", e)
       null
     }
   }

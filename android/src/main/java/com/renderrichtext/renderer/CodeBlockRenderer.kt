@@ -4,7 +4,7 @@ import android.graphics.Paint
 import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.style.LineHeightSpan
-import com.renderrichtext.parser.MarkdownASTNode
+import com.renderrichtext.parser.TiptapASTNode
 import com.renderrichtext.spans.CodeBlockSpan
 import com.renderrichtext.spans.MarginBottomSpan
 import com.renderrichtext.spans.isLastDrawnLine
@@ -17,7 +17,7 @@ class CodeBlockRenderer(
   private val config: RendererConfig,
 ) : NodeRenderer {
   override fun render(
-    node: MarkdownASTNode,
+    node: TiptapASTNode,
     builder: SpannableStringBuilder,
     onLinkPress: ((String) -> Unit)?,
     onLinkLongPress: ((String) -> Unit)?,

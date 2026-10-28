@@ -12,8 +12,7 @@ import kotlin.math.floor
  * https://github.com/react/react-native/blob/v0.86.2/packages/react-native/ReactAndroid/src/main/java/com/facebook/react/views/text/internal/span/CustomLineHeightSpan.kt#L44-L57
  *
  * Unlike RN, [lineHeight] is a floor, not a clamp: taller content grows the
- * line instead of being clipped (e.g. inline code taller than the paragraph,
- * https://github.com/software-mansion/enriched-markdown/issues/827).
+ * line instead of being clipped (for example, inline code taller than the paragraph).
  */
 internal fun applyLineHeight(
   fm: FontMetricsInt,

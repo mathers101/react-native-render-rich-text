@@ -1,6 +1,6 @@
 #import "FactoidRenderer.h"
 #import "FactoidBackground.h"
-#import "MarkdownASTNode.h"
+#import "TiptapASTNode.h"
 #import "RenderContext.h"
 #import "RendererFactory.h"
 #import "StyleConfig.h"
@@ -91,7 +91,7 @@ static RCTUIColor *ENRMFactoidColor(NSString *value, RCTUIColor *styleColor, uns
   return [context snapshotScope];
 }
 
-- (void)renderNodeContent:(MarkdownASTNode *)node
+- (void)renderNodeContent:(TiptapASTNode *)node
                      into:(NSMutableAttributedString *)output
                   context:(RenderContext *)context
 {

@@ -1,5 +1,5 @@
 import { Platform, processColor, type ColorValue } from 'react-native';
-import type { MarkdownStyle } from './types/MarkdownStyle';
+import type { TiptapStyle } from './types/TiptapStyle';
 import { isDev } from './utils/isDev';
 
 export const normalizeColor = (
@@ -11,7 +11,7 @@ export const normalizeColor = (
   if (processed === null || processed === undefined) {
     if (isDev) {
       console.warn(
-        `[MarkdownStyle] Ignoring invalid color value "${color}"; falling back to the default.`
+        `[TiptapStyle] Ignoring invalid color value "${color}"; falling back to the default.`
       );
     }
     return undefined;
@@ -85,13 +85,13 @@ function isSubStyleEqual(
 }
 
 export function isStyleEqual(
-  a: MarkdownStyle,
-  b: MarkdownStyle,
+  a: TiptapStyle,
+  b: TiptapStyle,
   referenceKeys: readonly string[]
 ): boolean {
   for (const key of referenceKeys) {
-    const subA = a[key as keyof MarkdownStyle];
-    const subB = b[key as keyof MarkdownStyle];
+    const subA = a[key as keyof TiptapStyle];
+    const subB = b[key as keyof TiptapStyle];
     if (subA === subB) continue;
     if (!subA || !subB) return false;
     if (

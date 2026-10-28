@@ -76,15 +76,15 @@ static inline CGFloat ENRMContentWidth(NSLayoutManager *layoutManager, CGFloat m
 }
 
 /// Turns a raw TextKit layout pass into the final measured size. Shared by
-/// the view-backed path (`ENRMMeasureMarkdownText`) and the view-free path
-/// (`ENRMMeasureMarkdownViewFree`) so both measure with one algorithm.
+/// the view-backed path (`ENRMMeasureTiptapText`) and the view-free path
+/// (`ENRMMeasureTiptapViewFree`) so both measure with one algorithm.
 ///
 /// Steps, in order:
 /// - Soft-wrapped content reports maxWidth: a tight width would let flexShrink
 ///   narrow the view, re-wrapping it and mismatching the measured height.
 ///   Content broken only by explicit newlines keeps its tight width.
 /// - Optionally subtract the extra line fragment (iOS counts a trailing
-///   newline's empty line fragment into usedRect). Read-only markdown passes
+///   newline's empty line fragment into usedRect). Read-only tiptap passes
 ///   YES; text input passes NO so trailing newlines keep a blank line (RN Text
 ///   parity).
 /// - Add code-block padding when the last element is a code block, and the
@@ -116,7 +116,7 @@ static inline CGSize ENRMFinalizeMeasuredTextSize(ENRMTextLayoutResult layout, N
   return CGSizeMake(ceil(measuredWidth * scale) / scale, ceil(measuredHeight * scale) / scale);
 }
 
-static inline CGSize ENRMMeasureMarkdownText(ENRMPlatformTextView *textView, CGFloat maxWidth, StyleConfig *config,
+static inline CGSize ENRMMeasureTiptapText(ENRMPlatformTextView *textView, CGFloat maxWidth, StyleConfig *config,
                                              BOOL allowTrailingMargin, CGFloat lastElementMarginBottom)
 {
   NSAttributedString *text = ENRMGetAttributedText(textView);

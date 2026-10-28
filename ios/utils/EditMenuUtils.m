@@ -6,30 +6,30 @@
 #if !TARGET_OS_OSX
 
 static NSString *const kMenuIdentifierStandardEdit = @"com.apple.menu.standard-edit";
-static NSString *const kActionIdentifierCopy = @"com.swmansion.enriched.markdown.copy";
-static NSString *const kActionIdentifierCopyMarkdown = @"com.swmansion.enriched.markdown.copyMarkdown";
-static NSString *const kActionIdentifierCopyImageURL = @"com.swmansion.enriched.markdown.copyImageURL";
+static NSString *const kActionIdentifierCopy = @"com.swmansion.enriched.tiptap.copy";
+static NSString *const kActionIdentifierCopyTiptap = @"com.swmansion.enriched.tiptap.copyTiptap";
+static NSString *const kActionIdentifierCopyImageURL = @"com.swmansion.enriched.tiptap.copyImageURL";
 
-static UIAction *createCopyAction(NSAttributedString *selectedText, NSString *markdown, StyleConfig *styleConfig,
+static UIAction *createCopyAction(NSAttributedString *selectedText, NSString *tiptap, StyleConfig *styleConfig,
                                   NSString *copyLabel)
 {
   return [UIAction actionWithTitle:copyLabel
                              image:[RCTUIImage systemImageNamed:@"doc.on.doc"]
                         identifier:kActionIdentifierCopy
                            handler:^(__kindof UIAction *action) {
-                             copyAttributedStringToPasteboard(selectedText, markdown, styleConfig);
+                             copyAttributedStringToPasteboard(selectedText, tiptap, styleConfig);
                            }];
 }
 
-static UIAction *_Nullable createCopyMarkdownAction(NSString *markdown, NSString *copyAsMarkdownLabel)
+static UIAction *_Nullable createCopyTiptapAction(NSString *tiptap, NSString *copyAsTiptapLabel)
 {
-  if (markdown.length == 0)
+  if (tiptap.length == 0)
     return nil;
 
-  return [UIAction actionWithTitle:copyAsMarkdownLabel
+  return [UIAction actionWithTitle:copyAsTiptapLabel
                              image:[RCTUIImage systemImageNamed:@"doc.text"]
-                        identifier:kActionIdentifierCopyMarkdown
-                           handler:^(__kindof UIAction *action) { copyStringToPasteboard(markdown); }];
+                        identifier:kActionIdentifierCopyTiptap
+                           handler:^(__kindof UIAction *action) { copyStringToPasteboard(tiptap); }];
 }
 
 static UIAction *_Nullable createCopyImageURLAction(NSArray<NSString *> *imageURLs,
@@ -92,18 +92,18 @@ static void insertOptionalAction(NSMutableArray<UIMenuElement *> *array, UIActio
 }
 
 // TODO: Remove API_AVAILABLE(ios(16.0)) guard when the minimum iOS deployment target in RN is bumped to 16.
-UIMenu *buildEditMenuForSelection(NSAttributedString *attributedText, NSRange range, NSString *_Nullable cachedMarkdown,
+UIMenu *buildEditMenuForSelection(NSAttributedString *attributedText, NSRange range, NSString *_Nullable cachedTiptap,
                                   StyleConfig *styleConfig, NSArray<UIMenuElement *> *suggestedActions,
                                   NSArray<UIAction *> *_Nullable customActions,
                                   ENRMSelectionMenuConfig selectionMenuConfig) API_AVAILABLE(ios(16.0))
 {
   NSAttributedString *selectedText = [attributedText attributedSubstringFromRange:range];
-  NSString *markdown = markdownForRange(attributedText, range, cachedMarkdown);
+  NSString *tiptap = tiptapForRange(attributedText, range, cachedTiptap);
   NSArray<NSString *> *imageURLs = imageURLsInRange(attributedText, range);
 
-  UIAction *copyAction = createCopyAction(selectedText, markdown, styleConfig, selectionMenuConfig.copyLabel);
-  UIAction *copyMarkdownAction = selectionMenuConfig.copyAsMarkdown
-                                     ? createCopyMarkdownAction(markdown, selectionMenuConfig.copyAsMarkdownLabel)
+  UIAction *copyAction = createCopyAction(selectedText, tiptap, styleConfig, selectionMenuConfig.copyLabel);
+  UIAction *copyTiptapAction = selectionMenuConfig.copyAsTiptap
+                                     ? createCopyTiptapAction(tiptap, selectionMenuConfig.copyAsTiptapLabel)
                                      : nil;
   UIAction *copyImageURLAction =
       selectionMenuConfig.copyImageURL ? createCopyImageURLAction(imageURLs, selectionMenuConfig) : nil;
@@ -118,7 +118,7 @@ UIMenu *buildEditMenuForSelection(NSAttributedString *attributedText, NSRange ra
       if ([menu.identifier isEqualToString:kMenuIdentifierStandardEdit]) {
         // Replace standard Copy with our enhanced version
         [result addObject:createEnhancedStandardEditMenu(menu, copyAction)];
-        addOptionalAction(result, copyMarkdownAction);
+        addOptionalAction(result, copyTiptapAction);
         addOptionalAction(result, copyImageURLAction);
         foundStandardEditMenu = YES;
         continue;
@@ -129,7 +129,7 @@ UIMenu *buildEditMenuForSelection(NSAttributedString *attributedText, NSRange ra
 
   if (!foundStandardEditMenu) {
     [result insertObject:copyAction atIndex:0];
-    insertOptionalAction(result, copyMarkdownAction, 1);
+    insertOptionalAction(result, copyTiptapAction, 1);
     addOptionalAction(result, copyImageURLAction);
   }
 

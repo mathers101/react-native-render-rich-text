@@ -1,19 +1,19 @@
-#include "TipTapParser.hpp"
+#include "TiptapParser.hpp"
 
 #include <nlohmann/json.hpp>
 
 #include <string>
 
-namespace Markdown {
+namespace Tiptap {
 namespace {
 
 using json = nlohmann::json;
 
-std::shared_ptr<MarkdownASTNode> makeNode(NodeType type) {
-  return std::make_shared<MarkdownASTNode>(type);
+std::shared_ptr<TiptapASTNode> makeNode(NodeType type) {
+  return std::make_shared<TiptapASTNode>(type);
 }
 
-std::shared_ptr<MarkdownASTNode> parseNode(const json &node);
+std::shared_ptr<TiptapASTNode> parseNode(const json &node);
 
 bool isObject(const json &value) {
   return value.is_object();
@@ -43,19 +43,19 @@ const json *markOfType(const json &node, const char *typeA, const char *typeB = 
   return found;
 }
 
-std::shared_ptr<MarkdownASTNode> wrap(NodeType type, std::shared_ptr<MarkdownASTNode> child) {
+std::shared_ptr<TiptapASTNode> wrap(NodeType type, std::shared_ptr<TiptapASTNode> child) {
   auto node = makeNode(type);
   node->addChild(std::move(child));
   return node;
 }
 
-// Marks are flat on a TipTap text node. Nest them in a fixed order so the
-// renderers see the same shape markdown used to produce: code inside bold
+// Marks are flat on a Tiptap text node. Nest them in a fixed order so the
+// renderers see the same shape tiptap used to produce: code inside bold
 // inside italic inside strike inside underline inside highlight inside link.
-std::shared_ptr<MarkdownASTNode> parseText(const json &node) {
+std::shared_ptr<TiptapASTNode> parseText(const json &node) {
   auto text = makeNode(NodeType::Text);
   text->content = textOf(node);
-  std::shared_ptr<MarkdownASTNode> current = text;
+  std::shared_ptr<TiptapASTNode> current = text;
 
   if (markOfType(node, "code") != nullptr) {
     current = wrap(NodeType::Code, std::move(current));
@@ -89,7 +89,7 @@ std::shared_ptr<MarkdownASTNode> parseText(const json &node) {
   return current;
 }
 
-void addChildren(MarkdownASTNode &parent, const json &node) {
+void addChildren(TiptapASTNode &parent, const json &node) {
   if (!node.contains("content") || !node["content"].is_array()) {
     return;
   }
@@ -118,7 +118,7 @@ int intAttr(const json &node, const char *key, int fallback) {
   return fallback;
 }
 
-void copyAttributes(MarkdownASTNode &target, const json &node) {
+void copyAttributes(TiptapASTNode &target, const json &node) {
   if (!node.contains("attrs") || !node["attrs"].is_object()) {
     return;
   }
@@ -145,7 +145,7 @@ std::string stringAttr(const json &node, const char *key) {
   return attrs[key].get<std::string>();
 }
 
-std::shared_ptr<MarkdownASTNode> parseNode(const json &node) {
+std::shared_ptr<TiptapASTNode> parseNode(const json &node) {
   if (!isObject(node) || !node.contains("type") || !node["type"].is_string()) {
     return nullptr;
   }
@@ -158,7 +158,7 @@ std::shared_ptr<MarkdownASTNode> parseNode(const json &node) {
     return makeNode(NodeType::LineBreak);
   }
 
-  std::shared_ptr<MarkdownASTNode> parsed;
+  std::shared_ptr<TiptapASTNode> parsed;
   if (type == "doc") {
     parsed = makeNode(NodeType::Document);
   } else if (type == "paragraph") {
@@ -205,7 +205,7 @@ std::shared_ptr<MarkdownASTNode> parseNode(const json &node) {
 
 } // namespace
 
-std::shared_ptr<MarkdownASTNode> parseTipTapDocument(const std::string &jsonText) {
+std::shared_ptr<TiptapASTNode> parseTiptapDocument(const std::string &jsonText) {
   if (jsonText.empty()) {
     return makeNode(NodeType::Document);
   }
@@ -225,4 +225,4 @@ std::shared_ptr<MarkdownASTNode> parseTipTapDocument(const std::string &jsonText
   return root;
 }
 
-} // namespace Markdown
+} // namespace Tiptap

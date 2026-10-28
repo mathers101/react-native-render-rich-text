@@ -37,7 +37,7 @@ static inline CGFloat UIFontLineHeight(UIFont *font)
 #endif
 
 /// Value for `usesFontLeading` on every NSLayoutManager that draws or
-/// measures markdown. NSLayoutManager defaults to YES, which adds each font's
+/// measures tiptap. NSLayoutManager defaults to YES, which adds each font's
 /// built-in leading on top of the paragraph line height. React Native turns it
 /// off for Text layout, and drawing and measuring must agree, or the reported
 /// height and the on-screen layout drift apart. Fonts pulled in by glyph
@@ -199,10 +199,10 @@ static inline void ENRMSetDefaultTypingAttributes(ENRMPlatformTextView *textView
   textView.typingAttributes = attrs;
 }
 
-/// Applies shared configuration to a text view used for markdown input editing.
+/// Applies shared configuration to a text view used for tiptap input editing.
 /// Handles platform differences: scroll indicators, text container insets,
 /// drawsBackground (macOS). Sets editable=YES, scrollEnabled=YES.
-static inline void ENRMConfigureMarkdownTextInputTextView(ENRMPlatformTextView *textView)
+static inline void ENRMConfigureTiptapTextInputTextView(ENRMPlatformTextView *textView)
 {
   textView.font = [UIFont systemFontOfSize:16.0];
   textView.backgroundColor = [RCTUIColor clearColor];
@@ -264,10 +264,10 @@ static inline void ENRMBlurTextView(ENRMPlatformTextView *textView)
 #endif
 }
 
-/// Applies shared configuration to a text view used for markdown rendering.
+/// Applies shared configuration to a text view used for tiptap rendering.
 /// Handles platform differences: scroll indicators, text container insets,
 /// drawsBackground (macOS), accessibilityElementsHidden (iOS).
-static inline void ENRMConfigureMarkdownTextView(ENRMPlatformTextView *textView)
+static inline void ENRMConfigureTiptapTextView(ENRMPlatformTextView *textView)
 {
   textView.font = [UIFont systemFontOfSize:16.0];
   textView.backgroundColor = [RCTUIColor clearColor];

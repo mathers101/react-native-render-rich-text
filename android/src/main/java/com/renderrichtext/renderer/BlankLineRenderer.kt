@@ -1,7 +1,7 @@
 package com.renderrichtext.renderer
 
 import android.text.SpannableStringBuilder
-import com.renderrichtext.parser.MarkdownASTNode
+import com.renderrichtext.parser.TiptapASTNode
 import com.renderrichtext.utils.text.span.applyLineHeightSkippingImages
 
 // Renders a run of consecutive blank lines emitted when preserveBlankLines is
@@ -13,7 +13,7 @@ class BlankLineRenderer(
   private val config: RendererConfig,
 ) : NodeRenderer {
   override fun render(
-    node: MarkdownASTNode,
+    node: TiptapASTNode,
     builder: SpannableStringBuilder,
     onLinkPress: ((String) -> Unit)?,
     onLinkLongPress: ((String) -> Unit)?,

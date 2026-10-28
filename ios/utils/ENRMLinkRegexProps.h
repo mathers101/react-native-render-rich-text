@@ -3,7 +3,7 @@
 #import "ENRMLinkRegexConfig.h"
 
 #ifdef __cplusplus
-// Props share EnrichedMarkdownTextInput's native regex transport.
+// Props share EnrichedTiptapTextInput's native regex transport.
 template <typename RegexProps> static inline ENRMLinkRegexConfig *ENRMLinkRegexConfigFromProps(const RegexProps &props)
 {
   if (props.isDisabled || props.isDefault || props.pattern.empty())

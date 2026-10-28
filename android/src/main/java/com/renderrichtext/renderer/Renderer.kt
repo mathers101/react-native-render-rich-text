@@ -3,7 +3,7 @@ package com.renderrichtext.renderer
 import android.content.Context
 import android.text.SpannableStringBuilder
 import com.renderrichtext.math.LatexErrorReporter
-import com.renderrichtext.parser.MarkdownASTNode
+import com.renderrichtext.parser.TiptapASTNode
 import com.renderrichtext.spans.ImageSpan
 import com.renderrichtext.spans.MarginBottomSpan
 import com.renderrichtext.styles.StyleConfig
@@ -35,7 +35,7 @@ class Renderer {
   }
 
   fun renderDocument(
-    document: MarkdownASTNode,
+    document: TiptapASTNode,
     onLinkPress: ((String) -> Unit)? = null,
     onLinkLongPress: ((String) -> Unit)? = null,
     onFactoidPress: ((String) -> Unit)? = null,
@@ -54,12 +54,12 @@ class Renderer {
    * block-specific. See [BlockquoteTextRenderer].
    *
    * The builder is returned as-is rather than frozen into a `SpannableString`:
-   * the markdown text view adopts it verbatim (see `NoCopySpannableFactory`),
+   * the tiptap text view adopts it verbatim (see `NoCopySpannableFactory`),
    * and converting it would cost a quadratic span copy for no benefit. Each call
    * builds its own buffer, so callers must not mutate one they have passed on.
    */
   fun renderContent(
-    nodes: List<MarkdownASTNode>,
+    nodes: List<TiptapASTNode>,
     onLinkPress: ((String) -> Unit)? = null,
     onLinkLongPress: ((String) -> Unit)? = null,
     onFactoidPress: ((String) -> Unit)? = null,
@@ -128,7 +128,7 @@ class Renderer {
   }
 
   /**
-   * Provides the EnrichedMarkdownText with the exact list of spans that need registration.
+   * Provides the EnrichedTiptapText with the exact list of spans that need registration.
    */
   fun getCollectedImageSpans(): List<ImageSpan> = collectedImageSpans
 }

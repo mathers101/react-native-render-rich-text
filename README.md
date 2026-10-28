@@ -1,10 +1,10 @@
 # react-native-render-rich-text
 
-A React Native Fabric library that renders a [TipTap](https://tiptap.dev/) document on iOS and Android. The public component is `RichText`. Its `document` prop is a TipTap JSON tree, or that tree already encoded as a string.
+A React Native Fabric library that renders a [Tiptap](https://tiptap.dev/) document on iOS and Android. The public component is `RichText`. Its `document` prop is a Tiptap JSON tree, or that tree already encoded as a string.
 
 There is no web renderer and no text-input component. New Architecture is required (React Native 0.88).
 
-The display renderers are adapted from Software Mansion's enriched-markdown. That copyright stays on the copied sources. See `LICENSE`.
+The display renderers are adapted from Software Mansion. That copyright stays on the copied sources. See `LICENSE`.
 
 ## What it draws
 
@@ -28,11 +28,11 @@ import { RichText } from 'react-native-render-rich-text';
 />
 ```
 
-`document` is either a `TipTapNode` or a JSON string. `selectable` defaults to true. `allowFontScaling` defaults to true, and `maxFontSizeMultiplier` caps that scale. `numberOfLines` and `ellipsizeMode` (`'head' | 'middle' | 'tail' | 'clip'`) truncate the view. `style` is a normal React Native view style for the container, not the text.
+`document` is either a `TiptapNode` or a JSON string. `selectable` defaults to true. `allowFontScaling` defaults to true, and `maxFontSizeMultiplier` caps that scale. `numberOfLines` and `ellipsizeMode` (`'head' | 'middle' | 'tail' | 'clip'`) truncate the view. `style` is a normal React Native view style for the container, not the text.
 
 ## Styling
 
-Pass a partial `MarkdownStyle` as `textStyle`. Omitted keys keep the built-in defaults. JavaScript fills in that complete style before it crosses the bridge; native does not invent colors of its own.
+Pass a partial `TiptapStyle` as `textStyle`. Omitted keys keep the built-in defaults. JavaScript fills in that complete style before it crosses the bridge; native does not invent colors of its own.
 
 ```tsx
 <RichText
@@ -45,7 +45,7 @@ Pass a partial `MarkdownStyle` as `textStyle`. Omitted keys keep the built-in de
 />
 ```
 
-The type is exported as `MarkdownStyle`. Each node has its own block: `paragraph`, `h1` through `h6`, `blockquote`, `list`, `code`, `codeBlock`, `link`, `linkVariants`, `strong`, `em`, `strikethrough`, `underline`, `factoid`, `highlight`, `thematicBreak`, and the table, image, math, and task-list blocks the style object still carries. Color fields take any string `processColor` accepts.
+The type is exported as `TiptapStyle`. Each node has its own block: `paragraph`, `h1` through `h6`, `blockquote`, `list`, `code`, `codeBlock`, `link`, `linkVariants`, `strong`, `em`, `strikethrough`, `underline`, `factoid`, `highlight`, `thematicBreak`, and the table, image, math, and task-list blocks the style object still carries. Color fields take any string `processColor` accepts.
 
 With no `textStyle`, body text is `#1F2937`, headings are near-black, links are `#2563EB`, and inline code is pink on a light chip. Blockquotes use a gray bar, a light fill, and 10 points of padding. Bold and italic do not set a color, so they inherit the surrounding text. Fenced code blocks are the exception: they default to a dark background (`#1F2937`) and a GitHub-dark syntax palette.
 
@@ -73,7 +73,7 @@ textStyle={{
 }}
 ```
 
-The preset lives in `src/darkModeTextStyle.ts`. The light defaults live in `src/normalizeMarkdownStyle.ts`.
+The preset lives in `src/darkModeTextStyle.ts`. The light defaults live in `src/normalizeTiptapStyle.ts`.
 
 ## Run the example
 
@@ -107,7 +107,7 @@ The C++ parser tests check mark nesting, lists, factoids, empty documents, and u
 yarn test:parser
 ```
 
-That compiles `cpp/parser/TipTapParser.cpp` with `cpp/tests/parser_tests.cpp` and runs the binary. A passing run prints `all parser tests passed`.
+That compiles `cpp/parser/TiptapParser.cpp` with `cpp/tests/parser_tests.cpp` and runs the binary. A passing run prints `all parser tests passed`.
 
 ## What this environment cannot verify
 

@@ -3,7 +3,7 @@
 #import "FontUtils.h"
 #import "LastElementUtils.h"
 #import "ListItemRenderer.h"
-#import "MarkdownASTNode.h"
+#import "TiptapASTNode.h"
 #import "ParagraphStyleUtils.h"
 #import "RenderContext.h"
 #import "RendererFactory.h"
@@ -19,7 +19,7 @@ static NSString *const kNestedInfoRangeKey = @"range";
   return [context snapshotScope];
 }
 
-- (void)renderNodeContent:(MarkdownASTNode *)node
+- (void)renderNodeContent:(TiptapASTNode *)node
                      into:(NSMutableAttributedString *)output
                   context:(RenderContext *)context
 {

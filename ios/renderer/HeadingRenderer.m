@@ -27,7 +27,7 @@ static NSString *const kHeadingTypes[] = {nil,          @"heading-1", @"heading-
   return [context snapshotScope];
 }
 
-- (void)renderNodeContent:(MarkdownASTNode *)node
+- (void)renderNodeContent:(TiptapASTNode *)node
                      into:(NSMutableAttributedString *)output
                   context:(RenderContext *)context
 {
@@ -62,8 +62,8 @@ static NSString *const kHeadingTypes[] = {nil,          @"heading-1", @"heading-
   NSString *headingText = ENRMStringByExpandingLinkPills([output attributedSubstringFromRange:range]);
   [context registerHeadingRange:range level:level text:headingText];
 
-  // Metadata attribute used for post-processing (e.g., Export to Markdown/HTML)
-  [output addAttribute:MarkdownTypeAttributeName value:kHeadingTypes[level] range:range];
+  // Metadata attribute used for post-processing (e.g., Export to Tiptap/HTML)
+  [output addAttribute:TiptapTypeAttributeName value:kHeadingTypes[level] range:range];
 
   applyLineHeight(output, range, style.lineHeight);
   applyBaselineOffset(output, range);

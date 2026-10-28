@@ -1,8 +1,8 @@
 #import <Foundation/Foundation.h>
 
-@class MarkdownASTNode;
+@class TiptapASTNode;
 @class RenderContext;
 
 @protocol NodeRenderer <NSObject>
-- (void)renderNode:(MarkdownASTNode *)node into:(NSMutableAttributedString *)output context:(RenderContext *)context;
+- (void)renderNode:(TiptapASTNode *)node into:(NSMutableAttributedString *)output context:(RenderContext *)context;
 @end

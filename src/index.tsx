@@ -1,4 +1,4 @@
 export { RichText } from './RichText';
 export { darkModeTextStyle } from './darkModeTextStyle';
-export type { RichTextProps, TipTapMark, TipTapNode } from './RichText';
-export type { MarkdownStyle } from './types/MarkdownStyle';
+export type { RichTextProps, TiptapMark, TiptapNode } from './RichText';
+export type { TiptapStyle } from './types/TiptapStyle';

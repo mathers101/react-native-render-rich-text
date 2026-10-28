@@ -1,4 +1,4 @@
-#include "TipTapParser.hpp"
+#include "TiptapParser.hpp"
 
 #include <algorithm>
 #include <iostream>
@@ -7,9 +7,9 @@
 #include <utility>
 #include <vector>
 
-using Markdown::MarkdownASTNode;
-using Markdown::NodeType;
-using Markdown::parseTipTapDocument;
+using Tiptap::TiptapASTNode;
+using Tiptap::NodeType;
+using Tiptap::parseTiptapDocument;
 
 namespace {
 
@@ -62,7 +62,7 @@ const char *typeName(NodeType type) {
   }
 }
 
-void dump(const MarkdownASTNode &node, std::ostream &out, int indent) {
+void dump(const TiptapASTNode &node, std::ostream &out, int indent) {
   out << std::string(static_cast<size_t>(indent) * 2, ' ') << typeName(node.type);
   if (!node.content.empty()) {
     out << " \"" << node.content << "\"";
@@ -78,7 +78,7 @@ void dump(const MarkdownASTNode &node, std::ostream &out, int indent) {
   }
 }
 
-std::string dump(const MarkdownASTNode &node) {
+std::string dump(const TiptapASTNode &node) {
   std::ostringstream out;
   dump(node, out, 0);
   return out.str();
@@ -97,7 +97,7 @@ void expect(const std::string &name, const std::string &actual, const std::strin
 
 int main() {
   {
-    auto ast = parseTipTapDocument(R"({
+    auto ast = parseTiptapDocument(R"({
       "type": "doc",
       "content": [{
         "type": "paragraph",
@@ -130,7 +130,7 @@ int main() {
   }
 
   {
-    auto ast = parseTipTapDocument(R"({
+    auto ast = parseTiptapDocument(R"({
       "type": "doc",
       "content": [
         {"type": "heading", "attrs": {"level": 3}, "content": [{"type": "text", "text": "Title"}]},
@@ -180,22 +180,22 @@ int main() {
   }
 
   {
-    auto ast = parseTipTapDocument(R"({"type":"doc"})");
+    auto ast = parseTiptapDocument(R"({"type":"doc"})");
     expect("empty document", dump(*ast), "Document\n");
   }
 
   {
-    auto ast = parseTipTapDocument(R"({"type":"doc","content":[]})");
+    auto ast = parseTiptapDocument(R"({"type":"doc","content":[]})");
     expect("empty content", dump(*ast), "Document\n");
   }
 
   {
-    auto ast = parseTipTapDocument("not json");
+    auto ast = parseTiptapDocument("not json");
     expect("invalid json", dump(*ast), "Document\n");
   }
 
   {
-    auto ast = parseTipTapDocument(R"({
+    auto ast = parseTiptapDocument(R"({
       "type": "doc",
       "content": [
         {"type": "paragraph", "content": [{"type": "text", "text": "before"}]},
@@ -224,7 +224,7 @@ int main() {
   }
 
   {
-    auto ast = parseTipTapDocument(R"({
+    auto ast = parseTiptapDocument(R"({
       "type": "doc",
       "content": [{
         "type": "paragraph",

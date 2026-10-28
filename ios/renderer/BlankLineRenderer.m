@@ -1,5 +1,5 @@
 #import "BlankLineRenderer.h"
-#import "MarkdownASTNode.h"
+#import "TiptapASTNode.h"
 #import "ParagraphStyleUtils.h"
 #import "StyleConfig.h"
 
@@ -8,12 +8,12 @@
 // Renders a run of consecutive blank lines emitted by the parser when the
 // preserveBlankLines flag is enabled. Each blank line in the source is drawn as
 // one empty line, so the rendered text keeps the exact line count that was typed
-// (e.g. in EnrichedMarkdownTextInput). The empty lines use the paragraph font
+// (e.g. in EnrichedTiptapTextInput). The empty lines use the paragraph font
 // and line height so their vertical rhythm matches the surrounding paragraphs;
-// any extra block spacing is left to the caller to configure via markdownStyle.
+// any extra block spacing is left to the caller to configure via tiptapStyle.
 @implementation BlankLineRenderer
 
-- (void)renderNodeContent:(MarkdownASTNode *)node
+- (void)renderNodeContent:(TiptapASTNode *)node
                      into:(NSMutableAttributedString *)output
                   context:(RenderContext *)context
 {

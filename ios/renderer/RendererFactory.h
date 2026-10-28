@@ -1,12 +1,12 @@
-#import "MarkdownASTNode.h"
+#import "TiptapASTNode.h"
 #import "NodeRenderer.h"
 
 @class RenderContext;
 
 @interface RendererFactory : NSObject
 - (instancetype)initWithConfig:(id)config;
-- (id<NodeRenderer>)rendererForNodeType:(MarkdownNodeType)type;
-- (void)renderChildrenOfNode:(MarkdownASTNode *)node
+- (id<NodeRenderer>)rendererForNodeType:(TiptapNodeType)type;
+- (void)renderChildrenOfNode:(TiptapASTNode *)node
                         into:(NSMutableAttributedString *)output
                      context:(RenderContext *)context;
 @end

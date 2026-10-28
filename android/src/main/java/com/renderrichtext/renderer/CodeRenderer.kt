@@ -1,7 +1,7 @@
 package com.renderrichtext.renderer
 
 import android.text.SpannableStringBuilder
-import com.renderrichtext.parser.MarkdownASTNode
+import com.renderrichtext.parser.TiptapASTNode
 import com.renderrichtext.spans.CodeBackgroundSpan
 import com.renderrichtext.spans.CodeSpan
 import com.renderrichtext.utils.text.span.SPAN_FLAGS_EXCLUSIVE_EXCLUSIVE
@@ -10,7 +10,7 @@ class CodeRenderer(
   private val config: RendererConfig,
 ) : NodeRenderer {
   override fun render(
-    node: MarkdownASTNode,
+    node: TiptapASTNode,
     builder: SpannableStringBuilder,
     onLinkPress: ((String) -> Unit)?,
     onLinkLongPress: ((String) -> Unit)?,

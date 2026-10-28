@@ -10,5 +10,14 @@ module.exports = {
     [pak.name]: {
       root: path.join(__dirname, '..'),
     },
+    // example/package.json depends on this unscoped name via link:.., and Yarn
+    // nohoist keeps that symlink beside the real package. Autolinking both
+    // adds the same native library twice and CMake rejects the shared build dir.
+    'react-native-render-rich-text': {
+      platforms: {
+        android: null,
+        ios: null,
+      },
+    },
   },
 };

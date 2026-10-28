@@ -1,9 +1,9 @@
 package com.renderrichtext.utils.text.extensions
 
-import com.renderrichtext.parser.MarkdownASTNode
+import com.renderrichtext.parser.TiptapASTNode
 
-fun MarkdownASTNode.containsBlockImage(): Boolean {
-  if (type != MarkdownASTNode.NodeType.Paragraph) return false
+fun TiptapASTNode.containsBlockImage(): Boolean {
+  if (type != TiptapASTNode.NodeType.Paragraph) return false
   val firstChild = children.firstOrNull()
-  return firstChild != null && children.size == 1 && firstChild.type == MarkdownASTNode.NodeType.Image
+  return firstChild != null && children.size == 1 && firstChild.type == TiptapASTNode.NodeType.Image
 }

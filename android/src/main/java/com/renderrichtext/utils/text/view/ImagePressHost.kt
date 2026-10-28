@@ -1,8 +1,8 @@
 package com.renderrichtext.utils.text.view
 
 /**
- * Implemented by the React-tagged host views (EnrichedMarkdownText and the GFM
- * EnrichedMarkdown container) so [LinkLongPressMovementMethod] can gate and
+ * Implemented by the React-tagged host views (EnrichedTiptapText and the GFM
+ * EnrichedTiptap container) so [LinkLongPressMovementMethod] can gate and
  * dispatch image taps without knowing which flavor owns the tapped TextView.
  *
  * In GFM the tapped TextView is an internal segment child, so the movement

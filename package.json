@@ -1,7 +1,7 @@
 {
   "name": "@mathers101/react-native-render-rich-text",
   "version": "0.1.1",
-  "description": "Render TipTap documents with the React Native rich text display path.",
+  "description": "Render Tiptap documents with the React Native rich text display path.",
   "main": "src/index.tsx",
   "react-native": "src/index.tsx",
   "source": "src/index.tsx",
@@ -35,7 +35,7 @@
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "test:parser": "g++ -std=c++17 -Wall -Wextra -I cpp/parser -I cpp/vendor -o /tmp/parser_tests cpp/parser/TipTapParser.cpp cpp/tests/parser_tests.cpp && /tmp/parser_tests",
+    "test:parser": "g++ -std=c++17 -Wall -Wextra -I cpp/parser -I cpp/vendor -o /tmp/parser_tests cpp/parser/TiptapParser.cpp cpp/tests/parser_tests.cpp && /tmp/parser_tests",
     "example": "yarn workspace render-rich-text-example start"
   },
   "peerDependencies": {
@@ -57,8 +57,8 @@
     },
     "ios": {
       "components": {
-        "EnrichedMarkdownText": {
-          "className": "EnrichedMarkdownText"
+        "EnrichedTiptapText": {
+          "className": "EnrichedTiptapText"
         }
       }
     }

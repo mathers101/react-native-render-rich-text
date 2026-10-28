@@ -5,7 +5,7 @@ import android.graphics.Color
 import android.text.TextPaint
 import android.text.style.ClickableSpan
 import android.view.View
-import com.renderrichtext.EnrichedMarkdownText
+import com.renderrichtext.EnrichedTiptapText
 import com.renderrichtext.renderer.BlockStyle
 import com.renderrichtext.renderer.SpanStyleCache
 import com.renderrichtext.utils.text.extensions.applyBlockStyleFont
@@ -30,13 +30,13 @@ class LinkSpan(
       return
     }
 
-    onLinkPress?.invoke(url) ?: (widget as? EnrichedMarkdownText)?.emitOnLinkPress(url)
+    onLinkPress?.invoke(url) ?: (widget as? EnrichedTiptapText)?.emitOnLinkPress(url)
   }
 
   fun onLongClick(widget: View): Boolean {
     longPressTriggered = true
 
-    (widget as? EnrichedMarkdownText)?.emitOnLinkLongPress(url)
+    (widget as? EnrichedTiptapText)?.emitOnLinkLongPress(url)
 
     onLinkLongPress?.invoke(url)
 

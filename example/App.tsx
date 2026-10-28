@@ -45,7 +45,7 @@ function Gallery() {
     >
       <StatusBar barStyle={dark ? 'light-content' : 'dark-content'} />
       <View style={styles.header}>
-        <Text style={[styles.kicker, dark && styles.kickerDark]}>TipTap</Text>
+        <Text style={[styles.kicker, dark && styles.kickerDark]}>Tiptap</Text>
         <View style={styles.titleRow}>
           <Text style={[styles.title, dark && styles.titleDark]}>
             Rich text

@@ -13,7 +13,7 @@
 #import "LinkRenderer.h"
 #import "ListItemRenderer.h"
 #import "ListRenderer.h"
-#import "MarkdownASTNode.h"
+#import "TiptapASTNode.h"
 #import "ParagraphRenderer.h"
 #import "RenderContext.h"
 #import "StrikethroughRenderer.h"
@@ -46,7 +46,7 @@
  * Returns a shared renderer instance for a specific node type.
  * Implements lazy initialization to avoid allocating unused renderers.
  */
-- (id<NodeRenderer>)rendererForNodeType:(MarkdownNodeType)type
+- (id<NodeRenderer>)rendererForNodeType:(TiptapNodeType)type
 {
   id<NodeRenderer> cached = _cache[@(type)];
   if (cached) {
@@ -63,59 +63,59 @@
 /**
  * Internal factory method to instantiate specialized renderers.
  */
-- (id<NodeRenderer>)createRendererForType:(MarkdownNodeType)type
+- (id<NodeRenderer>)createRendererForType:(TiptapNodeType)type
 {
   switch (type) {
-    case MarkdownNodeTypeText:
+    case TiptapNodeTypeText:
       return [TextRenderer new];
-    case MarkdownNodeTypeStrong:
+    case TiptapNodeTypeStrong:
       return [[StrongRenderer alloc] initWithRendererFactory:self config:_config];
-    case MarkdownNodeTypeEmphasis:
+    case TiptapNodeTypeEmphasis:
       return [[EmphasisRenderer alloc] initWithRendererFactory:self config:_config];
-    case MarkdownNodeTypeStrikethrough:
+    case TiptapNodeTypeStrikethrough:
       return [[StrikethroughRenderer alloc] initWithRendererFactory:self config:_config];
-    case MarkdownNodeTypeUnderline:
+    case TiptapNodeTypeUnderline:
       return [[UnderlineRenderer alloc] initWithRendererFactory:self config:_config];
-    case MarkdownNodeTypeHighlight:
+    case TiptapNodeTypeHighlight:
       return [[HighlightRenderer alloc] initWithRendererFactory:self config:_config];
-    case MarkdownNodeTypeParagraph:
+    case TiptapNodeTypeParagraph:
       return [[ParagraphRenderer alloc] initWithRendererFactory:self config:_config];
-    case MarkdownNodeTypeLink:
+    case TiptapNodeTypeLink:
       return [[LinkRenderer alloc] initWithRendererFactory:self config:_config];
-    case MarkdownNodeTypeHeading:
+    case TiptapNodeTypeHeading:
       return [[HeadingRenderer alloc] initWithRendererFactory:self config:_config];
-    case MarkdownNodeTypeCode:
+    case TiptapNodeTypeCode:
       return [[CodeRenderer alloc] initWithRendererFactory:self config:_config];
-    case MarkdownNodeTypeImage:
-    case MarkdownNodeTypeSuperscript:
-    case MarkdownNodeTypeSubscript:
-    case MarkdownNodeTypeSpoiler:
-    case MarkdownNodeTypeLatexMathInline:
-    case MarkdownNodeTypeLatexMathDisplay:
-    case MarkdownNodeTypeTable:
-    case MarkdownNodeTypeTableHead:
-    case MarkdownNodeTypeTableBody:
-    case MarkdownNodeTypeTableRow:
-    case MarkdownNodeTypeTableHeaderCell:
-    case MarkdownNodeTypeTableCell:
-    case MarkdownNodeTypeVideo:
+    case TiptapNodeTypeImage:
+    case TiptapNodeTypeSuperscript:
+    case TiptapNodeTypeSubscript:
+    case TiptapNodeTypeSpoiler:
+    case TiptapNodeTypeLatexMathInline:
+    case TiptapNodeTypeLatexMathDisplay:
+    case TiptapNodeTypeTable:
+    case TiptapNodeTypeTableHead:
+    case TiptapNodeTypeTableBody:
+    case TiptapNodeTypeTableRow:
+    case TiptapNodeTypeTableHeaderCell:
+    case TiptapNodeTypeTableCell:
+    case TiptapNodeTypeVideo:
       return nil;
-    case MarkdownNodeTypeBlockquote:
+    case TiptapNodeTypeBlockquote:
     // A list-nested admonition falls back to the inline blockquote renderer
     // (no themed header); top-level admonitions use the segment container path.
-    case MarkdownNodeTypeAdmonition:
+    case TiptapNodeTypeAdmonition:
       return [[BlockquoteRenderer alloc] initWithRendererFactory:self config:_config];
-    case MarkdownNodeTypeListItem:
+    case TiptapNodeTypeListItem:
       return [[ListItemRenderer alloc] initWithRendererFactory:self config:_config];
-    case MarkdownNodeTypeUnorderedList:
+    case TiptapNodeTypeUnorderedList:
       return [[ListRenderer alloc] initWithRendererFactory:self config:_config isOrdered:NO];
-    case MarkdownNodeTypeOrderedList:
+    case TiptapNodeTypeOrderedList:
       return [[ListRenderer alloc] initWithRendererFactory:self config:_config isOrdered:YES];
-    case MarkdownNodeTypeCodeBlock:
+    case TiptapNodeTypeCodeBlock:
       return [[CodeBlockRenderer alloc] initWithRendererFactory:self config:_config];
-    case MarkdownNodeTypeThematicBreak:
+    case TiptapNodeTypeThematicBreak:
       return [[ThematicBreakRenderer alloc] initWithRendererFactory:self config:_config];
-    case MarkdownNodeTypeBlankLine:
+    case TiptapNodeTypeBlankLine:
       return [[BlankLineRenderer alloc] initWithRendererFactory:self config:_config];
     default:
       return nil;
@@ -126,18 +126,18 @@
  * Helper method for container renderers to process their children.
  * Leverages the factory to find the appropriate renderer for each child node.
  */
-- (void)renderChildrenOfNode:(MarkdownASTNode *)node
+- (void)renderChildrenOfNode:(TiptapASTNode *)node
                         into:(NSMutableAttributedString *)output
                      context:(RenderContext *)context
 {
-  for (MarkdownASTNode *child in node.children) {
-    if (child.type == MarkdownNodeTypeLineBreak) {
+  for (TiptapASTNode *child in node.children) {
+    if (child.type == TiptapNodeTypeLineBreak) {
       NSAttributedString *lineBreak = [[NSAttributedString alloc] initWithString:@"\u2028"
                                                                       attributes:[context getTextAttributes]];
       [output appendAttributedString:lineBreak];
       continue;
     }
-    if (child.type == MarkdownNodeTypeSoftBreak) {
+    if (child.type == TiptapNodeTypeSoftBreak) {
       NSAttributedString *softBreak = [[NSAttributedString alloc] initWithString:@" "
                                                                       attributes:[context getTextAttributes]];
       [output appendAttributedString:softBreak];

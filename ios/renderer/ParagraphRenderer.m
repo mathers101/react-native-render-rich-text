@@ -1,6 +1,6 @@
 #import "ParagraphRenderer.h"
 #import "FontUtils.h"
-#import "MarkdownASTNode.h"
+#import "TiptapASTNode.h"
 #import "ParagraphStyleUtils.h"
 #import "RendererFactory.h"
 #import "StyleConfig.h"
@@ -12,7 +12,7 @@
   return [context snapshotScope];
 }
 
-- (void)renderNodeContent:(MarkdownASTNode *)node
+- (void)renderNodeContent:(TiptapASTNode *)node
                      into:(NSMutableAttributedString *)output
                   context:(RenderContext *)context
 {
@@ -40,7 +40,7 @@
        context.currentBlockType == BlockTypeBlockquote);
 
   // Detect if the paragraph is a wrapper for a standalone image to use image-specific spacing
-  BOOL isBlockImage = (node.children.count == 1 && ((MarkdownASTNode *)node.children[0]).type == MarkdownNodeTypeImage);
+  BOOL isBlockImage = (node.children.count == 1 && ((TiptapASTNode *)node.children[0]).type == TiptapNodeTypeImage);
   CGFloat marginTop = isBlockImage ? _config.imageMarginTop : _config.paragraphMarginTop;
 
   NSUInteger contentStart = start;

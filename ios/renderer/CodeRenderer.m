@@ -2,7 +2,7 @@
 #import "CodeBackground.h"
 #import "ENRMUIKit.h"
 #import "FontUtils.h"
-#import "MarkdownASTNode.h"
+#import "TiptapASTNode.h"
 #import "RenderContext.h"
 #import "RendererFactory.h"
 #import "StyleConfig.h"
@@ -10,7 +10,7 @@
 
 @implementation CodeRenderer
 
-- (void)renderNodeContent:(MarkdownASTNode *)node
+- (void)renderNodeContent:(TiptapASTNode *)node
                      into:(NSMutableAttributedString *)output
                   context:(RenderContext *)context
 {

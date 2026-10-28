@@ -9,23 +9,23 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.ViewParent
 import android.widget.TextView
-import com.renderrichtext.EnrichedMarkdownText
+import com.renderrichtext.EnrichedTiptapText
 import com.renderrichtext.spans.ImageSpan
 import com.renderrichtext.styles.StyleConfig
 import com.renderrichtext.utils.common.layout.isLayoutRTL
 import com.renderrichtext.utils.text.conversion.HTMLGenerator
-import com.renderrichtext.utils.text.conversion.MarkdownExtractor
+import com.renderrichtext.utils.text.conversion.TiptapExtractor
 
-private const val MENU_ITEM_COPY_MARKDOWN = 1000
+private const val MENU_ITEM_COPY_TIPTAP = 1000
 private const val MENU_ITEM_COPY_IMAGE_URL = 1001
 private const val MENU_ITEM_CUSTOM_BASE = 2000
 private const val MENU_ITEM_CUSTOM_GROUP = 2001
 
 data class SelectionMenuConfig(
-  val copyAsMarkdown: Boolean = true,
+  val copyAsTiptap: Boolean = true,
   val copyImageUrl: Boolean = true,
   val copyLabel: String = "",
-  val copyAsMarkdownLabel: String = "",
+  val copyAsTiptapLabel: String = "",
   val copyImageUrlLabel: String = "",
   val copyImageUrlsLabel: String = "",
   // Plural templates indexed by image count (0..100). Empty when no pluralLabels
@@ -71,7 +71,7 @@ fun createSelectionActionModeCallback(
     ): Boolean {
       if (menu == null) return false
 
-      menu.removeItem(MENU_ITEM_COPY_MARKDOWN)
+      menu.removeItem(MENU_ITEM_COPY_TIPTAP)
       menu.removeItem(MENU_ITEM_COPY_IMAGE_URL)
       menu.removeGroup(MENU_ITEM_CUSTOM_GROUP)
 
@@ -85,15 +85,15 @@ fun createSelectionActionModeCallback(
       }
 
       if (
-        selectionMenuConfig.copyAsMarkdown &&
+        selectionMenuConfig.copyAsTiptap &&
         textView.selectionStart >= 0 &&
         textView.selectionEnd > textView.selectionStart
       ) {
         menu.add(
           Menu.NONE,
-          MENU_ITEM_COPY_MARKDOWN,
+          MENU_ITEM_COPY_TIPTAP,
           Menu.NONE,
-          selectionMenuConfig.copyAsMarkdownLabel,
+          selectionMenuConfig.copyAsTiptapLabel,
         )
       }
 
@@ -133,8 +133,8 @@ fun createSelectionActionModeCallback(
           return true
         }
 
-        MENU_ITEM_COPY_MARKDOWN -> {
-          textView.copyMarkdownToClipboard()
+        MENU_ITEM_COPY_TIPTAP -> {
+          textView.copyTiptapToClipboard()
           mode?.finish()
           return true
         }
@@ -174,8 +174,8 @@ private fun TextView.copyWithHTML() {
   val plainText = selectedText.toString()
 
   val styleConfig =
-    (this as? EnrichedMarkdownText)?.markdownStyle
-      ?: findParentMarkdownStyle()
+    (this as? EnrichedTiptapText)?.tiptapStyle
+      ?: findParentTiptapStyle()
   val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
 
   if (styleConfig != null && selectedText is Spannable) {
@@ -190,16 +190,16 @@ private fun TextView.copyWithHTML() {
         displayMetrics.density,
         isRTL,
       )
-    clipboard.setPrimaryClip(ClipData.newHtmlText("EnrichedMarkdown", plainText, html))
+    clipboard.setPrimaryClip(ClipData.newHtmlText("EnrichedTiptap", plainText, html))
   } else {
     clipboard.setPrimaryClip(ClipData.newPlainText("Text", plainText))
   }
 }
 
-private fun TextView.copyMarkdownToClipboard() {
-  val markdown = MarkdownExtractor.getMarkdownForSelection(this) ?: return
+private fun TextView.copyTiptapToClipboard() {
+  val tiptap = TiptapExtractor.getTiptapForSelection(this) ?: return
   val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-  clipboard.setPrimaryClip(ClipData.newPlainText("Markdown", markdown))
+  clipboard.setPrimaryClip(ClipData.newPlainText("Tiptap", tiptap))
 }
 
 /** Returns remote image URLs (http/https only) from the current selection. */
@@ -223,10 +223,10 @@ private fun TextView.copyImageUrlsToClipboard() {
   clipboard.setPrimaryClip(ClipData.newPlainText("Image URLs", urls.joinToString("\n")))
 }
 
-private fun TextView.findParentMarkdownStyle(): StyleConfig? {
+private fun TextView.findParentTiptapStyle(): StyleConfig? {
   var current: ViewParent? = parent
   while (current != null) {
-    if (current is EnrichedMarkdownText) return current.markdownStyle
+    if (current is EnrichedTiptapText) return current.tiptapStyle
     current = current.parent
   }
   return null

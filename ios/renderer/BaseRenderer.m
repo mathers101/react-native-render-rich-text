@@ -14,7 +14,7 @@
   return self;
 }
 
-- (void)renderNode:(MarkdownASTNode *)node into:(NSMutableAttributedString *)output context:(RenderContext *)context
+- (void)renderNode:(TiptapASTNode *)node into:(NSMutableAttributedString *)output context:(RenderContext *)context
 {
   id snapshot = [self takeContextSnapshot:context];
   @try {
@@ -24,7 +24,7 @@
   }
 }
 
-- (void)renderNodeContent:(MarkdownASTNode *)node
+- (void)renderNodeContent:(TiptapASTNode *)node
                      into:(NSMutableAttributedString *)output
                   context:(RenderContext *)context
 {

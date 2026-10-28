@@ -1,13 +1,13 @@
 #pragma once
 
-#include "MarkdownASTNode.hpp"
+#include "TiptapASTNode.hpp"
 #include <memory>
 #include <string>
 
-namespace Markdown {
+namespace Tiptap {
 
-// Parses a TipTap document JSON string into the display AST.
+// Parses a Tiptap document JSON string into the display AST.
 // Unknown nodes and marks are skipped. Invalid JSON yields an empty document.
-std::shared_ptr<MarkdownASTNode> parseTipTapDocument(const std::string &json);
+std::shared_ptr<TiptapASTNode> parseTiptapDocument(const std::string &json);
 
-} // namespace Markdown
+} // namespace Tiptap
