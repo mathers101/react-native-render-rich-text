@@ -10,6 +10,7 @@ import com.renderrichtext.spans.BlockquoteSpan
 import com.renderrichtext.spans.CodeBlockSpan
 import com.renderrichtext.spans.CodeSpan
 import com.renderrichtext.spans.EmphasisSpan
+import com.renderrichtext.spans.FactoidPaddingSpan
 import com.renderrichtext.spans.HeadingSpan
 import com.renderrichtext.spans.HighlightSpan
 import com.renderrichtext.spans.ImageSpan
@@ -668,6 +669,11 @@ object HTMLGenerator {
       val char = text[i]
 
       when {
+        char == FactoidPaddingSpan.MARK &&
+          text.getSpans(i, i + 1, FactoidPaddingSpan::class.java).isNotEmpty() -> {
+          i++
+        }
+
         char == '\n' && i == end - 1 -> {
           i++
         }

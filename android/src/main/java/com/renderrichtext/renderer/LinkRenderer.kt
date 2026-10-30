@@ -4,9 +4,11 @@ import android.text.SpannableStringBuilder
 import android.text.TextPaint
 import android.text.style.ReplacementSpan
 import com.renderrichtext.parser.TiptapASTNode
+import com.renderrichtext.spans.FactoidPaddingSpan
 import com.renderrichtext.spans.LinkPillSpan
 import com.renderrichtext.spans.LinkSpan
 import com.renderrichtext.spans.SpoilerSpan
+import com.renderrichtext.spans.stripFactoidPadding
 import com.renderrichtext.utils.text.extensions.applyBlockStyleFont
 import com.renderrichtext.utils.text.span.SPAN_FLAGS_EXCLUSIVE_EXCLUSIVE
 
@@ -37,7 +39,7 @@ class LinkRenderer(
             variant,
             font.typeface,
             blockStyle.fontSize,
-            builder.subSequence(start, end).toString(),
+            builder.subSequence(start, end).stripFactoidPadding(),
             factory.context,
             config.style.linkPillContent[url],
             config.style.imageRequestHeaders,
@@ -70,14 +72,14 @@ class LinkRenderer(
    * A pill replaces one unbroken run. Links that already hold a replacement (image,
    * math) or span a line break stay ordinary links: a replacement straddling two
    * paragraphs would be drawn once per paragraph. So do links holding a spoiler,
-   * whose hidden text the label would show.
+   * whose hidden text the label would show. Factoid padding only reserves a gap.
    */
   private fun canPresentAsPill(
     builder: SpannableStringBuilder,
     start: Int,
     end: Int,
   ): Boolean {
-    if (builder.getSpans(start, end, ReplacementSpan::class.java).isNotEmpty()) return false
+    if (builder.getSpans(start, end, ReplacementSpan::class.java).any { it !is FactoidPaddingSpan }) return false
     if (builder.getSpans(start, end, SpoilerSpan::class.java).isNotEmpty()) return false
     for (index in start until end) {
       val char = builder[index]

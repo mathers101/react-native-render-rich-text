@@ -11,6 +11,7 @@ import android.view.ViewParent
 import android.widget.TextView
 import com.renderrichtext.EnrichedTiptapText
 import com.renderrichtext.spans.ImageSpan
+import com.renderrichtext.spans.stripFactoidPadding
 import com.renderrichtext.styles.StyleConfig
 import com.renderrichtext.utils.common.layout.isLayoutRTL
 import com.renderrichtext.utils.text.conversion.HTMLGenerator
@@ -151,7 +152,8 @@ fun createSelectionActionModeCallback(
       if (customIndex in customItems.indices) {
         val start = textView.selectionStart
         val end = textView.selectionEnd
-        val selectedText = if (start >= 0 && end > start) textView.text.substring(start, end) else ""
+        val selectedText =
+          if (start >= 0 && end > start) textView.text.subSequence(start, end).stripFactoidPadding() else ""
         onCustomItemPress(customItems[customIndex], selectedText, start, end)
         mode?.finish()
         return true
@@ -171,7 +173,7 @@ private fun TextView.copyWithHTML() {
 
   val spannable = text as? Spannable ?: return
   val selectedText = spannable.subSequence(start, end)
-  val plainText = selectedText.toString()
+  val plainText = selectedText.stripFactoidPadding()
 
   val styleConfig =
     (this as? EnrichedTiptapText)?.tiptapStyle

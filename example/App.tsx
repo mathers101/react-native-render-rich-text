@@ -70,7 +70,7 @@ function Gallery() {
           </Pressable>
         </View>
         <Text style={[styles.subtitle, dark && styles.subtitleDark]}>
-          Four documents the display path knows how to draw.
+          Five documents the display path knows how to draw.
         </Text>
       </View>
       <View style={styles.tabs}>

@@ -10,6 +10,7 @@ import com.renderrichtext.spans.BlockquoteSpan
 import com.renderrichtext.spans.CodeBlockSpan
 import com.renderrichtext.spans.CodeSpan
 import com.renderrichtext.spans.EmphasisSpan
+import com.renderrichtext.spans.FactoidPaddingSpan
 import com.renderrichtext.spans.HeadingSpan
 import com.renderrichtext.spans.HighlightSpan
 import com.renderrichtext.spans.ImageSpan
@@ -95,6 +96,14 @@ object TiptapExtractor {
     val thematicBreakSpans = spannable.getSpans(segmentStart, segmentEnd, ThematicBreakSpan::class.java)
     if (thematicBreakSpans.isNotEmpty()) {
       appendThematicBreak(result, state)
+      return true
+    }
+
+    if (
+      segmentText.length == 1 &&
+      segmentText[0] == FactoidPaddingSpan.MARK &&
+      spannable.getSpans(segmentStart, segmentEnd, FactoidPaddingSpan::class.java).isNotEmpty()
+    ) {
       return true
     }
 
