@@ -66,19 +66,26 @@ class FactoidBackgroundSpan(
       rangeEnd: Int,
     ) {
       if (max(rangeStart, start) >= min(rangeEnd, end)) return
-      val isFirst = rangeStart >= start
-      val isLast = rangeEnd <= end
+      // A padding mark that the line breaker left behind has no glyphs. Drawing it paints a
+      // chip on the previous line after the word has wrapped.
+      val inkStart = firstInk(text, rangeStart, rangeEnd)
+      val inkEnd = lastInk(text, rangeStart, rangeEnd)
+      if (max(inkStart, start) >= min(inkEnd, end)) return
+      val isFirst = inkStart in start until end
+      val isLast = inkEnd > start && inkEnd <= end
 
       val finalBottom = adjustBottomForMargin(text, end, bottom)
       val leadingMargin = InlineBackgroundGeometry.leadingMarginAt(text, start)
+      val origin = if (rangeStart >= start) rangeStart else inkStart.coerceAtLeast(start)
       val startX =
         if (isFirst) {
-          InlineBackgroundGeometry.horizontalOffset(text, start, end, rangeStart, p, leadingMargin) + left
+          InlineBackgroundGeometry.horizontalOffset(text, start, end, origin, p, leadingMargin) + left
         } else {
           left.toFloat() + leadingMargin
         }
       // A line break used to run the background out to the line's right edge. Stop at the last glyph.
-      val glyphEnd = if (isLast) rangeEnd else lastGlyphOffset(text, start, end)
+      // When the edge mark is still on this line, measure through it so the gap stays inside the chip.
+      val glyphEnd = if (isLast && rangeEnd <= end) rangeEnd else lastGlyphOffset(text, start, end)
       val endX = InlineBackgroundGeometry.horizontalOffset(text, start, end, glyphEnd, p, leadingMargin) + left
 
       rect.set(min(startX, endX), top.toFloat(), max(startX, endX), finalBottom.toFloat())
@@ -201,6 +208,30 @@ class FactoidBackgroundSpan(
       (Color.green(color) * PRESSED_DARKEN).toInt(),
       (Color.blue(color) * PRESSED_DARKEN).toInt(),
     )
+
+  /** First factoid character in [from, to) that is not a padding mark or whitespace. */
+  private fun firstInk(
+    text: CharSequence,
+    from: Int,
+    to: Int,
+  ): Int {
+    var index = from
+    while (index < to && isPaddingOrSpace(text[index])) index++
+    return index
+  }
+
+  /** Exclusive end of the last factoid character in [from, to) that is not a padding mark or whitespace. */
+  private fun lastInk(
+    text: CharSequence,
+    from: Int,
+    to: Int,
+  ): Int {
+    var index = to
+    while (index > from && isPaddingOrSpace(text[index - 1])) index--
+    return index
+  }
+
+  private fun isPaddingOrSpace(c: Char): Boolean = c == FactoidPaddingSpan.MARK || c.isWhitespace()
 
   /** End of the visible glyphs on this line, before the break and any trailing space. */
   private fun lastGlyphOffset(

@@ -6,7 +6,8 @@ import com.renderrichtext.parser.TiptapASTNode
 import com.renderrichtext.spans.FactoidBackgroundSpan
 import com.renderrichtext.spans.FactoidPaddingSpan
 import com.renderrichtext.spans.FactoidSpan
-import com.renderrichtext.spans.LinkPillSpan
+import com.renderrichtext.spans.leadingFactoidEdge
+import com.renderrichtext.spans.trailingFactoidEdge
 import com.renderrichtext.utils.text.span.SPAN_FLAGS_EXCLUSIVE_EXCLUSIVE
 
 class FactoidRenderer(
@@ -36,45 +37,53 @@ class FactoidRenderer(
       val contentEnd = builder.length
       if (contentEnd == contentStart) return
 
-      // A pill already has its own padding and is punched out of this background.
-      // A gap on that edge would draw as a sliver beside the pill.
-      val padLeading = !coveredByPill(builder, contentStart, contentStart + 1)
-      val padTrailing = !coveredByPill(builder, contentEnd - 1, contentEnd)
-      if (padLeading) {
-        builder.insert(contentStart, FactoidPaddingSpan.MARK.toString())
-        factory.shiftDeferredSpans(contentStart, 1)
-      }
-      if (padTrailing) builder.append(FactoidPaddingSpan.MARK)
-      val start = contentStart
-      val end = builder.length
-      if (padLeading) {
-        builder.setSpan(FactoidPaddingSpan(), start, start + 1, SPAN_FLAGS_EXCLUSIVE_EXCLUSIVE)
-      }
-      if (padTrailing) {
-        builder.setSpan(FactoidPaddingSpan(), end - 1, end, SPAN_FLAGS_EXCLUSIVE_EXCLUSIVE)
+      // The gap is extra advance on the edge word, not its own character. A character
+      // is a separate metric run, and the line breaker will leave those 8px on the
+      // previous line when the word wraps. A pill already has its own padding; the edge
+      // helpers refuse a run that is already a replacement.
+      val lead = leadingFactoidEdge(builder, contentStart, contentEnd)
+      val trail = trailingFactoidEdge(builder, contentStart, contentEnd)
+      if (lead != null && trail != null && lead.runEnd >= trail.runStart) {
+        builder.setSpan(
+          FactoidPaddingSpan(padStart = true, padEnd = true),
+          lead.runStart,
+          trail.runEnd,
+          SPAN_FLAGS_EXCLUSIVE_EXCLUSIVE,
+        )
+      } else {
+        if (lead != null) {
+          builder.setSpan(
+            FactoidPaddingSpan(padStart = true, padEnd = false),
+            lead.runStart,
+            lead.runEnd,
+            SPAN_FLAGS_EXCLUSIVE_EXCLUSIVE,
+          )
+        }
+        if (trail != null) {
+          builder.setSpan(
+            FactoidPaddingSpan(padStart = false, padEnd = true),
+            trail.runStart,
+            trail.runEnd,
+            SPAN_FLAGS_EXCLUSIVE_EXCLUSIVE,
+          )
+        }
       }
       builder.setSpan(
         FactoidSpan(factory.styleCache, factoidId, onFactoidPress, textColor),
-        start,
-        end,
+        contentStart,
+        contentEnd,
         SPAN_FLAGS_EXCLUSIVE_EXCLUSIVE,
       )
       builder.setSpan(
         FactoidBackgroundSpan(config.style, backgroundColor, borderColor),
-        start,
-        end,
+        contentStart,
+        contentEnd,
         SPAN_FLAGS_EXCLUSIVE_EXCLUSIVE,
       )
     } finally {
       factory.blockStyleContext.popInlineColor()
     }
   }
-
-  private fun coveredByPill(
-    builder: SpannableStringBuilder,
-    start: Int,
-    end: Int,
-  ): Boolean = builder.getSpans(start, end, LinkPillSpan::class.java).isNotEmpty()
 }
 
 private fun String?.toColorOrNull(): Int? {

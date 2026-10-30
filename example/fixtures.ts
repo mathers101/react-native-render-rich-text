@@ -22,15 +22,19 @@ export const FIXTURES: {
           type: 'paragraph',
           content: [
             { type: 'text', text: 'The trail was ' },
-            { type: 'text', text: 'quiet', marks: [{ type: 'italic' }] },
-            { type: 'text', text: ' until time for ' },
+            { type: 'text', text: 'quiet ', marks: [{ type: 'italic' }] },
+            { type: 'text', text: 'until, out of nowhere, a ' },
             {
               type: 'factoid',
               attrs: {
                 id: 'saddle-wind',
               },
               content: [
-                { type: 'text', text: 'a gust ', marks: [] },
+                {
+                  type: 'text',
+                  text: 'sweltering gust ',
+                  marks: [],
+                },
                 {
                   type: 'text',
                   text: 'of',
