@@ -83,7 +83,7 @@ The example app is a Yarn workspace of this package. Metro serves it on port 418
 yarn example
 ```
 
-One screen shows five fixtures: mixed document, lists, code, links, and a long document that mixes every node. The header button labeled **Dark** swaps the document to `darkModeTextStyle` and darkens the screen around it. It reads **Light** after the switch. Open a link or a factoid and the footer shows what was pressed.
+One screen shows five fixtures: mixed document, lists, code, links, and a long tab of two documents that mix every node. The header button labeled **Dark** swaps the document to `darkModeTextStyle` and darkens the screen around it. It reads **Light** after the switch. Open a link or a factoid and the footer shows what was pressed.
 
 iOS: from `example/ios`, run `bundle install` and `bundle exec pod install`, then `yarn example ios` (or `yarn workspace render-rich-text-example ios`). The pod is `ReactNativeRenderRichText`.
 

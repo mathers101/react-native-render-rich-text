@@ -28,8 +28,21 @@ test('ships one document for each supported screen', () => {
     'long',
   ]);
   for (const fixture of FIXTURES) {
-    expect(fixture.document.type).toBe('doc');
-    expect(fixture.document.content?.length).toBeGreaterThan(0);
+    expect(fixture.documents.length).toBeGreaterThan(0);
+    for (const document of fixture.documents) {
+      expect(document.type).toBe('doc');
+      expect(document.content?.length).toBeGreaterThan(0);
+    }
+  }
+});
+
+test('the long tab is two documents and each contains a factoid', () => {
+  const fixture = FIXTURES.find(item => item.id === 'long');
+  expect(fixture?.documents).toHaveLength(2);
+  for (const document of fixture!.documents) {
+    const types = new Set<string>();
+    walk(document, types, new Set(), new Set());
+    expect(types.has('factoid')).toBe(true);
   }
 });
 
@@ -39,7 +52,9 @@ test('the long document mixes every node the display path draws', () => {
   const types = new Set<string>();
   const marks = new Set<string>();
   const levels = new Set<number>();
-  walk(fixture!.document, types, marks, levels);
+  for (const document of fixture!.documents) {
+    walk(document, types, marks, levels);
+  }
 
   for (const type of [
     'heading',
@@ -71,5 +86,10 @@ test('the long document mixes every node the display path draws', () => {
     expect(marks.has(mark)).toBe(true);
   }
   expect([...levels].sort()).toEqual([1, 2, 3, 4, 5, 6]);
-  expect(fixture!.document.content!.length).toBeGreaterThan(15);
+  expect(
+    fixture!.documents.reduce(
+      (count, document) => count + (document.content?.length ?? 0),
+      0,
+    ),
+  ).toBeGreaterThan(15);
 });

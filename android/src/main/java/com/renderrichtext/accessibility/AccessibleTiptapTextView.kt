@@ -19,6 +19,17 @@ abstract class AccessibleTiptapTextView
   ) : AppCompatTextView(context, attrs, defStyleAttr) {
     val accessibilityHelper = TiptapAccessibilityHelper(this)
 
+    /**
+     * True only while [requestFocus] is on the stack. A tap focuses this view, and the
+     * surrounding scroll view then brings the focused child on screen by its drawing
+     * rect. This view is as tall as its text, so that scroll aligns the text with the
+     * top of the viewport and the tapped line jumps upward. For that one call, the
+     * drawing rect is the part already on screen, and the scroll delta is zero.
+     * Dragging a selection still scrolls: that path asks for the caret's rectangle,
+     * not this drawing rect.
+     */
+    private var reportingVisibleFocusRect = false
+
     override fun setText(
       text: CharSequence?,
       type: BufferType?,
@@ -56,6 +67,29 @@ abstract class AccessibleTiptapTextView
       accessibilityHelper.dispatchHoverEvent(event) || super.dispatchHoverEvent(event)
 
     override fun dispatchKeyEvent(event: KeyEvent): Boolean = accessibilityHelper.dispatchKeyEvent(event) || super.dispatchKeyEvent(event)
+
+    override fun requestFocus(
+      direction: Int,
+      previouslyFocusedRect: Rect?,
+    ): Boolean {
+      reportingVisibleFocusRect = true
+      return try {
+        super.requestFocus(direction, previouslyFocusedRect)
+      } finally {
+        reportingVisibleFocusRect = false
+      }
+    }
+
+    override fun getDrawingRect(outRect: Rect) {
+      super.getDrawingRect(outRect)
+      if (!reportingVisibleFocusRect) return
+      val visibleOnScreen = Rect()
+      if (!getGlobalVisibleRect(visibleOnScreen)) return
+      val screenOrigin = IntArray(2)
+      getLocationOnScreen(screenOrigin)
+      visibleOnScreen.offset(-screenOrigin[0] + scrollX, -screenOrigin[1] + scrollY)
+      if (!outRect.intersect(visibleOnScreen)) super.getDrawingRect(outRect)
+    }
 
     override fun onFocusChanged(
       gainFocus: Boolean,

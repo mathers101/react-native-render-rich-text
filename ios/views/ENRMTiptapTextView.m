@@ -28,6 +28,42 @@
   return self;
 }
 
+/// A tap places the caret, and UITextView then scrolls that caret into view. This view is
+/// already sized to its text and sits in the screen's scroll view, so that scroll shifts
+/// the page and the tapped line jumps toward the top. Scrolling stays off, and these
+/// requests are dropped. Copy and selection are unchanged.
+- (void)setContentOffset:(CGPoint)contentOffset
+{
+  if (!self.scrollEnabled && !CGPointEqualToPoint(contentOffset, CGPointZero)) {
+    if (!CGPointEqualToPoint(self.contentOffset, CGPointZero)) {
+      [super setContentOffset:CGPointZero];
+    }
+    return;
+  }
+  [super setContentOffset:contentOffset];
+}
+
+- (void)setContentOffset:(CGPoint)contentOffset animated:(BOOL)animated
+{
+  if (!self.scrollEnabled) {
+    [self setContentOffset:CGPointZero];
+    return;
+  }
+  [super setContentOffset:contentOffset animated:animated];
+}
+
+- (void)scrollRangeToVisible:(NSRange)range
+{
+  if (self.scrollEnabled)
+    [super scrollRangeToVisible:range];
+}
+
+- (void)scrollRectToVisible:(CGRect)rect animated:(BOOL)animated
+{
+  if (self.scrollEnabled)
+    [super scrollRectToVisible:rect animated:animated];
+}
+
 /// New text moves or replaces the pill under its lifted image.
 - (void)setAttributedText:(NSAttributedString *)attributedText
 {

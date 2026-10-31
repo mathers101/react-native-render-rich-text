@@ -5,12 +5,13 @@ export type FixtureId = 'mixed' | 'lists' | 'code' | 'links' | 'long';
 export const FIXTURES: {
   id: FixtureId;
   label: string;
-  document: TiptapNode;
+  documents: TiptapNode[];
 }[] = [
   {
     id: 'mixed',
     label: 'Mixed',
-    document: {
+    documents: [
+      {
       type: 'doc',
       content: [
         {
@@ -93,11 +94,13 @@ export const FIXTURES: {
         },
       ],
     },
+      ],
   },
   {
     id: 'lists',
     label: 'Lists',
-    document: {
+    documents: [
+      {
       type: 'doc',
       content: [
         {
@@ -166,11 +169,13 @@ export const FIXTURES: {
         },
       ],
     },
+    ],
   },
   {
     id: 'code',
     label: 'Code',
-    document: {
+    documents: [
+      {
       type: 'doc',
       content: [
         {
@@ -207,11 +212,13 @@ export const FIXTURES: {
         },
       ],
     },
+      ],
   },
   {
     id: 'links',
     label: 'Links',
-    document: {
+    documents: [
+      {
       type: 'doc',
       content: [
         {
@@ -250,11 +257,13 @@ export const FIXTURES: {
         },
       ],
     },
+      ],
   },
   {
     id: 'long',
     label: 'Long',
-    document: {
+    documents: [
+      {
       type: 'doc',
       content: [
         {
@@ -536,6 +545,11 @@ export const FIXTURES: {
           ],
         },
         { type: 'horizontalRule' },
+      ],
+    },
+    {
+      type: 'doc',
+      content: [
         {
           type: 'heading',
           attrs: { level: 3 },
@@ -1059,5 +1073,6 @@ export const FIXTURES: {
         },
       ],
     },
+    ],
   },
 ];

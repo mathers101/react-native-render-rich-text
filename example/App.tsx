@@ -108,12 +108,20 @@ function Gallery() {
         style={styles.scrollView}
       >
         <View style={[styles.sheet, dark && styles.sheetDark]}>
-          <RichText
-            document={fixture.document}
-            onLinkPress={setLastLink}
-            onFactoidPress={setLastFactoid}
-            textStyle={dark ? darkModeTextStyle : lightTextStyle}
-          />
+          {fixture.documents.map((document, index) => (
+            <RichText
+              key={`${fixture.id}-${index}`}
+              document={document}
+              onLinkPress={setLastLink}
+              onFactoidPress={setLastFactoid}
+              textStyle={dark ? darkModeTextStyle : lightTextStyle}
+              style={
+                index > 0
+                  ? [styles.chunk, dark && styles.chunkDark]
+                  : undefined
+              }
+            />
+          ))}
         </View>
       </ScrollView>
       <View style={[styles.footer, dark && styles.footerDark]}>
@@ -281,6 +289,15 @@ const styles = StyleSheet.create({
   sheetDark: {
     backgroundColor: '#0D1117',
     borderColor: '#30363D',
+  },
+  chunk: {
+    marginTop: 20,
+    paddingTop: 20,
+    borderTopWidth: 1,
+    borderTopColor: '#e7e5e4',
+  },
+  chunkDark: {
+    borderTopColor: '#30363D',
   },
   footer: {
     borderTopWidth: 1,
