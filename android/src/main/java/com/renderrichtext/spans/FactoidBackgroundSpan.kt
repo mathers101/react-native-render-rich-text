@@ -89,6 +89,11 @@ class FactoidBackgroundSpan(
       val endX = InlineBackgroundGeometry.horizontalOffset(text, start, end, glyphEnd, p, leadingMargin) + left
 
       rect.set(min(startX, endX), top.toFloat(), max(startX, endX), finalBottom.toFloat())
+      // The stroke is centered on the path. Flush with the line edge, its outer half is clipped.
+      if (isFirst) {
+        val contentLeft = left + leadingMargin.toFloat()
+        if (rect.left <= contentLeft) rect.left = contentLeft + BORDER_WIDTH  / 2f
+      }
 
       val factoidStyle = styleConfig.factoidStyle
       var fill = backgroundColorOverride ?: factoidStyle.backgroundColor
