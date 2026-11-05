@@ -6,7 +6,6 @@ import android.graphics.Paint
 import android.graphics.RectF
 import android.graphics.Typeface
 import android.os.Build
-import android.text.Spanned
 import android.text.style.ReplacementSpan
 import kotlin.math.ceil
 
@@ -25,6 +24,9 @@ class MentionChipSpan(
   private val paddingX: Float,
   private val paddingY: Float,
 ) : ReplacementSpan() {
+  /** True while a finger is down. The movement method sets this and re-sets the span so the new fill is recorded. */
+  var pressed: Boolean = false
+
   private val fillPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.FILL }
   private val rect = RectF()
   private var cachedSource: Typeface? = null
@@ -74,7 +76,7 @@ class MentionChipSpan(
       )
       val radius = 10f
       var fill = backgroundColor
-      if (isPressed(text)) fill = darken(fill)
+      if (pressed) fill = darken(fill)
       if (Color.alpha(fill) > 0) {
         fillPaint.color = fill
         canvas.drawRoundRect(rect, radius, radius, fillPaint)
@@ -85,14 +87,6 @@ class MentionChipSpan(
       canvas.drawText(text, start, end, x + paddingX, y.toFloat(), paint)
       paint.color = previousColor
     }
-  }
-
-  private fun isPressed(text: CharSequence): Boolean {
-    val spanned = text as? Spanned ?: return false
-    val start = spanned.getSpanStart(this)
-    val end = spanned.getSpanEnd(this)
-    if (start < 0 || end <= start) return false
-    return spanned.getSpans(start, end, MentionSpan::class.java).any { it.pressed }
   }
 
   private fun darken(color: Int): Int =

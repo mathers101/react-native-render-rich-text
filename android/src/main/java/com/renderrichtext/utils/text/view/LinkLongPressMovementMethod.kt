@@ -13,6 +13,7 @@ import com.renderrichtext.spans.CodeBlockSpan
 import com.renderrichtext.spans.FactoidSpan
 import com.renderrichtext.spans.ImageSpan
 import com.renderrichtext.spans.LinkSpan
+import com.renderrichtext.spans.MentionChipSpan
 import com.renderrichtext.spans.MentionSpan
 import com.renderrichtext.spans.SpoilerSpan
 import com.renderrichtext.spoiler.SpoilerCapable
@@ -212,7 +213,26 @@ class LinkLongPressMovementMethod : ArrowKeyMovementMethod() {
   ) {
     if (span == null || span.pressed == pressed) return
     span.pressed = pressed
-    widget.invalidate()
+    val text = widget.text as? Spannable
+    val start = text?.getSpanStart(span) ?: -1
+    val end = if (text != null && start >= 0) text.getSpanEnd(span) else -1
+    val chip =
+      if (text != null && end > start) {
+        text.getSpans(start, end, MentionChipSpan::class.java).firstOrNull { candidate ->
+          text.getSpanStart(candidate) == start && text.getSpanEnd(candidate) == end
+        }
+      } else {
+        null
+      }
+    // A factoid fill is a line background, so invalidate() draws it again. The mention
+    // is a replacement run, and a selectable TextView keeps that run in a display list
+    // that invalidate() does not rebuild. Re-setting the chip records the darker fill.
+    if (text != null && chip != null) {
+      chip.pressed = pressed
+      text.setSpan(chip, start, end, text.getSpanFlags(chip))
+    } else {
+      widget.invalidate()
+    }
   }
 
   private fun scheduleLongPress(

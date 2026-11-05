@@ -17,7 +17,7 @@ class MentionSpan(
   private val onMentionPress: ((String, String) -> Unit)?,
   private val onMentionLongPress: ((String, String) -> Unit)?,
 ) : ClickableSpan() {
-  /** True while a finger is down on this mention. The chip reads it while drawing. */
+  /** True while a finger is down on this mention. The chip's own flag is what it draws. */
   var pressed: Boolean = false
 
   @Volatile
