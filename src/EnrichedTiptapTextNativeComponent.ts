@@ -143,6 +143,11 @@ interface CodeStyleInternal {
   borderColor: ColorValue;
 }
 
+interface MentionStyleInternal {
+  color: ColorValue;
+  backgroundColor: ColorValue;
+}
+
 interface FactoidStyleInternal {
   color: ColorValue;
   backgroundColor: ColorValue;
@@ -266,6 +271,7 @@ export interface TiptapStyleInternal {
   strikethrough: StrikethroughStyleInternal;
   underline: UnderlineStyleInternal;
   code: CodeStyleInternal;
+  mention: MentionStyleInternal;
   factoid: FactoidStyleInternal;
   image: ImageStyleInternal;
   video: VideoStyleInternal;
@@ -287,6 +293,11 @@ export interface LinkPressEvent {
 
 export interface FactoidPressEvent {
   factoidId: string;
+}
+
+export interface MentionPressEvent {
+  mentionId: string;
+  label: string;
 }
 
 export interface LinkLongPressEvent {
@@ -494,6 +505,18 @@ export interface NativeProps extends ViewProps {
    * `onLinkPress` instead, so a single tap never fires both.
    */
   onFactoidPress?: CodegenTypes.BubblingEventHandler<FactoidPressEvent>;
+  /**
+   * Callback fired when a mention is pressed.
+   * Receives the mention node's `id` and `label`.
+   */
+  onMentionPress?: CodegenTypes.BubblingEventHandler<MentionPressEvent>;
+  /**
+   * Callback fired when a mention is long pressed.
+   * Receives the mention node's `id` and `label`.
+   * - iOS: A long press on a mention. Text selection still starts everywhere else.
+   * - Android: Handles the long-press gesture on the mention chip.
+   */
+  onMentionLongPress?: CodegenTypes.BubblingEventHandler<MentionPressEvent>;
   /**
    * Callback fired when a link is long pressed.
    * Receives the URL that was long pressed.

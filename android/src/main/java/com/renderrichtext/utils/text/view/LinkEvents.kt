@@ -10,6 +10,28 @@ import com.renderrichtext.events.FactoidPressEvent
 import com.renderrichtext.events.ImagePressEvent
 import com.renderrichtext.events.LinkLongPressEvent
 import com.renderrichtext.events.LinkPressEvent
+import com.renderrichtext.events.MentionLongPressEvent
+import com.renderrichtext.events.MentionPressEvent
+
+fun View.emitMentionPressEvent(
+  mentionId: String,
+  label: String,
+) {
+  val reactContext = context as? ReactContext ?: return
+  val surfaceId = UIManagerHelper.getSurfaceId(reactContext)
+  val dispatcher = UIManagerHelper.getEventDispatcherForReactTag(reactContext, id)
+  dispatcher?.dispatchEvent(MentionPressEvent(surfaceId, id, mentionId, label))
+}
+
+fun View.emitMentionLongPressEvent(
+  mentionId: String,
+  label: String,
+) {
+  val reactContext = context as? ReactContext ?: return
+  val surfaceId = UIManagerHelper.getSurfaceId(reactContext)
+  val dispatcher = UIManagerHelper.getEventDispatcherForReactTag(reactContext, id)
+  dispatcher?.dispatchEvent(MentionLongPressEvent(surfaceId, id, mentionId, label))
+}
 
 fun View.emitFactoidPressEvent(factoidId: String) {
   val reactContext = context as? ReactContext ?: return

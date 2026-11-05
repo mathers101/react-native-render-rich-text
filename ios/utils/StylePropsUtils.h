@@ -776,6 +776,28 @@ BOOL applyTiptapStyleToConfig(StyleConfig *config, const TiptapStyle &newStyle, 
     changed = YES;
   }
 
+  // ── Mention ────────────────────────────────────────────────────────────────
+
+  if (newStyle.mention.color != oldStyle.mention.color) {
+    if (newStyle.mention.color) {
+      RCTUIColor *mentionColor = RCTUIColorFromSharedColor(newStyle.mention.color);
+      [config setMentionColor:mentionColor];
+    } else {
+      [config setMentionColor:nullptr];
+    }
+    changed = YES;
+  }
+
+  if (newStyle.mention.backgroundColor != oldStyle.mention.backgroundColor) {
+    if (newStyle.mention.backgroundColor) {
+      RCTUIColor *mentionBackgroundColor = RCTUIColorFromSharedColor(newStyle.mention.backgroundColor);
+      [config setMentionBackgroundColor:mentionBackgroundColor];
+    } else {
+      [config setMentionBackgroundColor:nullptr];
+    }
+    changed = YES;
+  }
+
   // ── Image ──────────────────────────────────────────────────────────────────
 
   if (newStyle.image.height != oldStyle.image.height) {

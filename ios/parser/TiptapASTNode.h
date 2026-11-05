@@ -35,7 +35,8 @@ typedef NS_ENUM(NSInteger, TiptapNodeType) {
   TiptapNodeTypeBlankLine,
   TiptapNodeTypeAdmonition,
   TiptapNodeTypeVideo,
-  TiptapNodeTypeFactoid
+  TiptapNodeTypeFactoid,
+  TiptapNodeTypeMention
 };
 
 @interface TiptapASTNode : NSObject

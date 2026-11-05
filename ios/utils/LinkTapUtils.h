@@ -30,6 +30,13 @@ NSDictionary<NSString *, NSString *> *_Nullable imageAtTapLocation(ENRMPlatformT
 /// when the tap did not land on a factoid.
 NSString *_Nullable factoidIdAtTapLocation(ENRMPlatformTextView *textView, ENRMTapRecognizer *recognizer);
 
+/// Returns @{@"id": ..., @"label": ...} for the mention under the tap, or nil.
+NSDictionary<NSString *, NSString *> *_Nullable mentionAtTapLocation(ENRMPlatformTextView *textView,
+                                                                     ENRMTapRecognizer *recognizer);
+
+/// Returns @{@"id": ..., @"label": ...} for the mention under a point in text-view coordinates, or nil.
+NSDictionary<NSString *, NSString *> *_Nullable mentionAtPoint(ENRMPlatformTextView *textView, CGPoint point);
+
 /// Returns the tapped code block as @{@"code": ..., @"language": ...}, or nil if
 /// the tap did not land on a commonmark code block.
 NSDictionary<NSString *, NSString *> *_Nullable codeBlockAtTapLocation(ENRMPlatformTextView *textView,

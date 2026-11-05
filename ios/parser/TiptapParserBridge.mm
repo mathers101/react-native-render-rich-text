@@ -119,6 +119,9 @@ static TiptapASTNode *convertCppASTToObjC(std::shared_ptr<Tiptap::TiptapASTNode>
     case Tiptap::NodeType::Factoid:
       objcType = TiptapNodeTypeFactoid;
       break;
+    case Tiptap::NodeType::Mention:
+      objcType = TiptapNodeTypeMention;
+      break;
   }
 
   TiptapASTNode *objcNode = [[TiptapASTNode alloc] initWithType:objcType];

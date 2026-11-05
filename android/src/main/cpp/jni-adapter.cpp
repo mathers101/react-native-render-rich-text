@@ -83,6 +83,8 @@ static jint nodeTypeToJavaOrdinal(NodeType type) {
       return 33;
     case NodeType::Factoid:
       return 34;
+    case NodeType::Mention:
+      return 35;
     default:
       return 0;
   }

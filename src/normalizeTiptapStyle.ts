@@ -196,6 +196,10 @@ const DEFAULT_NORMALIZED_STYLE = Object.freeze({
     backgroundColor: normalizeColor('#FDF2F4')!,
     borderColor: normalizeColor('#F8D7DA')!,
   },
+  mention: {
+    color: normalizeColor('#1D4ED8')!,
+    backgroundColor: normalizeColor('#DBEAFE')!,
+  },
   factoid: {
     color: normalizeColor('#205710')!,
     backgroundColor: normalizeColor('#9bfc6e')!,

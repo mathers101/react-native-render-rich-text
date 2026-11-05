@@ -63,6 +63,12 @@ object TiptapASTSerializer {
         buffer.append("\n")
       }
 
+      NodeType.Mention -> {
+        val name = node.getAttribute("label").orEmpty().ifBlank { node.getAttribute("id").orEmpty() }
+        buffer.append('@')
+        buffer.append(name)
+      }
+
       NodeType.BlankLine -> {
         val count = node.getAttribute("count")?.toIntOrNull() ?: 0
         repeat(count) { buffer.append("\n") }
@@ -324,6 +330,12 @@ object TiptapASTSerializer {
         buffer.append("](")
         buffer.append(url)
         buffer.append(")")
+      }
+
+      NodeType.Mention -> {
+        val name = node.getAttribute("label").orEmpty().ifBlank { node.getAttribute("id").orEmpty() }
+        buffer.append('@')
+        buffer.append(name)
       }
 
       NodeType.Video -> {

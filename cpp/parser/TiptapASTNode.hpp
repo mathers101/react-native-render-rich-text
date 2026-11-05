@@ -42,7 +42,8 @@ enum class NodeType {
   BlankLine,
   Admonition,
   Video,
-  Factoid
+  Factoid,
+  Mention
 };
 
 struct TiptapASTNode {

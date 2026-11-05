@@ -241,6 +241,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setFactoidBackgroundColor:(RCTUIColor *)newValue;
 - (RCTUIColor *)factoidBorderColor;
 - (void)setFactoidBorderColor:(RCTUIColor *)newValue;
+// Mention properties
+- (RCTUIColor *)mentionColor;
+- (void)setMentionColor:(RCTUIColor *)newValue;
+- (RCTUIColor *)mentionBackgroundColor;
+- (void)setMentionBackgroundColor:(RCTUIColor *)newValue;
 // Image properties
 - (CGFloat)imageHeight;
 - (void)setImageHeight:(CGFloat)newValue;

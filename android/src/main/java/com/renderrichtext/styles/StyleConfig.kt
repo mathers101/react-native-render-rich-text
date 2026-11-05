@@ -161,6 +161,14 @@ class StyleConfig(
     CodeStyle.fromReadableMap(map, styleParser)
   }
 
+  val mentionStyle: MentionStyle by lazy {
+    val map =
+      requireNotNull(style.getMap("mention")) {
+        "Mention style not found. JS should always provide defaults."
+      }
+    MentionStyle.fromReadableMap(map, styleParser)
+  }
+
   val factoidStyle: FactoidStyle by lazy {
     val map =
       requireNotNull(style.getMap("factoid")) {
@@ -348,6 +356,7 @@ class StyleConfig(
       strikethroughStyle == other.strikethroughStyle &&
       underlineStyle == other.underlineStyle &&
       codeStyle == other.codeStyle &&
+      mentionStyle == other.mentionStyle &&
       factoidStyle == other.factoidStyle &&
       imageStyle == other.imageStyle &&
       videoStyle == other.videoStyle &&
@@ -378,6 +387,7 @@ class StyleConfig(
     result = 31 * result + strikethroughStyle.hashCode()
     result = 31 * result + underlineStyle.hashCode()
     result = 31 * result + codeStyle.hashCode()
+    result = 31 * result + mentionStyle.hashCode()
     result = 31 * result + factoidStyle.hashCode()
     result = 31 * result + imageStyle.hashCode()
     result = 31 * result + videoStyle.hashCode()

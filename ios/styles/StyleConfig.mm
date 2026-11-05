@@ -144,6 +144,9 @@ static inline NSString *normalizedFontWeight(NSString *fontWeight)
   RCTUIColor *_factoidColor;
   RCTUIColor *_factoidBackgroundColor;
   RCTUIColor *_factoidBorderColor;
+  // Mention properties
+  RCTUIColor *_mentionColor;
+  RCTUIColor *_mentionBackgroundColor;
   // Image properties
   CGFloat _imageHeight;
   CGFloat _imageMaxHeight;
@@ -450,6 +453,8 @@ static inline NSString *normalizedFontWeight(NSString *fontWeight)
   copy->_factoidColor = [_factoidColor copy];
   copy->_factoidBackgroundColor = [_factoidBackgroundColor copy];
   copy->_factoidBorderColor = [_factoidBorderColor copy];
+  copy->_mentionColor = [_mentionColor copy];
+  copy->_mentionBackgroundColor = [_mentionBackgroundColor copy];
   copy->_imageHeight = _imageHeight;
   copy->_imageMaxHeight = _imageMaxHeight;
   copy->_imageAspectRatio = _imageAspectRatio;
@@ -1586,6 +1591,26 @@ static inline NSString *normalizedFontWeight(NSString *fontWeight)
 - (void)setFactoidBorderColor:(RCTUIColor *)newValue
 {
   _factoidBorderColor = newValue;
+}
+
+- (RCTUIColor *)mentionColor
+{
+  return _mentionColor;
+}
+
+- (void)setMentionColor:(RCTUIColor *)newValue
+{
+  _mentionColor = newValue;
+}
+
+- (RCTUIColor *)mentionBackgroundColor
+{
+  return _mentionBackgroundColor;
+}
+
+- (void)setMentionBackgroundColor:(RCTUIColor *)newValue
+{
+  _mentionBackgroundColor = newValue;
 }
 
 - (CGFloat)imageHeight

@@ -5,6 +5,7 @@
 #import "CodeRenderer.h"
 #import "EmphasisRenderer.h"
 #import "FactoidRenderer.h"
+#import "MentionRenderer.h"
 
 #import "ENRMFeatureFlags.h"
 
@@ -117,6 +118,8 @@
       return [[ThematicBreakRenderer alloc] initWithRendererFactory:self config:_config];
     case TiptapNodeTypeBlankLine:
       return [[BlankLineRenderer alloc] initWithRendererFactory:self config:_config];
+    case TiptapNodeTypeMention:
+      return [[MentionRenderer alloc] initWithRendererFactory:self config:_config];
     default:
       return nil;
   }

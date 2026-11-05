@@ -17,6 +17,8 @@ import com.renderrichtext.spoiler.SpoilerOverlay
 import com.renderrichtext.utils.common.applyReactBorderProps
 import com.renderrichtext.utils.common.emitContextMenuItemPress
 import com.renderrichtext.utils.common.emitFactoidPress
+import com.renderrichtext.utils.common.emitMentionLongPress
+import com.renderrichtext.utils.common.emitMentionPress
 import com.renderrichtext.utils.common.emitLatexError
 import com.renderrichtext.utils.common.emitLinkLongPress
 import com.renderrichtext.utils.common.emitLinkPress
@@ -54,6 +56,14 @@ class EnrichedTiptapTextManager :
 
     view.setOnFactoidPressCallback { factoidId ->
       emitFactoidPress(view, factoidId)
+    }
+
+    view.setOnMentionPressCallback { mentionId, label ->
+      emitMentionPress(view, mentionId, label)
+    }
+
+    view.setOnMentionLongPressCallback { mentionId, label ->
+      emitMentionLongPress(view, mentionId, label)
     }
 
     view.setOnLinkLongPressCallback { url ->

@@ -48,6 +48,8 @@ import com.renderrichtext.utils.text.view.emitFactoidPressEvent
 import com.renderrichtext.utils.text.view.emitImagePressEvent
 import com.renderrichtext.utils.text.view.emitLinkLongPressEvent
 import com.renderrichtext.utils.text.view.emitLinkPressEvent
+import com.renderrichtext.utils.text.view.emitMentionLongPressEvent
+import com.renderrichtext.utils.text.view.emitMentionPressEvent
 import com.renderrichtext.utils.text.view.setupAsTiptapTextView
 import java.util.concurrent.Executors
 import kotlin.math.ceil
@@ -72,6 +74,8 @@ class EnrichedTiptapText
     private var onLinkPressCallback: ((String) -> Unit)? = null
     private var onLinkLongPressCallback: ((String) -> Unit)? = null
     private var onFactoidPressCallback: ((String) -> Unit)? = null
+    private var onMentionPressCallback: ((String, String) -> Unit)? = null
+    private var onMentionLongPressCallback: ((String, String) -> Unit)? = null
     private var onLatexErrorCallback: LatexErrorReporter? = null
 
     private val reportedLatexErrors = HashSet<String>()
@@ -311,7 +315,15 @@ class EnrichedTiptapText
             }
 
           renderer.configure(style, context, latexErrorReporter)
-          val styledText = renderer.renderDocument(ast, onLinkPressCallback, onLinkLongPressCallback, onFactoidPressCallback)
+          val styledText =
+            renderer.renderDocument(
+              ast,
+              onLinkPressCallback,
+              onLinkLongPressCallback,
+              onFactoidPressCallback,
+              onMentionPressCallback,
+              onMentionLongPressCallback,
+            )
 
           mainHandler.post {
             if (renderId == currentRenderId) {
@@ -464,6 +476,20 @@ class EnrichedTiptapText
       emitFactoidPressEvent(factoidId)
     }
 
+    fun emitOnMentionPress(
+      mentionId: String,
+      label: String,
+    ) {
+      emitMentionPressEvent(mentionId, label)
+    }
+
+    fun emitOnMentionLongPress(
+      mentionId: String,
+      label: String,
+    ) {
+      emitMentionLongPressEvent(mentionId, label)
+    }
+
     fun emitOnLinkLongPress(url: String) {
       emitLinkLongPressEvent(url)
     }
@@ -502,6 +528,14 @@ class EnrichedTiptapText
 
     fun setOnFactoidPressCallback(callback: (String) -> Unit) {
       onFactoidPressCallback = callback
+    }
+
+    fun setOnMentionPressCallback(callback: (String, String) -> Unit) {
+      onMentionPressCallback = callback
+    }
+
+    fun setOnMentionLongPressCallback(callback: (String, String) -> Unit) {
+      onMentionLongPressCallback = callback
     }
 
     fun setOnLinkLongPressCallback(callback: (String) -> Unit) {

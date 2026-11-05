@@ -194,6 +194,11 @@ std::shared_ptr<TiptapASTNode> parseNode(const json &node) {
     // Inline node whose children are themselves inline (text, marks, links).
     parsed = makeNode(NodeType::Factoid);
     copyAttributes(*parsed, node);
+  } else if (type == "mention") {
+    // Atom. The visible text is "@" plus label, or id when label is blank.
+    parsed = makeNode(NodeType::Mention);
+    copyAttributes(*parsed, node);
+    return parsed;
   } else {
     // Tables, images, task lists, and anything else are skipped with their children.
     return nullptr;

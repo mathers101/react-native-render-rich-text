@@ -2,6 +2,7 @@
 #import "BlockquoteBorder.h"
 #import "CodeBackground.h"
 #import "FactoidBackground.h"
+#import "MentionBackground.h"
 #import "CodeBlockBackground.h"
 #import "ListMarkerDrawer.h"
 #import "RuntimeKeys.h"
@@ -37,6 +38,9 @@
 
   FactoidBackground *factoidBg = [self getFactoidBackground];
   [factoidBg drawBackgroundsForGlyphRange:glyphsToShow layoutManager:self textContainer:textContainer atPoint:origin];
+
+  MentionBackground *mentionBg = [self getMentionBackground];
+  [mentionBg drawBackgroundsForGlyphRange:glyphsToShow layoutManager:self textContainer:textContainer atPoint:origin];
 
   CodeBlockBackground *codeBlockBg = [self getCodeBlockBackgroundWithConfig:config];
   [codeBlockBg drawBackgroundsForGlyphRange:glyphsToShow layoutManager:self textContainer:textContainer atPoint:origin];
@@ -116,6 +120,16 @@
   if (!obj) {
     obj = [FactoidBackground new];
     objc_setAssociatedObject(self, kFactoidBackgroundKey, obj, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+  }
+  return obj;
+}
+
+- (MentionBackground *)getMentionBackground
+{
+  MentionBackground *obj = objc_getAssociatedObject(self, kMentionBackgroundKey);
+  if (!obj) {
+    obj = [MentionBackground new];
+    objc_setAssociatedObject(self, kMentionBackgroundKey, obj, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
   }
   return obj;
 }

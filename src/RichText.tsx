@@ -3,6 +3,7 @@ import { type NativeSyntheticEvent, type StyleProp, type ViewStyle } from 'react
 import NativeRichText, {
   type FactoidPressEvent,
   type LinkPressEvent,
+  type MentionPressEvent,
   type Md4cFlagsInternal,
   type SelectionMenuConfig,
   type AccessibilityLabelsProps,
@@ -61,6 +62,11 @@ const ACCESSIBILITY_LABELS: AccessibilityLabelsProps = {
   rotor: { headings: 'headings', links: 'links', images: 'images' },
 };
 
+export type MentionTarget = {
+  id: string;
+  label: string;
+};
+
 export type RichTextProps = {
   /** Tiptap document, or the same document already encoded as JSON. */
   document: TiptapNode | string;
@@ -69,6 +75,10 @@ export type RichTextProps = {
   onLinkPress?: (url: string) => void;
   /** Called with the factoid's `id`. A factoid that contains a link emits `onLinkPress` instead. */
   onFactoidPress?: (factoidId: string) => void;
+  /** Called with the mention node's `id` and `label`. */
+  onMentionPress?: (mention: MentionTarget) => void;
+  /** Called with the mention node's `id` and `label`. */
+  onMentionLongPress?: (mention: MentionTarget) => void;
   selectable?: boolean;
   allowFontScaling?: boolean;
   maxFontSizeMultiplier?: number;
@@ -84,6 +94,8 @@ export function RichText({
   selectable = true,
   allowFontScaling = true,
   onFactoidPress,
+  onMentionPress,
+  onMentionLongPress,
   maxFontSizeMultiplier,
   numberOfLines,
   ellipsizeMode,
@@ -107,6 +119,28 @@ export function RichText({
       onFactoidPress(event.nativeEvent.factoidId);
     };
   }, [onFactoidPress]);
+  const handleMentionPress = useMemo(() => {
+    if (!onMentionPress) {
+      return undefined;
+    }
+    return (event: NativeSyntheticEvent<MentionPressEvent>) => {
+      onMentionPress({
+        id: event.nativeEvent.mentionId,
+        label: event.nativeEvent.label,
+      });
+    };
+  }, [onMentionPress]);
+  const handleMentionLongPress = useMemo(() => {
+    if (!onMentionLongPress) {
+      return undefined;
+    }
+    return (event: NativeSyntheticEvent<MentionPressEvent>) => {
+      onMentionLongPress({
+        id: event.nativeEvent.mentionId,
+        label: event.nativeEvent.label,
+      });
+    };
+  }, [onMentionLongPress]);
 
   return (
     <NativeRichText
@@ -119,6 +153,8 @@ export function RichText({
       selectable={selectable}
       allowFontScaling={allowFontScaling}
       onFactoidPress={handleFactoidPress}
+      onMentionPress={handleMentionPress}
+      onMentionLongPress={handleMentionLongPress}
       maxFontSizeMultiplier={maxFontSizeMultiplier}
       numberOfLines={numberOfLines}
       ellipsizeMode={ellipsizeMode}

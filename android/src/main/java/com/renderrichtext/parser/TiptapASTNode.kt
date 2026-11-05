@@ -42,6 +42,7 @@ data class TiptapASTNode(
     Admonition,
     Video,
     Factoid,
+    Mention,
   }
 
   fun getAttribute(key: String): String? = attributes[key]

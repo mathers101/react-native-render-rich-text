@@ -7,6 +7,8 @@ import com.facebook.react.uimanager.UIManagerHelper
 import com.renderrichtext.accessibility.AccessibilityLabels
 import com.renderrichtext.events.CodeBlockPressEvent
 import com.renderrichtext.events.FactoidPressEvent
+import com.renderrichtext.events.MentionLongPressEvent
+import com.renderrichtext.events.MentionPressEvent
 import com.renderrichtext.events.ContextMenuItemPressEvent
 import com.renderrichtext.events.CopyPressEvent
 import com.renderrichtext.events.LatexErrorEvent
@@ -21,6 +23,9 @@ fun tiptapEventTypeConstants(): MutableMap<String, Any> {
   val map = mutableMapOf<String, Any>()
   map[LinkPressEvent.EVENT_NAME] = mapOf("registrationName" to LinkPressEvent.EVENT_NAME)
   map[FactoidPressEvent.EVENT_NAME] = mapOf("registrationName" to FactoidPressEvent.EVENT_NAME)
+  map[MentionPressEvent.EVENT_NAME] = mapOf("registrationName" to MentionPressEvent.EVENT_NAME)
+  map[MentionLongPressEvent.EVENT_NAME] =
+    mapOf("registrationName" to MentionLongPressEvent.EVENT_NAME)
   map[LinkLongPressEvent.EVENT_NAME] =
     mapOf("registrationName" to LinkLongPressEvent.EVENT_NAME)
   map[TaskListItemPressEvent.EVENT_NAME] =
@@ -34,6 +39,28 @@ fun tiptapEventTypeConstants(): MutableMap<String, Any> {
   map[LatexErrorEvent.EVENT_NAME] =
     mapOf("registrationName" to LatexErrorEvent.EVENT_NAME)
   return map
+}
+
+fun emitMentionPress(
+  view: View,
+  mentionId: String,
+  label: String,
+) {
+  val context = view.context as com.facebook.react.bridge.ReactContext
+  val surfaceId = UIManagerHelper.getSurfaceId(context)
+  val eventDispatcher = UIManagerHelper.getEventDispatcherForReactTag(context, view.id)
+  eventDispatcher?.dispatchEvent(MentionPressEvent(surfaceId, view.id, mentionId, label))
+}
+
+fun emitMentionLongPress(
+  view: View,
+  mentionId: String,
+  label: String,
+) {
+  val context = view.context as com.facebook.react.bridge.ReactContext
+  val surfaceId = UIManagerHelper.getSurfaceId(context)
+  val eventDispatcher = UIManagerHelper.getEventDispatcherForReactTag(context, view.id)
+  eventDispatcher?.dispatchEvent(MentionLongPressEvent(surfaceId, view.id, mentionId, label))
 }
 
 fun emitFactoidPress(

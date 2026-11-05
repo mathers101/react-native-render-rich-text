@@ -3,6 +3,7 @@
 #import "ENRMSpoilerTapUtils.h"
 #import "ENRMTextHitTest.h"
 #import "FactoidBackground.h"
+#import "MentionBackground.h"
 
 NSString *_Nullable linkURLAtTapLocation(ENRMPlatformTextView *textView, ENRMTapRecognizer *recognizer)
 {
@@ -64,6 +65,29 @@ NSDictionary<NSString *, NSString *> *_Nullable imageAtTapLocation(ENRMPlatformT
   return @{@"url" : url, @"altText" : altText ?: @""};
 }
 
+static NSDictionary<NSString *, NSString *> *_Nullable mentionAtIndex(NSAttributedString *attrText, NSUInteger characterIndex)
+{
+  if (characterIndex == NSNotFound || characterIndex >= attrText.length)
+    return nil;
+  if ([attrText attribute:MentionAttributeName atIndex:characterIndex effectiveRange:NULL] == nil)
+    return nil;
+
+  NSString *mentionId = [attrText attribute:MentionIdAttributeName atIndex:characterIndex effectiveRange:NULL] ?: @"";
+  NSString *label = [attrText attribute:MentionLabelAttributeName atIndex:characterIndex effectiveRange:NULL] ?: @"";
+  return @{@"id" : mentionId, @"label" : label};
+}
+
+NSDictionary<NSString *, NSString *> *_Nullable mentionAtTapLocation(ENRMPlatformTextView *textView,
+                                                                     ENRMTapRecognizer *recognizer)
+{
+  return mentionAtIndex(ENRMGetAttributedText(textView), ENRMCharacterIndexForTap(textView, recognizer));
+}
+
+NSDictionary<NSString *, NSString *> *_Nullable mentionAtPoint(ENRMPlatformTextView *textView, CGPoint point)
+{
+  return mentionAtIndex(ENRMGetAttributedText(textView), ENRMCharacterIndexAtPoint(textView, point));
+}
+
 NSString *_Nullable factoidIdAtTapLocation(ENRMPlatformTextView *textView, ENRMTapRecognizer *recognizer)
 {
   NSUInteger characterIndex = ENRMCharacterIndexForTap(textView, recognizer);
@@ -105,7 +129,7 @@ BOOL isPointOnInteractiveElement(ENRMPlatformTextView *textView, CGPoint point, 
 
   NSDictionary *attrs = [ENRMGetAttributedText(textView) attributesAtIndex:charIndex effectiveRange:NULL];
   if (attrs[@"linkURL"] != nil || [attrs[@"TaskItem"] boolValue] || attrs[SpoilerAttributeName] != nil ||
-      attrs[FactoidAttributeName] != nil)
+      attrs[FactoidAttributeName] != nil || attrs[MentionAttributeName] != nil)
     return YES;
 
   if (includeImages && attrs[@"imageURL"] != nil)

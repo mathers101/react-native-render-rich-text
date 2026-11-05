@@ -13,6 +13,7 @@ import com.renderrichtext.spans.CodeBlockSpan
 import com.renderrichtext.spans.FactoidSpan
 import com.renderrichtext.spans.ImageSpan
 import com.renderrichtext.spans.LinkSpan
+import com.renderrichtext.spans.MentionSpan
 import com.renderrichtext.spans.SpoilerSpan
 import com.renderrichtext.spoiler.SpoilerCapable
 import kotlin.math.abs
@@ -34,6 +35,7 @@ class LinkLongPressMovementMethod : ArrowKeyMovementMethod() {
   private var pressedLink: LinkSpan? = null
   private var pressedImage: ImageSpan? = null
   private var pressedFactoid: FactoidSpan? = null
+  private var pressedMention: MentionSpan? = null
   private var pressedCodeBlock: CodeBlockSpan? = null
 
   var isLinkTouchActive: Boolean = false
@@ -64,10 +66,17 @@ class LinkLongPressMovementMethod : ArrowKeyMovementMethod() {
           } else {
             null
           }
+        pressedMention =
+          if (pressedLink == null && pressedImage == null && pressedFactoid == null) {
+            findMentionSpan(widget, buffer, event)
+          } else {
+            null
+          }
         pressedCodeBlock =
           if (pressedLink == null &&
             pressedImage == null &&
             pressedFactoid == null &&
+            pressedMention == null &&
             // Skip while text is selected so the tap clears the selection
             // instead of firing the press (matches the web guard).
             !widget.hasSelection() &&
@@ -77,9 +86,13 @@ class LinkLongPressMovementMethod : ArrowKeyMovementMethod() {
           } else {
             null
           }
-        isLinkTouchActive = pressedLink != null || pressedImage != null || pressedFactoid != null || pressedCodeBlock != null
+        isLinkTouchActive =
+          pressedLink != null || pressedImage != null || pressedFactoid != null ||
+            pressedMention != null || pressedCodeBlock != null
         setFactoidPressed(widget, pressedFactoid, pressed = true)
+        setMentionPressed(widget, pressedMention, pressed = true)
         pressedLink?.let { scheduleLongPress(widget, it) }
+        pressedMention?.let { scheduleMentionLongPress(widget, it) }
         // Keeps RNGH Pressable and scrolling parents from stealing the press before ACTION_UP.
         disallowsParentIntercept = isLinkTouchActive
         if (isLinkTouchActive) widget.parent?.requestDisallowInterceptTouchEvent(true)
@@ -93,13 +106,17 @@ class LinkLongPressMovementMethod : ArrowKeyMovementMethod() {
           cancelLongPress()
           isLinkTouchActive = false
           setFactoidPressed(widget, pressedFactoid, pressed = false)
+          setMentionPressed(widget, pressedMention, pressed = false)
           pressedLink = null
           pressedImage = null
           pressedFactoid = null
+          pressedMention = null
           pressedCodeBlock = null
           releaseParentIntercept(widget)
         } else if (pressedFactoid != null) {
           setFactoidPressed(widget, pressedFactoid, findFactoidSpan(widget, buffer, event) === pressedFactoid)
+        } else if (pressedMention != null) {
+          setMentionPressed(widget, pressedMention, findMentionSpan(widget, buffer, event) === pressedMention)
         }
       }
 
@@ -108,12 +125,15 @@ class LinkLongPressMovementMethod : ArrowKeyMovementMethod() {
         val tappedLink = pressedLink
         val tappedImage = pressedImage
         val tappedFactoid = pressedFactoid
+        val tappedMention = pressedMention
         val tappedCodeBlock = pressedCodeBlock
         isLinkTouchActive = false
         setFactoidPressed(widget, tappedFactoid, pressed = false)
+        setMentionPressed(widget, tappedMention, pressed = false)
         pressedLink = null
         pressedImage = null
         pressedFactoid = null
+        pressedMention = null
         pressedCodeBlock = null
         releaseParentIntercept(widget)
 
@@ -139,6 +159,11 @@ class LinkLongPressMovementMethod : ArrowKeyMovementMethod() {
           return true
         }
 
+        if (tappedMention != null && findMentionSpan(widget, buffer, event) === tappedMention) {
+          tappedMention.onClick(widget)
+          return true
+        }
+
         if (tappedCodeBlock != null && findCodeBlockSpan(widget, buffer, event) === tappedCodeBlock) {
           codeBlockPressHost(widget)?.emitOnCodeBlockPress(tappedCodeBlock.code, tappedCodeBlock.language)
           return true
@@ -149,10 +174,12 @@ class LinkLongPressMovementMethod : ArrowKeyMovementMethod() {
         cancelLongPress()
         isLinkTouchActive = false
         setFactoidPressed(widget, pressedFactoid, pressed = false)
+        setMentionPressed(widget, pressedMention, pressed = false)
         pressedLink = null
         pressedImage = null
         pressedCodeBlock = null
         pressedFactoid = null
+        pressedMention = null
         releaseParentIntercept(widget)
       }
     }
@@ -178,6 +205,16 @@ class LinkLongPressMovementMethod : ArrowKeyMovementMethod() {
     widget.invalidate()
   }
 
+  private fun setMentionPressed(
+    widget: TextView,
+    span: MentionSpan?,
+    pressed: Boolean,
+  ) {
+    if (span == null || span.pressed == pressed) return
+    span.pressed = pressed
+    widget.invalidate()
+  }
+
   private fun scheduleLongPress(
     widget: TextView,
     span: LinkSpan,
@@ -191,6 +228,24 @@ class LinkLongPressMovementMethod : ArrowKeyMovementMethod() {
         // Execute the long click logic on the span
         if (span.onLongClick(widget)) {
           // If consumed, cancel the system's own long-press logic (like context menus)
+          widget.cancelLongPress()
+        }
+        longPressRunnable = null
+      }.also {
+        handler.postDelayed(it, ViewConfiguration.getLongPressTimeout().toLong())
+      }
+  }
+
+  private fun scheduleMentionLongPress(
+    widget: TextView,
+    span: MentionSpan,
+  ) {
+    cancelLongPress()
+    widget.cancelLongPress()
+
+    longPressRunnable =
+      Runnable {
+        if (span.onLongClick(widget)) {
           widget.cancelLongPress()
         }
         longPressRunnable = null
@@ -247,6 +302,17 @@ class LinkLongPressMovementMethod : ArrowKeyMovementMethod() {
   ): LinkSpan? {
     val offset = charOffsetAt(widget, event) ?: return null
     return buffer.getSpans(offset, offset, LinkSpan::class.java).firstOrNull()
+  }
+
+  private fun findMentionSpan(
+    widget: TextView,
+    buffer: Spannable,
+    event: MotionEvent,
+  ): MentionSpan? {
+    val offset = charOffsetAt(widget, event) ?: return null
+    return buffer
+      .getSpans(offset, offset, MentionSpan::class.java)
+      .minByOrNull { buffer.getSpanEnd(it) - buffer.getSpanStart(it) }
   }
 
   private fun findFactoidSpan(

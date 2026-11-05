@@ -62,7 +62,12 @@ export const FIXTURES: {
               text: 'underlined',
               marks: [{ type: 'underline' }],
             },
-            { type: 'text', text: ' turn.' },
+            { type: 'text', text: ' turn. Ask ' },
+            {
+              type: 'mention',
+              attrs: { id: 'mara', label: 'Mara' },
+            },
+            { type: 'text', text: ' before the next ridge.' },
           ],
         },
         {
@@ -830,7 +835,12 @@ export const FIXTURES: {
               attrs: { id: 'bottle-count' },
               content: [{ type: 'text', text: 'two liters' }],
             },
-            { type: 'text', text: ', is the one the footer should name.' },
+            { type: 'text', text: ', is the one the footer should name. Tell ' },
+            {
+              type: 'mention',
+              attrs: { id: 'mara', label: 'Mara' },
+            },
+            { type: 'text', text: ' when the bottles are full.' },
           ],
         },
         {

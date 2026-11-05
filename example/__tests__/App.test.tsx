@@ -62,6 +62,7 @@ test('the long document mixes every node the display path draws', () => {
     'text',
     'hardBreak',
     'factoid',
+    'mention',
     'blockquote',
     'horizontalRule',
     'bulletList',

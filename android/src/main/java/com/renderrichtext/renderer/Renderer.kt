@@ -39,7 +39,17 @@ class Renderer {
     onLinkPress: ((String) -> Unit)? = null,
     onLinkLongPress: ((String) -> Unit)? = null,
     onFactoidPress: ((String) -> Unit)? = null,
-  ): SpannableStringBuilder = renderContent(document.children, onLinkPress, onLinkLongPress, onFactoidPress)
+    onMentionPress: ((String, String) -> Unit)? = null,
+    onMentionLongPress: ((String, String) -> Unit)? = null,
+  ): SpannableStringBuilder =
+    renderContent(
+      document.children,
+      onLinkPress,
+      onLinkLongPress,
+      onFactoidPress,
+      onMentionPress,
+      onMentionLongPress,
+    )
 
   /**
    * Renders a flat list of sibling nodes into a fresh buffer and hands over
@@ -63,6 +73,8 @@ class Renderer {
     onLinkPress: ((String) -> Unit)? = null,
     onLinkLongPress: ((String) -> Unit)? = null,
     onFactoidPress: ((String) -> Unit)? = null,
+    onMentionPress: ((String, String) -> Unit)? = null,
+    onMentionLongPress: ((String, String) -> Unit)? = null,
     block: BlockquoteTextRenderer? = null,
   ): SpannableStringBuilder {
     val factory =
@@ -71,6 +83,8 @@ class Renderer {
       }
 
     factory.resetForNewRender()
+    factory.onMentionPress = onMentionPress
+    factory.onMentionLongPress = onMentionLongPress
     collectedImageSpans.clear()
     lastElementMarginBottom = 0f
 

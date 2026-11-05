@@ -155,6 +155,11 @@ interface CodeStyleInternal {
   borderColor: string;
 }
 
+interface MentionStyleInternal {
+  color: string;
+  backgroundColor: string;
+}
+
 interface FactoidStyleInternal {
   color: string;
   backgroundColor: string;
@@ -277,6 +282,7 @@ export interface TiptapStyleInternal {
   strikethrough: StrikethroughStyleInternal;
   underline: UnderlineStyleInternal;
   code: CodeStyleInternal;
+  mention: MentionStyleInternal;
   factoid: FactoidStyleInternal;
   image: ImageStyleInternal;
   video: VideoStyleInternal;

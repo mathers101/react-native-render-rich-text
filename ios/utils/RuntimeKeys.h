@@ -23,6 +23,9 @@ extern void *kCodeBackgroundKey;
 // Key for storing FactoidBackground instance on NSLayoutManager
 extern void *kFactoidBackgroundKey;
 
+// Key for storing MentionBackground instance on NSLayoutManager
+extern void *kMentionBackgroundKey;
+
 // Key for storing BlockquoteBorder instance on NSLayoutManager
 // Used by TextViewLayoutManager for blockquote border drawing
 extern void *kBlockquoteBorderKey;

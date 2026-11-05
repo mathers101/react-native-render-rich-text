@@ -208,6 +208,19 @@ interface CodeStyle {
   borderColor?: string;
 }
 
+interface MentionStyle {
+  /**
+   * Text color of the `@label` chip.
+   * @default '#1D4ED8'
+   */
+  color?: string;
+  /**
+   * Capsule fill behind the label.
+   * @default '#DBEAFE'
+   */
+  backgroundColor?: string;
+}
+
 interface FactoidStyle {
   /**
    * Text color. A `color` attribute on the factoid node replaces this.
@@ -428,6 +441,12 @@ export interface TiptapStyle {
   strikethrough?: StrikethroughStyle;
   underline?: UnderlineStyle;
   code?: CodeStyle;
+  /**
+   * Inline `@mention` chip. `color` is the label, `backgroundColor` is the capsule.
+   * A mention is an atom: it has no children, and the text is `@` plus `label`
+   * (or `id` when `label` is blank).
+   */
+  mention?: MentionStyle;
   factoid?: FactoidStyle;
   image?: ImageStyle;
   video?: VideoStyle;

@@ -57,6 +57,8 @@ const char *typeName(NodeType type) {
       return "Highlight";
     case NodeType::Factoid:
       return "Factoid";
+    case NodeType::Mention:
+      return "Mention";
     default:
       return "Other";
   }
@@ -256,6 +258,26 @@ int main() {
            "        Text \"gust\"\n"
            "      Text \" of wind\"\n"
            "    Text \".\"\n");
+  }
+
+  {
+    auto ast = parseTiptapDocument(R"({
+      "type": "doc",
+      "content": [{
+        "type": "paragraph",
+        "content": [
+          {"type": "text", "text": "Ask "},
+          {"type": "mention", "attrs": {"id": "mara", "label": "Mara"}},
+          {"type": "text", "text": " first."}
+        ]
+      }]
+    })");
+    expect("mention atom", dump(*ast),
+           "Document\n"
+           "  Paragraph\n"
+           "    Text \"Ask \"\n"
+           "    Mention id=mara label=Mara\n"
+           "    Text \" first.\"\n");
   }
 
   if (g_failed != 0) {

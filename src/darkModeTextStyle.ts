@@ -67,6 +67,10 @@ export const darkModeTextStyle: TiptapStyle = {
     backgroundColor: '#3D1F24',
     borderColor: '#6E3036',
   },
+  mention: {
+    color: '#93C5FD',
+    backgroundColor: '#1E3A5F',
+  },
   factoid: {
     color: '#9BFC6E',
     backgroundColor: '#132E0F',

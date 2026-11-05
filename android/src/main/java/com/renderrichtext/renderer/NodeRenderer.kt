@@ -35,6 +35,10 @@ class RendererFactory(
 
   val styleCache = SpanStyleCache(config.style)
 
+  /** Set for the duration of one render. Mention spans capture the values. */
+  var onMentionPress: ((String, String) -> Unit)? = null
+  var onMentionLongPress: ((String, String) -> Unit)? = null
+
   /**
    * Spans registered here are applied after the full document tree is rendered, so they
    * always end up after block-level spans in the SpannableStringBuilder's internal array.
@@ -134,6 +138,7 @@ class RendererFactory(
       put(TiptapASTNode.NodeType.Highlight, HighlightRenderer())
       put(TiptapASTNode.NodeType.Code, CodeRenderer(config))
       put(TiptapASTNode.NodeType.Factoid, FactoidRenderer(config))
+      put(TiptapASTNode.NodeType.Mention, MentionRenderer(config))
       put(TiptapASTNode.NodeType.LineBreak, lineBreakRenderer)
       put(TiptapASTNode.NodeType.SoftBreak, softBreakRenderer)
       put(TiptapASTNode.NodeType.ThematicBreak, ThematicBreakRenderer(config))

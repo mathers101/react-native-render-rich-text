@@ -35,6 +35,7 @@ function Gallery() {
   const [fixtureId, setFixtureId] = useState<FixtureId>('mixed');
   const [lastLink, setLastLink] = useState('No link opened yet');
   const [lastFactoid, setLastFactoid] = useState('No factoid opened yet');
+  const [lastMention, setLastMention] = useState('No mention opened yet');
   const [dark, setDark] = useState(false);
   const fixture = FIXTURES.find(item => item.id === fixtureId) ?? FIXTURES[0];
 
@@ -114,6 +115,12 @@ function Gallery() {
               document={document}
               onLinkPress={setLastLink}
               onFactoidPress={setLastFactoid}
+              onMentionPress={mention =>
+                setLastMention(`Pressed ${mention.label || mention.id}`)
+              }
+              onMentionLongPress={mention =>
+                setLastMention(`Held ${mention.label || mention.id}`)
+              }
               textStyle={dark ? darkModeTextStyle : lightTextStyle}
               style={
                 index > 0
@@ -148,6 +155,21 @@ function Gallery() {
           style={[styles.footerValue, dark && styles.footerValueDark]}
         >
           {lastFactoid}
+        </Text>
+        <Text
+          style={[
+            styles.footerLabel,
+            styles.footerLabelSpaced,
+            dark && styles.footerLabelDark,
+          ]}
+        >
+          Last mention
+        </Text>
+        <Text
+          numberOfLines={1}
+          style={[styles.footerValue, dark && styles.footerValueDark]}
+        >
+          {lastMention}
         </Text>
       </View>
     </SafeAreaView>

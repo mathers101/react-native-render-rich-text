@@ -57,7 +57,12 @@ typedef NS_OPTIONS(NSUInteger, ENRMDirtyFlags) {
   ENRMDirtyRender = 1 << 0,
 };
 
-@interface EnrichedTiptapText () <RCTEnrichedTiptapTextViewProtocol, UITextViewDelegate, ENRMImageLayoutObserver>
+@interface EnrichedTiptapText () <RCTEnrichedTiptapTextViewProtocol, UITextViewDelegate, ENRMImageLayoutObserver
+#if !TARGET_OS_OSX
+                                   ,
+                                   UIGestureRecognizerDelegate
+#endif
+                                   >
 + (ENRMMd4cFlags *)flagsFromProps:(const EnrichedTiptapTextMd4cFlagsStruct &)props;
 - (void)setupTextView;
 - (void)renderTiptapContent:(NSString *)tiptapString;
@@ -66,6 +71,8 @@ typedef NS_OPTIONS(NSUInteger, ENRMDirtyFlags) {
 - (void)setupLayoutManager;
 - (void)emitLinkPress:(NSString *)url;
 - (void)emitFactoidPress:(NSString *)factoidId;
+- (void)emitMentionPress:(NSString *)mentionId label:(NSString *)label;
+- (void)emitMentionLongPress:(NSString *)mentionId label:(NSString *)label;
 - (void)emitLinkLongPress:(NSString *)url;
 - (void)emitLinkContextMenuItemPress:(NSString *)itemText pattern:(NSString *)pattern url:(NSString *)url;
 - (void)emitImagePress:(NSString *)url altText:(NSString *)altText;
@@ -84,6 +91,9 @@ typedef NS_OPTIONS(NSUInteger, ENRMDirtyFlags) {
 
 @implementation EnrichedTiptapText {
   ENRMPlatformTextView *_textView;
+#if !TARGET_OS_OSX
+  UILongPressGestureRecognizer *_mentionLongPress;
+#endif
   ENRMTiptapParser *_parser;
   NSString *_cachedTiptap;
   NSString *_renderedTiptap;
@@ -411,6 +421,14 @@ typedef NS_OPTIONS(NSUInteger, ENRMDirtyFlags) {
 #endif
 
   ENRMTapRecognizer *tapRecognizer = [[ENRMTapRecognizer alloc] initWithTarget:self action:@selector(textTapped:)];
+#if !TARGET_OS_OSX
+  // Fails immediately unless the touch is on a mention, so text selection is unchanged
+  // everywhere else. A mention long-press wins over the text view's selection gesture.
+  _mentionLongPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(mentionLongPressed:)];
+  _mentionLongPress.delegate = self;
+  [_textView addGestureRecognizer:_mentionLongPress];
+  [tapRecognizer requireGestureRecognizerToFail:_mentionLongPress];
+#endif
   [_textView addGestureRecognizer:tapRecognizer];
 
   self.contentView = _textView;
@@ -926,6 +944,22 @@ Class<RCTComponentViewProtocol> EnrichedTiptapTextCls(void)
     emitter->onLinkPress({.url = std::string(url.UTF8String)});
 }
 
+- (void)emitMentionPress:(NSString *)mentionId label:(NSString *)label
+{
+  auto emitter = std::static_pointer_cast<EnrichedTiptapTextEventEmitter const>(_eventEmitter);
+  if (emitter)
+    emitter->onMentionPress(
+        {.mentionId = std::string(mentionId.UTF8String ?: ""), .label = std::string(label.UTF8String ?: "")});
+}
+
+- (void)emitMentionLongPress:(NSString *)mentionId label:(NSString *)label
+{
+  auto emitter = std::static_pointer_cast<EnrichedTiptapTextEventEmitter const>(_eventEmitter);
+  if (emitter)
+    emitter->onMentionLongPress(
+        {.mentionId = std::string(mentionId.UTF8String ?: ""), .label = std::string(label.UTF8String ?: "")});
+}
+
 - (void)emitLinkLongPress:(NSString *)url
 {
   auto emitter = std::static_pointer_cast<EnrichedTiptapTextEventEmitter const>(_eventEmitter);
@@ -1008,6 +1042,12 @@ Class<RCTComponentViewProtocol> EnrichedTiptapTextCls(void)
     return;
   }
 
+  NSDictionary<NSString *, NSString *> *mention = mentionAtTapLocation(textView, recognizer);
+  if (mention) {
+    [self emitMentionPress:mention[@"id"] label:mention[@"label"]];
+    return;
+  }
+
   if (_enableImagePress) {
     NSDictionary<NSString *, NSString *> *image = imageAtTapLocation(textView, recognizer);
     if (image) {
@@ -1026,6 +1066,34 @@ Class<RCTComponentViewProtocol> EnrichedTiptapTextCls(void)
     }
   }
 }
+
+#if !TARGET_OS_OSX
+- (void)mentionLongPressed:(UILongPressGestureRecognizer *)recognizer
+{
+  if (recognizer.state != UIGestureRecognizerStateBegan)
+    return;
+  NSDictionary<NSString *, NSString *> *mention = mentionAtPoint(_textView, [recognizer locationInView:_textView]);
+  if (!mention)
+    return;
+  [self emitMentionLongPress:mention[@"id"] label:mention[@"label"]];
+}
+
+- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
+{
+  if (gestureRecognizer != _mentionLongPress)
+    return YES;
+  return mentionAtPoint(_textView, [_mentionLongPress locationInView:_textView]) != nil;
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer
+    shouldBeRequiredToFailByGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
+{
+  if (gestureRecognizer == _mentionLongPress &&
+      [otherGestureRecognizer isKindOfClass:[UILongPressGestureRecognizer class]])
+    return YES;
+  return NO;
+}
+#endif
 
 #pragma mark - UITextViewDelegate (Link Interaction)
 
