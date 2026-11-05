@@ -1,0 +1,87 @@
+# Publishes to GitHub Packages when a version tag is pushed.
+#
+# Uses the workflow's GITHUB_TOKEN. No npm token is required.
+# The package scope must be the GitHub owner: @mathers101.
+# In the repo settings, Actions → General → Workflow permissions must be
+# "Read and write permissions", or the token cannot upload the package.
+#
+# Cut a release by bumping "version" in package.json, committing it, then:
+#   git tag vX.Y.Z
+#   git push origin vX.Y.Z
+
+name: Publish
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+concurrency:
+  group: github-packages-publish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Publish to GitHub Packages
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+          registry-url: "https://npm.pkg.github.com"
+          scope: "@mathers101"
+          package-manager-cache: false
+
+      - name: Require the tag to match package.json
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          version="$(node -p "require('./package.json').version")"
+          if [ "$tag" != "$version" ]; then
+            echo "Tag ${GITHUB_REF_NAME} does not match package.json version ${version}."
+            echo "Commit the version bump, then tag that commit as v${version}."
+            exit 1
+          fi
+
+      - name: Install Yarn 1
+        run: npm install --global yarn@1.22.22
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Typecheck
+        run: yarn typecheck
+
+      - name: Parser tests
+        run: yarn test:parser
+
+      - name: Publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          name="$(node -p "require('./package.json').name")"
+          version="$(node -p "require('./package.json').version")"
+          if npm view "${name}@${version}" version >/dev/null 2>&1; then
+            echo "${name}@${version} is already on GitHub Packages."
+          else
+            npm publish
+          fi
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "Release ${GITHUB_REF_NAME} already exists."
+          else
+            gh release create "$GITHUB_REF_NAME" \
+              --repo "$GITHUB_REPOSITORY" \
+              --title "$GITHUB_REF_NAME" \
+              --generate-notes
+          fi

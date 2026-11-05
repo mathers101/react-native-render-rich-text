@@ -25,6 +25,9 @@
     "url": "https://github.com/mathers101/react-native-render-rich-text.git"
   },
   "private": false,
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
   "workspaces": {
     "packages": [
       "example"
