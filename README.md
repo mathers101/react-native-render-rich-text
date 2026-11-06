@@ -105,7 +105,7 @@ Android: from `example`, run `yarn android`. The native package is `com.renderri
 
 ## Release
 
-Pushing a `vX.Y.Z` tag publishes that version to GitHub Packages. The tag has to match `version` in `package.json`. The workflow is `.github/workflows/publish.yml`. It typechecks, runs the parser tests, publishes with the workflow token, and opens a GitHub Release.
+Pushing a `vX.Y.Z` tag publishes that version to the public npm registry. The tag has to match `version` in `package.json`. The workflow is `.github/workflows/publish.yml`. It typechecks, runs the parser tests, publishes, and opens a GitHub Release.
 
 ```sh
 # commit the version bump first, then:
@@ -113,7 +113,7 @@ git tag v0.1.7
 git push origin v0.1.7
 ```
 
-The repository's Actions setting **Workflow permissions** has to be **Read and write permissions**, or the token cannot upload the package. The first published version is private until you open the package on GitHub and set its visibility to Public.
+The repository secret `NPM_TOKEN` has to be an npm automation token that can publish `@mathers101`. The package is public, so Expo EAS and other installs do not need a token.
 
 ## Build the library
 
