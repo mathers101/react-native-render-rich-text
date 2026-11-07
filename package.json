@@ -22,7 +22,7 @@
   "homepage": "https://github.com/mathers101/react-native-render-rich-text",
   "repository": {
     "type": "git",
-    "url": "https://github.com/mathers101/react-native-render-rich-text.git"
+    "url": "git+https://github.com/mathers101/react-native-render-rich-text.git"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",

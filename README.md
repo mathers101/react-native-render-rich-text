@@ -113,7 +113,7 @@ git tag v0.1.7
 git push origin v0.1.7
 ```
 
-The repository secret `NPM_TOKEN` has to be an npm automation token that can publish `@mathers101`. The package is public, so Expo EAS and other installs do not need a token.
+Publishing uses npm trusted publishing from `.github/workflows/publish.yml`. No npm token is stored in GitHub. The package is public, so Expo EAS and other installs do not need a token.
 
 ## Build the library
 

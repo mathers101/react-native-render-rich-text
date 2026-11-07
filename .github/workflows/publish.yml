@@ -1,7 +1,8 @@
 # Publishes the public package to npmjs when a version tag is pushed.
 #
-# Repository secret NPM_TOKEN must be an npm automation token that can
-# publish @mathers101. Anyone can install the package. No token is required.
+# npm trusted publishing (OIDC). No NPM_TOKEN. The package settings on
+# npmjs.com must name this workflow file: publish.yml
+# https://docs.npmjs.com/trusted-publishers
 #
 # Yarn 4 is required. Yarn 1 refuses workspaces when "private" is false.
 #
@@ -25,6 +26,7 @@ jobs:
     name: Publish to npm
     runs-on: ubuntu-latest
     permissions:
+      id-token: write
       contents: write
     steps:
       - name: Checkout
@@ -33,7 +35,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v6
         with:
-          node-version: "22"
+          node-version: "24"
           registry-url: "https://registry.npmjs.org"
           package-manager-cache: false
 
@@ -60,28 +62,20 @@ jobs:
         run: yarn test:parser
 
       - name: Publish
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
-          if [ -z "${NODE_AUTH_TOKEN}" ]; then
-            echo "The NPM_TOKEN repository secret is empty."
-            echo "Create an npm automation token that can publish @mathers101 and add it as NPM_TOKEN."
-            exit 1
-          fi
-          # setup-node stores //registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}
-          # before this step's secret exists, so npm sees an empty login.
+          # setup-node writes an empty _authToken placeholder. npm treats that
+          # as a configured login and skips the trusted-publisher OIDC exchange.
           npmrc="${NPM_CONFIG_USERCONFIG:-$HOME/.npmrc}"
-          mkdir -p "$(dirname "$npmrc")"
-          touch "$npmrc"
-          grep -v '//registry.npmjs.org/:_authToken=' "$npmrc" > "${npmrc}.new" || true
-          printf '%s\n' "//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}" >> "${npmrc}.new"
-          mv "${npmrc}.new" "$npmrc"
+          if [ -f "$npmrc" ]; then
+            grep -v '_authToken=' "$npmrc" > "${npmrc}.new" || true
+            mv "${npmrc}.new" "$npmrc"
+          fi
           name="$(node -p "require('./package.json').name")"
           version="$(node -p "require('./package.json').version")"
           if npm view "${name}@${version}" version --registry https://registry.npmjs.org >/dev/null 2>&1; then
             echo "${name}@${version} is already on npm."
           else
-            npm publish --access public --registry https://registry.npmjs.org
+            npm publish --access public
           fi
 
       - name: Create GitHub Release
