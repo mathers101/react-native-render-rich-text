@@ -3,6 +3,8 @@
 # Repository secret NPM_TOKEN must be an npm automation token that can
 # publish @mathers101. Anyone can install the package. No token is required.
 #
+# Yarn 4 is required. Yarn 1 refuses workspaces when "private" is false.
+#
 # Cut a release by bumping "version" in package.json, committing it, then:
 #   git tag vX.Y.Z
 #   git push origin vX.Y.Z
@@ -45,11 +47,11 @@ jobs:
             exit 1
           fi
 
-      - name: Install Yarn 1
-        run: npm install --global yarn@1.22.22
+      - name: Enable Corepack
+        run: corepack enable
 
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: yarn install --immutable
 
       - name: Typecheck
         run: yarn typecheck

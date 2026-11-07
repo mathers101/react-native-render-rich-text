@@ -24,19 +24,14 @@
     "type": "git",
     "url": "https://github.com/mathers101/react-native-render-rich-text.git"
   },
-  "private": false,
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
     "access": "public"
   },
-  "workspaces": {
-    "packages": [
-      "example"
-    ],
-    "nohoist": [
-      "render-rich-text-example/react-native-render-rich-text"
-    ]
-  },
+  "workspaces": [
+    "example"
+  ],
+  "packageManager": "yarn@4.11.0",
   "scripts": {
     "typecheck": "tsc --noEmit",
     "test:parser": "g++ -std=c++17 -Wall -Wextra -I cpp/parser -I cpp/vendor -o /tmp/parser_tests cpp/parser/TiptapParser.cpp cpp/tests/parser_tests.cpp && /tmp/parser_tests",
