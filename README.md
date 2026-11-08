@@ -91,7 +91,7 @@ The preset lives in `src/darkModeTextStyle.ts`. The light defaults live in `src/
 
 ## Run the example
 
-The example app is a Yarn workspace of this package. Metro serves it on port 41873:
+The example app is a Yarn workspace of this package, running as an Expo SDK 58 app on React Native 0.88. Metro serves it on port 41873:
 
 ```sh
 yarn example

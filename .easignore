@@ -1,0 +1,83 @@
+# .easignore replaces every .gitignore in the repo. Keep those patterns here.
+# https://docs.expo.dev/build-reference/easignore/
+#
+# android/ and ios/ (library and example/) stay in the upload. They are
+# committed native projects, not generated on the build server.
+
+# Dependencies — EAS installs from yarn.lock on the build server.
+# .yarn/releases stays; it is the Yarn binary (.yarnrc.yml yarnPath).
+node_modules/
+.npmrc
+.yarn/cache
+.yarn/install-state.gz
+
+# Secrets and signing material. EAS injects credentials itself.
+.env
+.env.*
+!.env.example
+*.jks
+*.p8
+*.p12
+*.key
+*.pem
+*.mobileprovision
+
+# VCS, Expo, Metro
+.git/
+.expo/
+dist/
+web-build/
+.metro-health-check*
+*.jsbundle
+*.tsbuildinfo
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+*.log
+
+# Not used to compile the app
+coverage/
+/docs
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Xcode
+build/
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+xcuserdata
+*.xccheckout
+*.moved-aside
+DerivedData
+*.hmap
+*.ipa
+*.xcuserstate
+**/.xcode.env.local
+
+# Android / IntelliJ
+.idea
+.gradle
+local.properties
+*.iml
+*.hprof
+.cxx/
+.kotlin/
+*.keystore
+!debug.keystore
+*.orig.*
+
+# CocoaPods / Ruby / fastlane
+**/Pods/
+vendor/bundle/
+**/fastlane/report.xml
+**/fastlane/Preview.html
+**/fastlane/screenshots
+**/fastlane/test_output

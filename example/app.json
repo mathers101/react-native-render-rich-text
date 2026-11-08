@@ -1,4 +1,13 @@
 {
   "name": "RenderRichTextExample",
-  "displayName": "Rich Text"
+  "displayName": "Rich Text",
+  "expo": {
+    "name": "Rich Text",
+    "slug": "render-rich-text-example",
+    "extra": {
+      "eas": {
+        "projectId": "36cebf88-b6f9-418c-8519-32d7f109e05f"
+      }
+    }
+  }
 }

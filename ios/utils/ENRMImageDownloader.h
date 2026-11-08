@@ -15,7 +15,15 @@ typedef void (^ENRMImageDownloadCompletion)(RCTUIImage *_Nullable image);
  * deduplicated separately without embedding header values in the key.
  * Header names are compared case-insensitively.
  */
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 NSString *ENRMImageCacheKey(NSString *url, NSDictionary<NSString *, NSString *> *_Nullable headers);
+
+#ifdef __cplusplus
+}
+#endif
 
 @interface ENRMImageDownloader : NSObject
 

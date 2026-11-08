@@ -20,6 +20,10 @@ NS_ASSUME_NONNULL_BEGIN
  * appending `.png` when the path has no extension.
  */
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /// YES when the URL refers to a non-network source: any `file://` URL, or a
 /// scheme-less string (bare bundle-relative asset name or absolute path).
 BOOL ENRMIsLocalImageURL(NSString *url);
@@ -31,5 +35,9 @@ FOUNDATION_EXPORT NSString *_Nullable ENRMResolveLocalImagePath(NSString *url);
 /// Synchronously loads a local image; returns nil when the source cannot be
 /// resolved. Safe to call off the main thread.
 RCTUIImage *_Nullable ENRMLoadLocalImage(NSString *url);
+
+#ifdef __cplusplus
+}
+#endif
 
 NS_ASSUME_NONNULL_END

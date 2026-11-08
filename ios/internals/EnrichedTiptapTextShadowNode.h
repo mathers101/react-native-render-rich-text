@@ -1,8 +1,8 @@
 #pragma once
 #include "MeasurementCache.h"
 #include <ReactNativeRenderRichText/EnrichedTiptapTextState.h>
-#include <ReactNativeRenderRichText/EventEmitters.h>
-#include <ReactNativeRenderRichText/Props.h>
+#include <react/renderer/components/RichTextSpec/EventEmitters.h>
+#include <react/renderer/components/RichTextSpec/Props.h>
 #include <react/renderer/components/view/ConcreteViewShadowNode.h>
 #include <react/renderer/core/LayoutConstraints.h>
 

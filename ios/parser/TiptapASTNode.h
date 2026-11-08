@@ -54,4 +54,12 @@ typedef NS_ENUM(NSInteger, TiptapNodeType) {
 
 /// A node type that md4c emits as a standalone block stacked vertically,
 /// as opposed to an inline span.
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 BOOL ENRMIsTopLevelBlockType(TiptapNodeType type);
+
+#ifdef __cplusplus
+}
+#endif

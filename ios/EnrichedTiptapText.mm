@@ -41,9 +41,9 @@
 #import "TaskListTapUtils.h"
 
 #import <ReactNativeRenderRichText/EnrichedTiptapTextComponentDescriptor.h>
-#import <ReactNativeRenderRichText/EventEmitters.h>
-#import <ReactNativeRenderRichText/Props.h>
-#import <ReactNativeRenderRichText/RCTComponentViewHelpers.h>
+#import <react/renderer/components/RichTextSpec/EventEmitters.h>
+#import <react/renderer/components/RichTextSpec/Props.h>
+#import <react/renderer/components/RichTextSpec/RCTComponentViewHelpers.h>
 
 #import "RCTFabricComponentsPlugins.h"
 #import <React/RCTConversions.h>
