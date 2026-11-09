@@ -7,7 +7,7 @@ NSString *const FactoidBorderColorAttributeName = @"FactoidBorderColor";
 NSString *const FactoidPaddingAttributeName = @"FactoidPadding";
 NSString *const FactoidTrailingPaddingAttributeName = @"FactoidTrailingPadding";
 
-const CGFloat ENRMFactoidPadding = 8.0;
+const CGFloat ENRMFactoidPadding = 5.0;
 
 static const CGFloat kFactoidCornerRadius = 4.0;
 static const CGFloat kFactoidBorderWidth = 1.0;
