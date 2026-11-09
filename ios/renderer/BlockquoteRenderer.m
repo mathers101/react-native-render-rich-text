@@ -48,12 +48,100 @@ static NSString *const kNestedInfoRangeKey = @"range";
 
 #pragma mark - Styling and Spacing
 
+// A block margin spacer is a 1pt line whose only job is paragraphSpacing.
+// Padding spacers are taller and carry no paragraphSpacing, so they stay.
+static BOOL ENRMIsMarginSpacerLine(NSAttributedString *output, NSUInteger index)
+{
+  if (index >= output.length || [output.string characterAtIndex:index] != '\n')
+    return NO;
+  if (index > 0 && [output.string characterAtIndex:index - 1] != '\n')
+    return NO;
+
+  NSParagraphStyle *style = [output attribute:NSParagraphStyleAttributeName atIndex:index effectiveRange:NULL];
+  return style && style.paragraphSpacing > 0 && style.minimumLineHeight > 0 &&
+         style.minimumLineHeight == style.maximumLineHeight && style.minimumLineHeight <= 1.5;
+}
+
+// Deletes a trailing margin spacer from [start, end) and reports its spacing.
+// The spacer's paragraphSpacing would otherwise fall between the last line and
+// the quote's bottom padding, inside the background.
+static CGFloat ENRMRemoveTrailingMarginSpacer(NSMutableAttributedString *output, NSUInteger start, NSUInteger *endInOut)
+{
+  NSUInteger end = *endInOut;
+  if (end <= start)
+    return 0;
+
+  NSUInteger newline = end - 1;
+  if (!ENRMIsMarginSpacerLine(output, newline))
+    return 0;
+
+  NSParagraphStyle *style = [output attribute:NSParagraphStyleAttributeName atIndex:newline effectiveRange:NULL];
+  CGFloat margin = style.paragraphSpacing;
+  [output deleteCharactersInRange:NSMakeRange(newline, 1)];
+  *endInOut = newline;
+  return margin;
+}
+
+// paragraphSpacing of the content line that the bottom padding spacer follows.
+// That gap is inside the box: the padding row is part of the quote, so the
+// margin paints as extra space under the text. Returns 0 when this box has no
+// bottom padding row (the margin then sits past the background).
+static CGFloat ENRMParagraphSpacingBeforeBottomSpacer(NSAttributedString *output, NSRange boxRange)
+{
+  if (boxRange.length < 2 || NSMaxRange(boxRange) > output.length)
+    return 0;
+
+  NSUInteger spacerIndex = NSMaxRange(boxRange) - 1;
+  if (![output attribute:BlockquoteSpacerAttributeName atIndex:spacerIndex effectiveRange:NULL])
+    return 0;
+
+  NSRange paragraph = [output.string paragraphRangeForRange:NSMakeRange(spacerIndex - 1, 1)];
+  NSUInteger paraEnd = MIN(NSMaxRange(paragraph), spacerIndex);
+  if (paraEnd == 0 || paraEnd <= paragraph.location)
+    return 0;
+
+  NSParagraphStyle *style = [output attribute:NSParagraphStyleAttributeName atIndex:paraEnd - 1 effectiveRange:NULL];
+  return style ? style.paragraphSpacing : 0;
+}
+
+static void ENRMClearParagraphSpacingBeforeBottomSpacer(NSMutableAttributedString *output, NSRange boxRange)
+{
+  if (ENRMParagraphSpacingBeforeBottomSpacer(output, boxRange) <= 0)
+    return;
+
+  NSUInteger spacerIndex = NSMaxRange(boxRange) - 1;
+  NSRange paragraph = [output.string paragraphRangeForRange:NSMakeRange(spacerIndex - 1, 1)];
+  NSUInteger clearStart = MAX(paragraph.location, boxRange.location);
+  NSUInteger clearEnd = MIN(NSMaxRange(paragraph), spacerIndex);
+  if (clearEnd <= clearStart)
+    return;
+
+  NSRange clearRange = NSMakeRange(clearStart, clearEnd - clearStart);
+  [output enumerateAttribute:NSParagraphStyleAttributeName
+                     inRange:clearRange
+                     options:0
+                  usingBlock:^(NSParagraphStyle *style, NSRange range, BOOL *stop) {
+                    if (!style || style.paragraphSpacing <= 0)
+                      return;
+                    NSMutableParagraphStyle *updated = [style mutableCopy];
+                    updated.paragraphSpacing = 0;
+                    [output addAttribute:NSParagraphStyleAttributeName value:updated range:range];
+                  }];
+}
+
 - (void)applyStylingAndSpacing:(NSMutableAttributedString *)output
                          start:(NSUInteger)start
                            end:(NSUInteger)end
                   currentDepth:(NSInteger)currentDepth
                        context:(RenderContext *)context
 {
+  // Last child's margin, lifted off the box. A root quote drops it (the quote's
+  // own margin is applied below). A nested quote puts it back after the box so
+  // the parent still gets a gap before the next sibling.
+  CGFloat liftedMargin = ENRMRemoveTrailingMarginSpacer(output, start, &end);
+  if (end <= start)
+    return;
+
   NSUInteger contentStart = start;
   if (currentDepth == 0) {
     contentStart += applyBlockSpacingBefore(output, start, [_config blockquoteMarginTop]);
@@ -84,6 +172,10 @@ static NSString *const kNestedInfoRangeKey = @"range";
   CGFloat levelSpacing = [_config blockquoteBorderWidth] + [_config blockquoteGapWidth];
   NSArray<NSDictionary *> *nestedInfo = [self collectNestedBlockquotes:output range:innerRange depth:currentDepth];
 
+  // Read before base styling. That pass copies the first run's paragraph style
+  // across the quote and would report the wrong trailing margin.
+  CGFloat contentMargin = ENRMParagraphSpacingBeforeBottomSpacer(output, blockquoteRange);
+
   // Apply base styling (indentation, depth, background, line height)
   [self applyBaseBlockquoteStyle:output
                         boxRange:blockquoteRange
@@ -97,7 +189,21 @@ static NSString *const kNestedInfoRangeKey = @"range";
   // (applyBaseBlockquoteStyle overwrites nested indents with the parent's indent)
   [self reapplyNestedStyles:output nestedInfo:nestedInfo levelSpacing:levelSpacing];
 
-  if (currentDepth == 0) {
+  // Base styling copies the first paragraph's margin onto the last line, which
+  // puts it back between the text and the bottom padding row.
+  ENRMClearParagraphSpacingBeforeBottomSpacer(output, blockquoteRange);
+  for (NSDictionary *info in nestedInfo) {
+    ENRMClearParagraphSpacingBeforeBottomSpacer(output, [info[kNestedInfoRangeKey] rangeValue]);
+  }
+
+  if (currentDepth > 0) {
+    CGFloat margin = liftedMargin > 0 ? liftedMargin : contentMargin;
+    if (margin > 0) {
+      NSUInteger spacerLocation = output.length;
+      applyBlockSpacingAfter(output, margin);
+      [output addAttribute:BlockquoteSpacerAttributeName value:@YES range:NSMakeRange(spacerLocation, 1)];
+    }
+  } else {
     applyBlockSpacingAfter(output, [_config blockquoteMarginBottom]);
   }
 }

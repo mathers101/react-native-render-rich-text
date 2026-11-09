@@ -47,9 +47,19 @@
   NSUInteger contentStart = output.length;
   [_rendererFactory renderChildrenOfNode:node into:output context:context];
 
-  NSUInteger contentEnd = output.length;
-  if (contentEnd <= contentStart)
+  if (output.length <= contentStart)
     return;
+
+  // Padding and margin below only add height as their own paragraphs. TextKit
+  // takes a paragraph's line metrics from its first character, so a newline
+  // appended straight onto a code line that does not already end in '\n' is
+  // just that line's terminator: the bottom padding row is dropped and the
+  // block is tighter under the code than above it.
+  if ([output.string characterAtIndex:output.length - 1] != '\n') {
+    [output appendAttributedString:kNewlineAttributedString];
+  }
+
+  NSUInteger contentEnd = output.length;
 
   NSRange contentRange = NSMakeRange(contentStart, contentEnd - contentStart);
 
