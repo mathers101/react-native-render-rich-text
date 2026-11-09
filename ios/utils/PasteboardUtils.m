@@ -1,5 +1,6 @@
 #import "PasteboardUtils.h"
 #import "ENRMImageAttachment.h"
+#import "FactoidBackground.h"
 #import "ENRMLinkPillText.h"
 #import "HTMLGenerator.h"
 #import "TiptapExtractor.h"
@@ -92,6 +93,8 @@ void copyAttributedStringToPasteboard(NSAttributedString *attributedString, NSSt
     return;
 
   // Expanded once here for the plain-text flavor; the exporters below then have nothing left to expand.
+  // The factoid gap is not document text. Drop it before any flavor reads the string.
+  attributedString = ENRMAttributedStringByStrippingFactoidPadding(attributedString);
   attributedString = ENRMAttributedStringByExpandingLinkPills(attributedString, NULL);
 
   NSMutableDictionary *items = [NSMutableDictionary dictionary];

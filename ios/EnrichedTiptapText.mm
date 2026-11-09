@@ -92,7 +92,10 @@ typedef NS_OPTIONS(NSUInteger, ENRMDirtyFlags) {
 @implementation EnrichedTiptapText {
   ENRMPlatformTextView *_textView;
 #if !TARGET_OS_OSX
+  UITapGestureRecognizer *_tapRecognizer;
   UILongPressGestureRecognizer *_mentionLongPress;
+  CFAbsoluteTime _lastLinkPressAt;
+  NSString *_lastLinkPressURL;
 #endif
   ENRMTiptapParser *_parser;
   NSString *_cachedTiptap;
@@ -422,12 +425,16 @@ typedef NS_OPTIONS(NSUInteger, ENRMDirtyFlags) {
 
   ENRMTapRecognizer *tapRecognizer = [[ENRMTapRecognizer alloc] initWithTarget:self action:@selector(textTapped:)];
 #if !TARGET_OS_OSX
-  // Fails immediately unless the touch is on a mention, so text selection is unchanged
-  // everywhere else. A mention long-press wins over the text view's selection gesture.
+  // The tap must not wait for the mention long-press. While it waits, UITextView's own
+  // tap cancels it, and a factoid press never arrives. A mention long-press still cancels
+  // this tap when it begins, and it only tracks touches that land on a mention.
+  tapRecognizer.delegate = self;
+  tapRecognizer.cancelsTouchesInView = NO;
+  _tapRecognizer = tapRecognizer;
   _mentionLongPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(mentionLongPressed:)];
   _mentionLongPress.delegate = self;
+  _mentionLongPress.cancelsTouchesInView = YES;
   [_textView addGestureRecognizer:_mentionLongPress];
-  [tapRecognizer requireGestureRecognizerToFail:_mentionLongPress];
 #endif
   [_textView addGestureRecognizer:tapRecognizer];
 
@@ -916,6 +923,10 @@ typedef NS_OPTIONS(NSUInteger, ENRMDirtyFlags) {
     ENRMSetAttributedText(_textView, [[NSAttributedString alloc] initWithString:@""]);
     _textView.hidden = YES;
   }
+#if !TARGET_OS_OSX
+  _lastLinkPressAt = 0;
+  _lastLinkPressURL = nil;
+#endif
 
   [super prepareForRecycle];
 }
@@ -939,9 +950,27 @@ Class<RCTComponentViewProtocol> EnrichedTiptapTextCls(void)
 
 - (void)emitLinkPress:(NSString *)url
 {
+  if (url.length == 0)
+    return;
+#if !TARGET_OS_OSX
+  // A link tap can arrive both from the tap recognizer and from UITextView's
+  // text-item action. One press should produce one event.
+  CFAbsoluteTime now = CFAbsoluteTimeGetCurrent();
+  if (_lastLinkPressURL != nil && (now - _lastLinkPressAt) < 0.05 && [_lastLinkPressURL isEqualToString:url])
+    return;
+  _lastLinkPressAt = now;
+  _lastLinkPressURL = [url copy];
+#endif
   auto emitter = std::static_pointer_cast<EnrichedTiptapTextEventEmitter const>(_eventEmitter);
   if (emitter)
     emitter->onLinkPress({.url = std::string(url.UTF8String)});
+}
+
+- (void)emitFactoidPress:(NSString *)factoidId
+{
+  auto emitter = std::static_pointer_cast<EnrichedTiptapTextEventEmitter const>(_eventEmitter);
+  if (emitter)
+    emitter->onFactoidPress({.factoidId = std::string(factoidId.UTF8String ?: "")});
 }
 
 - (void)emitMentionPress:(NSString *)mentionId label:(NSString *)label
@@ -1042,9 +1071,17 @@ Class<RCTComponentViewProtocol> EnrichedTiptapTextCls(void)
     return;
   }
 
+  // A mention is an atom, including one drawn inside a factoid, so it wins over the factoid.
   NSDictionary<NSString *, NSString *> *mention = mentionAtTapLocation(textView, recognizer);
   if (mention) {
     [self emitMentionPress:mention[@"id"] label:mention[@"label"]];
+    return;
+  }
+
+  // A factoid that contains a link already returned above. The id may be empty.
+  NSString *factoidId = factoidIdAtTapLocation(textView, recognizer);
+  if (factoidId) {
+    [self emitFactoidPress:factoidId];
     return;
   }
 
@@ -1078,11 +1115,25 @@ Class<RCTComponentViewProtocol> EnrichedTiptapTextCls(void)
   [self emitMentionLongPress:mention[@"id"] label:mention[@"label"]];
 }
 
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch
+{
+  if (gestureRecognizer != _mentionLongPress)
+    return YES;
+  return mentionAtPoint(_textView, [touch locationInView:_textView]) != nil;
+}
+
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
 {
   if (gestureRecognizer != _mentionLongPress)
     return YES;
   return mentionAtPoint(_textView, [_mentionLongPress locationInView:_textView]) != nil;
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer
+    shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
+{
+  // UITextView's tap otherwise cancels ours, so factoid and mention presses never fire.
+  return gestureRecognizer == _tapRecognizer || otherGestureRecognizer == _tapRecognizer;
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer
@@ -1112,16 +1163,42 @@ Class<RCTComponentViewProtocol> EnrichedTiptapTextCls(void)
   return _linkContextMenus;
 }
 
+- (UIAction *)textView:(UITextView *)textView
+    primaryActionForTextItem:(UITextItem *)textItem
+               defaultAction:(UIAction *)defaultAction API_AVAILABLE(ios(17.0))
+{
+  // iOS 17 delivers a link tap here, not to the tap recognizer. Returning nil
+  // keeps UIKit from opening the URL itself.
+  NSString *urlString = nil;
+  if (textItem.range.location != NSNotFound)
+    urlString = linkURLAtRange((ENRMPlatformTextView *)textView, textItem.range);
+  if (urlString.length == 0 && textItem.link != nil)
+    urlString = textItem.link.absoluteString;
+  if (urlString.length == 0)
+    return defaultAction;
+  [self emitLinkPress:urlString];
+  return nil;
+}
+
 - (BOOL)textView:(ENRMPlatformTextView *)textView
     shouldInteractWithURL:(NSURL *)URL
                   inRange:(NSRange)characterRange
               interaction:(UITextItemInteraction)interaction
 {
+  NSString *urlString = linkURLAtRange(textView, characterRange);
+  if (urlString.length == 0)
+    urlString = URL.absoluteString;
+
+  if (interaction == UITextItemInteractionInvokeDefaultAction) {
+    if (urlString.length == 0)
+      return YES;
+    [self emitLinkPress:urlString];
+    return NO;
+  }
+
   if (interaction != UITextItemInteractionPresentActions) {
     return YES;
   }
-
-  NSString *urlString = linkURLAtRange(textView, characterRange);
 
   // A link with a menu is presented by the iOS 17 callback above and must not be vetoed here.
   if ([_linkContextMenus hasMenuForURL:urlString])

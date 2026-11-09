@@ -1,6 +1,7 @@
 #import "ContextMenuUtils.h"
 #import "ENRMLinkPillText.h"
 #import "ENRMMenuAction.h"
+#import "FactoidBackground.h"
 
 #if !TARGET_OS_OSX
 
@@ -15,8 +16,8 @@ NSMutableArray<UIAction *> *_Nullable ENRMBuildContextMenuActions(NSArray<NSStri
     return nil;
   }
 
-  NSString *selectedText =
-      ENRMStringByExpandingLinkPills([textView.textStorage attributedSubstringFromRange:selectedRange]);
+  NSString *selectedText = ENRMStringByStrippingFactoidPadding(
+      ENRMAttributedStringByExpandingLinkPills([textView.textStorage attributedSubstringFromRange:selectedRange], NULL));
   NSUInteger selectionStart = selectedRange.location;
   NSUInteger selectionEnd = NSMaxRange(selectedRange);
 
@@ -45,7 +46,8 @@ NSArray<NSMenuItem *> *_Nullable ENRMBuildContextMenuItems(NSArray<NSString *> *
   }
 
   NSRange selectedRange = textView.selectedRange;
-  NSString *selectedText = [textView.string substringWithRange:selectedRange];
+  NSString *selectedText =
+      ENRMStringByStrippingFactoidPadding([textView.textStorage attributedSubstringFromRange:selectedRange]);
   NSUInteger selectionStart = selectedRange.location;
   NSUInteger selectionEnd = NSMaxRange(selectedRange);
 

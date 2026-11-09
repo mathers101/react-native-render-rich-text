@@ -4,6 +4,10 @@ NSUInteger ENRMCharacterIndexAtPoint(ENRMPlatformTextView *textView, CGPoint poi
 {
   NSLayoutManager *layoutManager = textView.layoutManager;
   CGPoint adjusted = CGPointMake(point.x - textView.textContainerInset.left, point.y - textView.textContainerInset.top);
+#if !TARGET_OS_OSX
+  adjusted.x += textView.contentOffset.x;
+  adjusted.y += textView.contentOffset.y;
+#endif
 
   NSUInteger index = [layoutManager characterIndexForPoint:adjusted
                                            inTextContainer:textView.textContainer

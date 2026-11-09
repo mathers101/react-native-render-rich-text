@@ -3,11 +3,24 @@
 #import "BlockquoteBorder.h"
 #import "ENRMAccessibilityLabels.h"
 #import "ENRMLinkPillAttachment.h"
+#import "FactoidBackground.h"
 #include <TargetConditionals.h>
 
 typedef NS_ENUM(NSInteger, ElementType) { ElementTypeText, ElementTypeLink, ElementTypeImage };
 
 static const CGFloat kFocusRectPadding = 2.0;
+
+/// Label text for `range`. Factoid padding is an attachment and a word joiner, not spoken text.
+static NSString *ENRMVisibleText(NSAttributedString *text, NSRange range, BOOL trim)
+{
+  if (!text || range.location == NSNotFound || range.length == 0 || range.location >= text.length)
+    return @"";
+  NSRange clamped = NSMakeRange(range.location, MIN(range.length, text.length - range.location));
+  NSString *visible = ENRMStringByStrippingFactoidPadding([text attributedSubstringFromRange:clamped]);
+  if (!trim)
+    return visible;
+  return [visible stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+}
 
 @implementation TiptapAccessibilityElementBuilder
 
@@ -21,6 +34,7 @@ static const CGFloat kFocusRectPadding = 2.0;
                                                              container:(id)container
 {
   NSString *fullString = textView.attributedText.string;
+  NSAttributedString *fullText = textView.attributedText;
   if (fullString.length == 0)
     return [NSMutableArray array];
 
@@ -31,8 +45,7 @@ static const CGFloat kFocusRectPadding = 2.0;
 
   while (currentPos < fullString.length) {
     NSRange paragraphRange = [fullString paragraphRangeForRange:NSMakeRange(currentPos, 0)];
-    NSString *trimmed = [[fullString substringWithRange:paragraphRange]
-        stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    NSString *trimmed = ENRMVisibleText(fullText, paragraphRange, YES);
 
     if (trimmed.length > 0) {
       NSArray *links = [self linksInRange:paragraphRange info:info];
@@ -87,6 +100,7 @@ static const CGFloat kFocusRectPadding = 2.0;
                                                           inTextView:(UITextView *)textView
                                                            container:(id)container
 {
+  (void)fullText;
   NSMutableArray<UIAccessibilityElement *> *elements = [NSMutableArray array];
   NSArray *sortedSpecials = [specials sortedArrayUsingComparator:^NSComparisonResult(NSDictionary *a, NSDictionary *b) {
     return [@([a[@"range"] rangeValue].location) compare:@([b[@"range"] rangeValue].location)];
@@ -98,8 +112,7 @@ static const CGFloat kFocusRectPadding = 2.0;
 
     if (itemRange.location > segmentStart) {
       NSRange beforeRange = NSMakeRange(segmentStart, itemRange.location - segmentStart);
-      NSString *beforeText = [[fullText substringWithRange:beforeRange]
-          stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+      NSString *beforeText = ENRMVisibleText(textView.attributedText, beforeRange, YES);
       if (beforeText.length > 0 && [self hasAlphanumericContent:beforeText]) {
         [elements addObject:[self createElementForRange:beforeRange
                                                    type:ElementTypeText
@@ -114,7 +127,7 @@ static const CGFloat kFocusRectPadding = 2.0;
     }
 
     BOOL isImg = item[@"altText"] != nil;
-    NSString *label = isImg ? item[@"altText"] : [fullText substringWithRange:itemRange];
+    NSString *label = isImg ? item[@"altText"] : ENRMVisibleText(textView.attributedText, itemRange, NO);
     if (!isImg) {
       id attachment = [textView.textStorage attribute:NSAttachmentAttributeName
                                               atIndex:itemRange.location
@@ -136,8 +149,7 @@ static const CGFloat kFocusRectPadding = 2.0;
 
   if (segmentStart < NSMaxRange(paragraphRange)) {
     NSRange afterRange = NSMakeRange(segmentStart, NSMaxRange(paragraphRange) - segmentStart);
-    NSString *afterText = [[fullText substringWithRange:afterRange]
-        stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    NSString *afterText = ENRMVisibleText(textView.attributedText, afterRange, YES);
     if (afterText.length > 0 && [self hasAlphanumericContent:afterText]) {
       [elements addObject:[self createElementForRange:afterRange
                                                  type:ElementTypeText

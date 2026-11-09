@@ -1,6 +1,7 @@
 #import "HTMLGenerator.h"
 #import "BlockquoteBorder.h"
 #import "CodeBackground.h"
+#import "FactoidBackground.h"
 #import "ENRMFeatureFlags.h"
 #import "ENRMImageAttachment.h"
 #import "ENRMLinkPillText.h"
@@ -477,6 +478,10 @@ static void generateInlineHTML(NSMutableString *html, NSAttributedString *attrib
                          options:0
                       usingBlock:^(NSDictionary<NSAttributedStringKey, id> *attrs, NSRange attrRange, BOOL *stop) {
                         NSString *text = [string substringWithRange:attrRange];
+
+                        // The factoid gap is an attachment plus a word joiner. Neither is document text.
+                        if (attrs[FactoidPaddingAttributeName])
+                          return;
 
                         if ([text isEqualToString:@"\n"])
                           return;

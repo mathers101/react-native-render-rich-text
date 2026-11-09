@@ -88,20 +88,73 @@ NSDictionary<NSString *, NSString *> *_Nullable mentionAtPoint(ENRMPlatformTextV
   return mentionAtIndex(ENRMGetAttributedText(textView), ENRMCharacterIndexAtPoint(textView, point));
 }
 
-NSString *_Nullable factoidIdAtTapLocation(ENRMPlatformTextView *textView, ENRMTapRecognizer *recognizer)
+static NSString *_Nullable factoidIdAtIndex(NSAttributedString *attrText, NSUInteger characterIndex)
 {
-  NSUInteger characterIndex = ENRMCharacterIndexForTap(textView, recognizer);
-  if (characterIndex == NSNotFound)
-    return nil;
-
-  NSAttributedString *attrText = ENRMGetAttributedText(textView);
-  if (characterIndex >= attrText.length)
+  if (characterIndex == NSNotFound || characterIndex >= attrText.length)
     return nil;
   if ([attrText attribute:FactoidAttributeName atIndex:characterIndex effectiveRange:NULL] == nil)
     return nil;
+  return [attrText attribute:FactoidIdAttributeName atIndex:characterIndex effectiveRange:NULL] ?: @"";
+}
 
-  NSString *factoidId = [attrText attribute:FactoidIdAttributeName atIndex:characterIndex effectiveRange:NULL];
-  return factoidId ?: @"";
+/// The green box is the full line height and a hair wider than the glyphs. A tap on that box
+/// can miss the character index, so the drawn rect is the hit target.
+static NSString *_Nullable factoidIdInDrawnRect(ENRMPlatformTextView *textView, CGPoint point)
+{
+  NSLayoutManager *layoutManager = textView.layoutManager;
+  NSTextStorage *storage = layoutManager.textStorage;
+  if (!storage || storage.length == 0)
+      return nil;
+
+  CGPoint adjusted = CGPointMake(point.x - textView.textContainerInset.left, point.y - textView.textContainerInset.top);
+#if !TARGET_OS_OSX
+  adjusted.x += textView.contentOffset.x;
+  adjusted.y += textView.contentOffset.y;
+#endif
+
+  __block NSString *found = nil;
+  [storage enumerateAttribute:FactoidAttributeName
+                      inRange:NSMakeRange(0, storage.length)
+                      options:0
+                   usingBlock:^(id value, NSRange range, BOOL *stop) {
+                      if (found || !value || range.length == 0)
+                       return;
+                     NSRange glyphRange = [layoutManager glyphRangeForCharacterRange:range actualCharacterRange:NULL];
+                     if (glyphRange.location == NSNotFound || glyphRange.length == 0)
+                       return;
+                     [layoutManager
+                         enumerateLineFragmentsForGlyphRange:glyphRange
+                                                  usingBlock:^(CGRect rect, CGRect usedRect, NSTextContainer *container,
+                                                               NSRange lineRange, BOOL *stopLine) {
+                                                    (void)usedRect;
+                                                    (void)container;
+                                                    NSRange intersect = NSIntersectionRange(lineRange, glyphRange);
+                                                    if (intersect.length == 0)
+                                                      return;
+                                                    CGRect textRect = [layoutManager boundingRectForGlyphRange:intersect
+                                                                                               inTextContainer:textView.textContainer];
+                                                    CGRect hitRect = CGRectInset(CGRectMake(textRect.origin.x, rect.origin.y,
+                                                                                            textRect.size.width, rect.size.height),
+                                                                                 -1, -1);
+                                                    if (!CGRectContainsPoint(hitRect, adjusted))
+                                                      return;
+                                                       found = [storage attribute:FactoidIdAttributeName
+                                                                       atIndex:range.location
+                                                                effectiveRange:NULL] ?:
+                                                            @"";
+                                                    *stopLine = YES;
+                                                  }];
+                     if (found)
+                       *stop = YES;
+                   }];
+  return found;
+}
+
+NSString *_Nullable factoidIdAtTapLocation(ENRMPlatformTextView *textView, ENRMTapRecognizer *recognizer)
+{
+  CGPoint point = [recognizer locationInView:textView];
+  NSString *byIndex = factoidIdAtIndex(ENRMGetAttributedText(textView), ENRMCharacterIndexAtPoint(textView, point));
+  return byIndex ?: factoidIdInDrawnRect(textView, point);
 }
 
 NSDictionary<NSString *, NSString *> *_Nullable codeBlockAtTapLocation(ENRMPlatformTextView *textView,
@@ -123,6 +176,8 @@ NSDictionary<NSString *, NSString *> *_Nullable codeBlockAtTapLocation(ENRMPlatf
 BOOL isPointOnInteractiveElement(ENRMPlatformTextView *textView, CGPoint point, BOOL includeImages,
                                  BOOL includeCodeBlock)
 {
+    return YES;
+
   NSUInteger charIndex = ENRMCharacterIndexAtPoint(textView, point);
   if (charIndex == NSNotFound)
     return NO;

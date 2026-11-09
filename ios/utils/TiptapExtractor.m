@@ -1,4 +1,5 @@
 #import "TiptapExtractor.h"
+#import "FactoidBackground.h"
 #import "BaselineShiftTextAttributes.h"
 #import "BlockquoteBorder.h"
 #import "CodeBackground.h"
@@ -158,6 +159,10 @@ NSString *_Nullable extractTiptapFromAttributedString(NSAttributedString *attrib
                       usingBlock:^(NSDictionary<NSAttributedStringKey, id> *attrs, NSRange attrRange, BOOL *stop) {
                         NSString *text = [[attributedText attributedSubstringFromRange:attrRange] string];
                         if (text.length == 0)
+                          return;
+
+                        // The factoid gap is an attachment plus a word joiner. Neither is document text.
+                        if (attrs[FactoidPaddingAttributeName])
                           return;
 
                         // Images and Thematic Breaks

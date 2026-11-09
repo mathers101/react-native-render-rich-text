@@ -7,7 +7,7 @@ NSString *const MentionBackgroundColorAttributeName = @"MentionBackgroundColor";
 
 const CGFloat ENRMMentionPaddingX = 3.0;
 const CGFloat ENRMMentionPaddingY = 1.0;
-static const CGFloat kMentionCornerRadius = 10.0;
+static const CGFloat kMentionCornerRadius = 4.0;
 
 @implementation MentionBackground
 

@@ -118,6 +118,8 @@
       return [[ThematicBreakRenderer alloc] initWithRendererFactory:self config:_config];
     case TiptapNodeTypeBlankLine:
       return [[BlankLineRenderer alloc] initWithRendererFactory:self config:_config];
+    case TiptapNodeTypeFactoid:
+      return [[FactoidRenderer alloc] initWithRendererFactory:self config:_config];
     case TiptapNodeTypeMention:
       return [[MentionRenderer alloc] initWithRendererFactory:self config:_config];
     default:
