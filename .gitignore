@@ -1,6 +1,5 @@
 node_modules/
 example/node_modules/
-expo-example/node_modules/
 .npmrc
 .yarn/cache
 .yarn/install-state.gz
