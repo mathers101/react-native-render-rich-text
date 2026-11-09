@@ -1,6 +1,6 @@
 # Bash sources these during the iOS build. A carriage return is a command.
-expo-example/ios/.xcode.env text eol=lf
-expo-example/ios/Podfile text eol=lf
+example/ios/.xcode.env text eol=lf
+example/ios/Podfile text eol=lf
 *.swift text eol=lf
 *.pbxproj text eol=lf
 *.xcscheme text eol=lf

@@ -2922,37 +2922,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"expo-example@workspace:example":
-  version: 0.0.0-use.local
-  resolution: "expo-example@workspace:example"
-  dependencies:
-    "@expo/ui": "npm:~58.0.27"
-    "@types/react": "npm:~19.3.0"
-    expo: "npm:~58.0.23"
-    expo-constants: "npm:~58.0.15"
-    expo-dev-client: "npm:~58.0.18"
-    expo-device: "npm:~58.0.5"
-    expo-font: "npm:~58.0.11"
-    expo-glass-effect: "npm:~58.0.5"
-    expo-image: "npm:~58.0.18"
-    expo-linking: "npm:~58.0.16"
-    expo-router: "npm:~58.0.30"
-    expo-splash-screen: "npm:~58.0.13"
-    expo-status-bar: "npm:~58.0.4"
-    expo-symbols: "npm:~58.0.4"
-    expo-system-ui: "npm:~58.0.7"
-    react: "npm:19.3.0"
-    react-native: "npm:0.88.1"
-    react-native-gesture-handler: "npm:~3.3.0"
-    react-native-reanimated: "npm:4.7.1"
-    react-native-render-rich-text: "link:.."
-    react-native-safe-area-context: "npm:~5.11.1"
-    react-native-screens: "npm:~4.30.1"
-    react-native-worklets: "npm:0.13.0"
-    typescript: "npm:~6.0.3"
-  languageName: unknown
-  linkType: soft
-
 "expo-file-system@npm:~58.0.13":
   version: 58.0.13
   resolution: "expo-file-system@npm:58.0.13"
@@ -4915,9 +4884,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-render-rich-text@link:..::locator=expo-example%40workspace%3Aexample":
+"react-native-render-rich-text@link:..::locator=render-rich-text-example%40workspace%3Aexample":
   version: 0.0.0-use.local
-  resolution: "react-native-render-rich-text@link:..::locator=expo-example%40workspace%3Aexample"
+  resolution: "react-native-render-rich-text@link:..::locator=render-rich-text-example%40workspace%3Aexample"
   languageName: node
   linkType: soft
 
@@ -5099,6 +5068,37 @@ __metadata:
   checksum: 10c0/92d6b4bb214657115214ebfe729b0b9f8cfde17e982487cd6d769541cda4ca01ee23d365aae99f80ef1491f5a4f408dd8e66f2f5f8df07eaa5b055924fcc69ec
   languageName: node
   linkType: hard
+
+"render-rich-text-example@workspace:example":
+  version: 0.0.0-use.local
+  resolution: "render-rich-text-example@workspace:example"
+  dependencies:
+    "@expo/ui": "npm:~58.0.27"
+    "@types/react": "npm:~19.3.0"
+    expo: "npm:~58.0.23"
+    expo-constants: "npm:~58.0.15"
+    expo-dev-client: "npm:~58.0.18"
+    expo-device: "npm:~58.0.5"
+    expo-font: "npm:~58.0.11"
+    expo-glass-effect: "npm:~58.0.5"
+    expo-image: "npm:~58.0.18"
+    expo-linking: "npm:~58.0.16"
+    expo-router: "npm:~58.0.30"
+    expo-splash-screen: "npm:~58.0.13"
+    expo-status-bar: "npm:~58.0.4"
+    expo-symbols: "npm:~58.0.4"
+    expo-system-ui: "npm:~58.0.7"
+    react: "npm:19.3.0"
+    react-native: "npm:0.88.1"
+    react-native-gesture-handler: "npm:~3.3.0"
+    react-native-reanimated: "npm:4.7.1"
+    react-native-render-rich-text: "link:.."
+    react-native-safe-area-context: "npm:~5.11.1"
+    react-native-screens: "npm:~4.30.1"
+    react-native-worklets: "npm:0.13.0"
+    typescript: "npm:~6.0.3"
+  languageName: unknown
+  linkType: soft
 
 "require-directory@npm:^2.1.1":
   version: 2.1.1
