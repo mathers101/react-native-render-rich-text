@@ -1,6 +1,6 @@
 {
   "name": "@mathers101/react-native-render-rich-text",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Render Tiptap documents with the React Native rich text display path.",
   "main": "src/index.tsx",
   "react-native": "src/index.tsx",
