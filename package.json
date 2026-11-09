@@ -29,7 +29,7 @@
     "access": "public"
   },
   "workspaces": [
-    "example"
+    "expo-example"
   ],
   "packageManager": "yarn@4.11.0",
   "scripts": {
