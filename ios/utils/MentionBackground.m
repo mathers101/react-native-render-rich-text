@@ -1,4 +1,5 @@
 #import "MentionBackground.h"
+#import "TextViewLayoutManager.h"
 
 NSString *const MentionAttributeName = @"Mention";
 NSString *const MentionIdAttributeName = @"mentionId";
@@ -39,6 +40,10 @@ static const CGFloat kMentionCornerRadius = 4.0;
                                                                effectiveRange:NULL];
                          if (!backgroundColor)
                            return;
+
+                         if ([layoutManager isKindOfClass:[TextViewLayoutManager class]] &&
+                             [(TextViewLayoutManager *)layoutManager chipRangeIsPressed:range mention:YES])
+                           backgroundColor = ENRMPressedChipColor(backgroundColor);
 
                          [self drawMentionForRange:range
                                      layoutManager:layoutManager

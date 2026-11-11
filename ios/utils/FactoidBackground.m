@@ -1,4 +1,5 @@
 #import "FactoidBackground.h"
+#import "TextViewLayoutManager.h"
 
 NSString *const FactoidAttributeName = @"Factoid";
 NSString *const FactoidIdAttributeName = @"factoidId";
@@ -93,6 +94,28 @@ static NSUInteger ENRMLastInk(NSAttributedString *text, NSRange range)
   return NSNotFound;
 }
 
+/// Line-box height for a factoid chip. TextKit folds `paragraphSpacing` into the
+/// line fragment of the paragraph's last line, which would paint the gap before
+/// the next paragraph as extra bottom padding. Other lines are left unchanged.
+static CGFloat ENRMFactoidLineHeight(NSAttributedString *text, NSRange lineChars, CGFloat fragmentHeight)
+{
+  if (fragmentHeight <= 0 || lineChars.length == 0 || lineChars.location >= text.length)
+    return fragmentHeight;
+
+  NSParagraphStyle *style = [text attribute:NSParagraphStyleAttributeName
+                                    atIndex:lineChars.location
+                             effectiveRange:NULL];
+  CGFloat spacing = style.paragraphSpacing;
+  if (spacing <= 0 || spacing >= fragmentHeight)
+    return fragmentHeight;
+
+  NSRange paragraph = [text.string paragraphRangeForRange:NSMakeRange(lineChars.location, 0)];
+  if (paragraph.length == 0 || NSMaxRange(lineChars) < NSMaxRange(paragraph))
+    return fragmentHeight;
+
+  return fragmentHeight - spacing;
+}
+
 /// Container-x of the glyph. `endX` is where the next glyph starts when it shares
 /// the line, which includes kern. At the end of the line the glyph bounds omit
 /// trailing kern, so the caller adds `FactoidTrailingPadding` itself.
@@ -176,6 +199,10 @@ static void ENRMGlyphHorizontalSpan(NSLayoutManager *layoutManager, NSUInteger c
                              [textStorage attribute:FactoidBorderColorAttributeName atIndex:range.location effectiveRange:NULL];
                          if (!backgroundColor && !borderColor)
                            return;
+
+                         if ([layoutManager isKindOfClass:[TextViewLayoutManager class]] &&
+                             [(TextViewLayoutManager *)layoutManager chipRangeIsPressed:range mention:NO])
+                           backgroundColor = ENRMPressedChipColor(backgroundColor);
 
                          [self drawFactoidForRange:range
                                      layoutManager:layoutManager
@@ -264,10 +291,15 @@ static void ENRMGlyphHorizontalSpan(NSLayoutManager *layoutManager, NSUInteger c
 
                                  BOOL isFirst = NSLocationInRange(factoidFirstInk, lineChars);
                                  BOOL isLast = NSLocationInRange(factoidLastInk, lineChars);
-                                 // Full line height. Width stops at the last glyph, including the edge
-                                 // gap when it is on this line, rather than running out to the line edge.
+                                 // The fragment glyph range, not the factoid slice: the paragraph's
+                                 // trailing newline is what marks the line that carries paragraphSpacing.
+                                 NSRange fullLineChars = [layoutManager characterRangeForGlyphRange:lineRange
+                                                                                   actualGlyphRange:NULL];
+                                 CGFloat lineHeight = ENRMFactoidLineHeight(text, fullLineChars, rect.size.height);
+                                 // Line-box height, without the gap before the next paragraph. Width stops
+                                 // at the last glyph, including the edge gap when it is on this line.
                                  CGRect finalRect = CGRectMake(minX + origin.x, rect.origin.y + origin.y, maxX - minX,
-                                                               rect.size.height);
+                                                               lineHeight);
                                  [self drawBackgroundAndBorders:finalRect
                                                 backgroundColor:backgroundColor
                                                     borderColor:borderColor

@@ -426,14 +426,17 @@ typedef NS_OPTIONS(NSUInteger, ENRMDirtyFlags) {
   ENRMTapRecognizer *tapRecognizer = [[ENRMTapRecognizer alloc] initWithTarget:self action:@selector(textTapped:)];
 #if !TARGET_OS_OSX
   // The tap must not wait for the mention long-press. While it waits, UITextView's own
-  // tap cancels it, and a factoid press never arrives. A mention long-press still cancels
-  // this tap when it begins, and it only tracks touches that land on a mention.
+  // tap cancels it, and a factoid press never arrives. A mention long-press resets this
+  // tap when it begins, and it only tracks touches that land on a mention.
   tapRecognizer.delegate = self;
   tapRecognizer.cancelsTouchesInView = NO;
   _tapRecognizer = tapRecognizer;
   _mentionLongPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(mentionLongPressed:)];
   _mentionLongPress.delegate = self;
-  _mentionLongPress.cancelsTouchesInView = YES;
+  // Leave the touch with the text view. Cancelling it here would lift the chip's
+  // press darkening while the finger is still down. The tap is reset when this
+  // recognizer begins, so a hold does not also emit a press.
+  _mentionLongPress.cancelsTouchesInView = NO;
   [_textView addGestureRecognizer:_mentionLongPress];
 #endif
   [_textView addGestureRecognizer:tapRecognizer];
@@ -1109,6 +1112,9 @@ Class<RCTComponentViewProtocol> EnrichedTiptapTextCls(void)
 {
   if (recognizer.state != UIGestureRecognizerStateBegan)
     return;
+  // Drop the tap that is still tracking this touch, or the lift emits a press as well.
+  _tapRecognizer.enabled = NO;
+  _tapRecognizer.enabled = YES;
   NSDictionary<NSString *, NSString *> *mention = mentionAtPoint(_textView, [recognizer locationInView:_textView]);
   if (!mention)
     return;

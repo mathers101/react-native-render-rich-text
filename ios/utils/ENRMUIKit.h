@@ -36,6 +36,23 @@ static inline CGFloat UIFontLineHeight(UIFont *font)
 #define ENRMTapRecognizer NSClickGestureRecognizer
 #endif
 
+/// Fill used while a finger is down on a factoid or mention chip. RGB is multiplied
+/// by 0.82 and alpha is left alone, the same factor Android uses for that press.
+static inline RCTUIColor *ENRMPressedChipColor(RCTUIColor *color)
+{
+  if (!color)
+    return nil;
+  static const CGFloat kDarken = 0.82;
+  CGFloat red = 0, green = 0, blue = 0, alpha = 0;
+  if ([color getRed:&red green:&green blue:&blue alpha:&alpha]) {
+    return [RCTUIColor colorWithRed:red * kDarken green:green * kDarken blue:blue * kDarken alpha:alpha];
+  }
+  CGFloat white = 0;
+  if ([color getWhite:&white alpha:&alpha])
+    return [RCTUIColor colorWithWhite:white * kDarken alpha:alpha];
+  return color;
+}
+
 /// Value for `usesFontLeading` on every NSLayoutManager that draws or
 /// measures tiptap. NSLayoutManager defaults to YES, which adds each font's
 /// built-in leading on top of the paragraph line height. React Native turns it

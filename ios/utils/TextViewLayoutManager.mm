@@ -174,6 +174,40 @@
   return obj;
 }
 
+#pragma mark - Pressed chip
+
+static void *kPressedChipRangeKey = &kPressedChipRangeKey;
+static void *kPressedChipIsMentionKey = &kPressedChipIsMentionKey;
+
+- (NSRange)pressedChipRange
+{
+  NSValue *value = objc_getAssociatedObject(self, kPressedChipRangeKey);
+  return value ? value.rangeValue : NSMakeRange(NSNotFound, 0);
+}
+
+- (void)setPressedChipRange:(NSRange)pressedChipRange
+{
+  objc_setAssociatedObject(self, kPressedChipRangeKey, [NSValue valueWithRange:pressedChipRange],
+                           OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (BOOL)pressedChipIsMention
+{
+  return [objc_getAssociatedObject(self, kPressedChipIsMentionKey) boolValue];
+}
+
+- (void)setPressedChipIsMention:(BOOL)pressedChipIsMention
+{
+  objc_setAssociatedObject(self, kPressedChipIsMentionKey, @(pressedChipIsMention), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (BOOL)chipRangeIsPressed:(NSRange)range mention:(BOOL)mention
+{
+  if (range.location == NSNotFound || range.length == 0 || mention != self.pressedChipIsMention)
+    return NO;
+  return NSEqualRanges(range, self.pressedChipRange);
+}
+
 #pragma mark - Configuration
 
 - (StyleConfig *)config

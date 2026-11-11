@@ -88,23 +88,34 @@ NSDictionary<NSString *, NSString *> *_Nullable mentionAtPoint(ENRMPlatformTextV
   return mentionAtIndex(ENRMGetAttributedText(textView), ENRMCharacterIndexAtPoint(textView, point));
 }
 
-static NSString *_Nullable factoidIdAtIndex(NSAttributedString *attrText, NSUInteger characterIndex)
+static NSRange ENRMRangeNotFound(void)
 {
-  if (characterIndex == NSNotFound || characterIndex >= attrText.length)
-    return nil;
-  if ([attrText attribute:FactoidAttributeName atIndex:characterIndex effectiveRange:NULL] == nil)
-    return nil;
-  return [attrText attribute:FactoidIdAttributeName atIndex:characterIndex effectiveRange:NULL] ?: @"";
+  return NSMakeRange(NSNotFound, 0);
+}
+
+static NSRange ENRMAttributeRange(NSAttributedString *text, NSString *name, NSUInteger index)
+{
+  if (text == nil || index == NSNotFound || index >= text.length)
+    return ENRMRangeNotFound();
+  NSRange range = ENRMRangeNotFound();
+  id value = [text attribute:name atIndex:index longestEffectiveRange:&range inRange:NSMakeRange(0, text.length)];
+  return value ? range : ENRMRangeNotFound();
+}
+
+NSRange mentionRangeAtPoint(ENRMPlatformTextView *textView, CGPoint point)
+{
+  return ENRMAttributeRange(ENRMGetAttributedText(textView), MentionAttributeName,
+                            ENRMCharacterIndexAtPoint(textView, point));
 }
 
 /// The green box is the full line height and a hair wider than the glyphs. A tap on that box
 /// can miss the character index, so the drawn rect is the hit target.
-static NSString *_Nullable factoidIdInDrawnRect(ENRMPlatformTextView *textView, CGPoint point)
+static NSRange factoidRangeInDrawnRect(ENRMPlatformTextView *textView, CGPoint point)
 {
   NSLayoutManager *layoutManager = textView.layoutManager;
   NSTextStorage *storage = layoutManager.textStorage;
   if (!storage || storage.length == 0)
-      return nil;
+    return ENRMRangeNotFound();
 
   CGPoint adjusted = CGPointMake(point.x - textView.textContainerInset.left, point.y - textView.textContainerInset.top);
 #if !TARGET_OS_OSX
@@ -112,12 +123,12 @@ static NSString *_Nullable factoidIdInDrawnRect(ENRMPlatformTextView *textView, 
   adjusted.y += textView.contentOffset.y;
 #endif
 
-  __block NSString *found = nil;
+  __block NSRange found = ENRMRangeNotFound();
   [storage enumerateAttribute:FactoidAttributeName
                       inRange:NSMakeRange(0, storage.length)
                       options:0
                    usingBlock:^(id value, NSRange range, BOOL *stop) {
-                      if (found || !value || range.length == 0)
+                     if (found.location != NSNotFound || !value || range.length == 0)
                        return;
                      NSRange glyphRange = [layoutManager glyphRangeForCharacterRange:range actualCharacterRange:NULL];
                      if (glyphRange.location == NSNotFound || glyphRange.length == 0)
@@ -138,23 +149,31 @@ static NSString *_Nullable factoidIdInDrawnRect(ENRMPlatformTextView *textView, 
                                                                                  -1, -1);
                                                     if (!CGRectContainsPoint(hitRect, adjusted))
                                                       return;
-                                                       found = [storage attribute:FactoidIdAttributeName
-                                                                       atIndex:range.location
-                                                                effectiveRange:NULL] ?:
-                                                            @"";
+                                                    found = range;
                                                     *stopLine = YES;
                                                   }];
-                     if (found)
+                     if (found.location != NSNotFound)
                        *stop = YES;
                    }];
   return found;
 }
 
+NSRange factoidRangeAtPoint(ENRMPlatformTextView *textView, CGPoint point)
+{
+  NSRange byIndex =
+      ENRMAttributeRange(ENRMGetAttributedText(textView), FactoidAttributeName, ENRMCharacterIndexAtPoint(textView, point));
+  if (byIndex.location != NSNotFound)
+    return byIndex;
+  return factoidRangeInDrawnRect(textView, point);
+}
+
 NSString *_Nullable factoidIdAtTapLocation(ENRMPlatformTextView *textView, ENRMTapRecognizer *recognizer)
 {
-  CGPoint point = [recognizer locationInView:textView];
-  NSString *byIndex = factoidIdAtIndex(ENRMGetAttributedText(textView), ENRMCharacterIndexAtPoint(textView, point));
-  return byIndex ?: factoidIdInDrawnRect(textView, point);
+  NSRange range = factoidRangeAtPoint(textView, [recognizer locationInView:textView]);
+  if (range.location == NSNotFound)
+    return nil;
+  return [ENRMGetAttributedText(textView) attribute:FactoidIdAttributeName atIndex:range.location effectiveRange:NULL] ?:
+         @"";
 }
 
 NSDictionary<NSString *, NSString *> *_Nullable codeBlockAtTapLocation(ENRMPlatformTextView *textView,
@@ -176,6 +195,7 @@ NSDictionary<NSString *, NSString *> *_Nullable codeBlockAtTapLocation(ENRMPlatf
 BOOL isPointOnInteractiveElement(ENRMPlatformTextView *textView, CGPoint point, BOOL includeImages,
                                  BOOL includeCodeBlock)
 {
+  if (factoidRangeInDrawnRect(textView, point).location != NSNotFound)
     return YES;
 
   NSUInteger charIndex = ENRMCharacterIndexAtPoint(textView, point);

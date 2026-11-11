@@ -4,9 +4,103 @@
 #import "ENRMTextHitTest.h"
 #import "LinkTapUtils.h"
 #import "PasteboardUtils.h"
+#import "TextViewLayoutManager.h"
 
 #if !TARGET_OS_OSX
+
+/// Tracks a finger on a factoid or mention without taking the touch. A tap recognizer
+/// delays the view's touch-up and then discards it when the tap succeeds, so the view
+/// itself cannot be relied on to lift the darkening. This recognizer sees every phase,
+/// and it neither cancels the touch nor prevents the tap, the mention hold, or a scroll.
+@interface ENRMChipPressRecognizer : UIGestureRecognizer
+@end
+
+@implementation ENRMChipPressRecognizer
+
+- (instancetype)initWithTarget:(id)target action:(SEL)action
+{
+  if (self = [super initWithTarget:target action:action]) {
+    self.cancelsTouchesInView = NO;
+    self.delaysTouchesBegan = NO;
+    self.delaysTouchesEnded = NO;
+  }
+  return self;
+}
+
+- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+{
+  [super touchesBegan:touches withEvent:event];
+  if (touches.count != 1 || event.allTouches.count != 1) {
+    // Failed is only valid from Possible. A second finger mid-press cancels instead.
+    self.state = self.state == UIGestureRecognizerStatePossible ? UIGestureRecognizerStateFailed
+                                                                : UIGestureRecognizerStateCancelled;
+    return;
+  }
+  if (self.state == UIGestureRecognizerStatePossible)
+    self.state = UIGestureRecognizerStateBegan;
+}
+
+- (void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+{
+  [super touchesMoved:touches withEvent:event];
+  if (self.state == UIGestureRecognizerStateBegan || self.state == UIGestureRecognizerStateChanged)
+    self.state = UIGestureRecognizerStateChanged;
+}
+
+- (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+{
+  [super touchesEnded:touches withEvent:event];
+  if (self.state == UIGestureRecognizerStateBegan || self.state == UIGestureRecognizerStateChanged)
+    self.state = UIGestureRecognizerStateEnded;
+}
+
+- (void)touchesCancelled:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+{
+  [super touchesCancelled:touches withEvent:event];
+  if (self.state == UIGestureRecognizerStateBegan || self.state == UIGestureRecognizerStateChanged)
+    self.state = UIGestureRecognizerStateCancelled;
+}
+
+- (BOOL)canPreventGestureRecognizer:(UIGestureRecognizer *)preventedGestureRecognizer
+{
+  (void)preventedGestureRecognizer;
+  return NO;
+}
+
+- (BOOL)canBePreventedByGestureRecognizer:(UIGestureRecognizer *)preventingGestureRecognizer
+{
+  (void)preventingGestureRecognizer;
+  return NO;
+}
+
+@end
+
 @interface ENRMTiptapTextView () <UIContextMenuInteractionDelegate>
+- (BOOL)chipHitAtPoint:(CGPoint)point range:(NSRange *)range isMention:(BOOL *)isMention;
+@end
+
+/// Delegate is a separate object. UITextView is the delegate of its own gestures, and
+/// overriding those methods here would change selection and link handling.
+@interface ENRMChipPressDelegate : NSObject <UIGestureRecognizerDelegate>
+@property (nonatomic, weak) ENRMTiptapTextView *textView;
+@end
+
+@implementation ENRMChipPressDelegate
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch
+{
+  (void)gestureRecognizer;
+  return [self.textView chipHitAtPoint:[touch locationInView:self.textView] range:NULL isMention:NULL];
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer
+    shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
+{
+  (void)gestureRecognizer;
+  (void)otherGestureRecognizer;
+  return YES;
+}
+
 @end
 
 @implementation ENRMTiptapTextView {
@@ -15,11 +109,23 @@
   // stands in for it: it would show through that image.
   ENRMLinkPillAttachment *_liftedPill;
   NSUInteger _pillMenuIndex;
+  // The chip the finger went down on. Sliding off it lifts the darkening; sliding back restores it.
+  NSRange _trackedChipRange;
+  BOOL _trackedChipIsMention;
+  BOOL _chipPressed;
+  ENRMChipPressDelegate *_chipPressDelegate;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame textContainer:(NSTextContainer *)textContainer
 {
   if (self = [super initWithFrame:frame textContainer:textContainer]) {
+    _trackedChipRange = NSMakeRange(NSNotFound, 0);
+    _chipPressDelegate = [ENRMChipPressDelegate new];
+    _chipPressDelegate.textView = self;
+    ENRMChipPressRecognizer *chipPress = [[ENRMChipPressRecognizer alloc] initWithTarget:self
+                                                                                 action:@selector(chipPressRecognized:)];
+    chipPress.delegate = _chipPressDelegate;
+    [self addGestureRecognizer:chipPress];
     _pillLift = [[ENRMLinkMenuLift alloc] init];
     __weak ENRMTiptapTextView *weakSelf = self;
     _pillLift.onEnd = ^{ [weakSelf restoreLiftedPill]; };
@@ -67,8 +173,104 @@
 /// New text moves or replaces the pill under its lifted image.
 - (void)setAttributedText:(NSAttributedString *)attributedText
 {
+  [self endChipPress];
   [_pillLift end];
   [super setAttributedText:attributedText];
+}
+
+- (void)didMoveToWindow
+{
+  [super didMoveToWindow];
+  if (self.window == nil)
+    [self endChipPress];
+}
+
+#pragma mark - Chip press
+
+- (void)chipPressRecognized:(UIGestureRecognizer *)recognizer
+{
+  switch (recognizer.state) {
+    case UIGestureRecognizerStateBegan:
+      [self beginChipPressAtPoint:[recognizer locationInView:self]];
+      break;
+    case UIGestureRecognizerStateChanged:
+      [self setChipPressed:[self pointHitsTrackedChip:[recognizer locationInView:self]]];
+      break;
+    default:
+      [self endChipPress];
+      break;
+  }
+}
+
+/// Link wins, then a mention, then the factoid around it. That is the order a tap emits.
+/// Either out-parameter may be NULL. Returns NO when this press should not darken a chip.
+- (BOOL)chipHitAtPoint:(CGPoint)point range:(NSRange *)outRange isMention:(BOOL *)isMention
+{
+  if (outRange)
+    *outRange = NSMakeRange(NSNotFound, 0);
+  if (isMention)
+    *isMention = NO;
+  if (linkURLAtPoint(self, point) != nil)
+    return NO;
+
+  NSRange range = mentionRangeAtPoint(self, point);
+  BOOL mention = range.location != NSNotFound;
+  if (!mention)
+    range = factoidRangeAtPoint(self, point);
+  if (range.location == NSNotFound)
+    return NO;
+  if (outRange)
+    *outRange = range;
+  if (isMention)
+    *isMention = mention;
+  return YES;
+}
+
+- (void)beginChipPressAtPoint:(CGPoint)point
+{
+  NSRange range = NSMakeRange(NSNotFound, 0);
+  BOOL isMention = NO;
+  if (![self chipHitAtPoint:point range:&range isMention:&isMention])
+    return;
+  _trackedChipRange = range;
+  _trackedChipIsMention = isMention;
+  [self setChipPressed:YES];
+}
+
+- (BOOL)pointHitsTrackedChip:(CGPoint)point
+{
+  if (_trackedChipRange.location == NSNotFound)
+    return NO;
+  NSRange range = _trackedChipIsMention ? mentionRangeAtPoint(self, point) : factoidRangeAtPoint(self, point);
+  return NSEqualRanges(range, _trackedChipRange);
+}
+
+- (void)setChipPressed:(BOOL)pressed
+{
+  if (_chipPressed == pressed)
+    return;
+  _chipPressed = pressed;
+
+  NSLayoutManager *layoutManager = self.layoutManager;
+  if ([layoutManager isKindOfClass:[TextViewLayoutManager class]]) {
+    TextViewLayoutManager *manager = (TextViewLayoutManager *)layoutManager;
+    if (pressed) {
+      manager.pressedChipIsMention = _trackedChipIsMention;
+      manager.pressedChipRange = _trackedChipRange;
+    } else {
+      manager.pressedChipRange = NSMakeRange(NSNotFound, 0);
+    }
+    NSTextStorage *storage = self.textStorage;
+    if (_trackedChipRange.location != NSNotFound && NSMaxRange(_trackedChipRange) <= storage.length)
+      [manager invalidateDisplayForCharacterRange:_trackedChipRange];
+  }
+  [self setNeedsDisplay];
+}
+
+- (void)endChipPress
+{
+  [self setChipPressed:NO];
+  _trackedChipRange = NSMakeRange(NSNotFound, 0);
 }
 
 /// The selection with pills expanded, or nil when `range` is not the selection or holds no pill.
