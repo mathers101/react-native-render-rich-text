@@ -94,11 +94,13 @@ static NSUInteger ENRMLastInk(NSAttributedString *text, NSRange range)
   return NSNotFound;
 }
 
-/// Line-box height for a factoid chip. TextKit folds `paragraphSpacing` into the
-/// line fragment of the paragraph's last line, which would paint the gap before
-/// the next paragraph as extra bottom padding. Other lines are left unchanged.
-static CGFloat ENRMFactoidLineHeight(NSAttributedString *text, NSRange lineChars, CGFloat fragmentHeight)
+/// Line-box height for a factoid chip. TextKit puts `paragraphSpacing` in the line
+/// fragment rect only, and only when another paragraph follows. The used rect stops
+/// at the glyphs. The document's last line has no following paragraph, so its
+/// fragment is already the line box — subtracting spacing there clips the text.
+static CGFloat ENRMFactoidLineHeight(NSAttributedString *text, NSRange lineChars, CGRect fragment, CGRect used)
 {
+  CGFloat fragmentHeight = fragment.size.height;
   if (fragmentHeight <= 0 || lineChars.length == 0 || lineChars.location >= text.length)
     return fragmentHeight;
 
@@ -106,14 +108,28 @@ static CGFloat ENRMFactoidLineHeight(NSAttributedString *text, NSRange lineChars
                                     atIndex:lineChars.location
                              effectiveRange:NULL];
   CGFloat spacing = style.paragraphSpacing;
-  if (spacing <= 0 || spacing >= fragmentHeight)
+  if (spacing <= 0)
     return fragmentHeight;
 
   NSRange paragraph = [text.string paragraphRangeForRange:NSMakeRange(lineChars.location, 0)];
   if (paragraph.length == 0 || NSMaxRange(lineChars) < NSMaxRange(paragraph))
     return fragmentHeight;
 
-  return fragmentHeight - spacing;
+  // Cover the line box and the glyph box. Only the fragment's overflow past that
+  // is the gap before the next paragraph.
+  CGFloat contentHeight = style.minimumLineHeight;
+  UIFont *font = [text attribute:NSFontAttributeName atIndex:lineChars.location effectiveRange:NULL];
+  if (font)
+    contentHeight = MAX(contentHeight, font.lineHeight);
+  if (used.size.height > 0) {
+    CGFloat usedBottom = (used.origin.y - fragment.origin.y) + used.size.height;
+    contentHeight = MAX(contentHeight, usedBottom);
+  }
+  CGFloat extra = fragmentHeight - contentHeight;
+  if (extra <= 0.5)
+    return fragmentHeight;
+
+  return fragmentHeight - MIN(extra, spacing);
 }
 
 /// Container-x of the glyph. `endX` is where the next glyph starts when it shares
@@ -234,7 +250,6 @@ static void ENRMGlyphHorizontalSpan(NSLayoutManager *layoutManager, NSUInteger c
       enumerateLineFragmentsForGlyphRange:glyphRange
                                usingBlock:^(CGRect rect, CGRect usedRect, NSTextContainer *tc, NSRange lineRange,
                                             BOOL *stop) {
-                                 (void)usedRect;
                                  (void)tc;
                                  (void)stop;
                                  NSRange intersect = NSIntersectionRange(lineRange, glyphRange);
@@ -295,7 +310,7 @@ static void ENRMGlyphHorizontalSpan(NSLayoutManager *layoutManager, NSUInteger c
                                  // trailing newline is what marks the line that carries paragraphSpacing.
                                  NSRange fullLineChars = [layoutManager characterRangeForGlyphRange:lineRange
                                                                                    actualGlyphRange:NULL];
-                                 CGFloat lineHeight = ENRMFactoidLineHeight(text, fullLineChars, rect.size.height);
+                                 CGFloat lineHeight = ENRMFactoidLineHeight(text, fullLineChars, rect, usedRect);
                                  // Line-box height, without the gap before the next paragraph. Width stops
                                  // at the last glyph, including the edge gap when it is on this line.
                                  CGRect finalRect = CGRectMake(minX + origin.x, rect.origin.y + origin.y, maxX - minX,

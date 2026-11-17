@@ -196,8 +196,10 @@ export const FIXTURES: Record<FixtureId, TiptapNode[]> = {
           content: [
             {
               type: "text",
-              text: "The fence is stored. Nothing is highlighted.",
+              text: "The fence is stored. Nothing is ",
             },
+            { type: "factoid", attrs: { id: "fence-stored" }, content: [{ type: "text", text: "highlighted" }] },
+            { type: "text", text: "." },
           ],
         },
       ],
