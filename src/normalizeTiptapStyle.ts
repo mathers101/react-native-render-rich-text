@@ -190,11 +190,13 @@ const DEFAULT_NORMALIZED_STYLE = Object.freeze({
   code: {
     // Native uses '' (inherit); web needs an explicit monospace stack so inline
     // code doesn't fall back to the browser's default proportional font.
+    // Colors follow the usual inline-code chip: body text on a neutral gray,
+    // the same grays as table headers and rules.
     fontFamily: Platform.select({ web: getMonospaceFont(), default: '' })!,
     fontSize: 0,
-    color: normalizeColor('#E01E5A')!,
-    backgroundColor: normalizeColor('#FDF2F4')!,
-    borderColor: normalizeColor('#F8D7DA')!,
+    color: defaultTextColor,
+    backgroundColor: normalizeColor('#F3F4F6')!,
+    borderColor: normalizeColor('#E5E7EB')!,
   },
   mention: {
     color: normalizeColor('#1D4ED8')!,

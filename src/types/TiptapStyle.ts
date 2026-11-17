@@ -203,8 +203,20 @@ interface UnderlineStyle {
 interface CodeStyle {
   fontFamily?: string;
   fontSize?: number;
+  /**
+   * Text color.
+   * @default '#1F2937'
+   */
   color?: string;
+  /**
+   * Chip fill behind the inline code.
+   * @default '#F3F4F6'
+   */
   backgroundColor?: string;
+  /**
+   * Chip border.
+   * @default '#E5E7EB'
+   */
   borderColor?: string;
 }
 

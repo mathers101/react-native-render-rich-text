@@ -63,9 +63,9 @@ export const darkModeTextStyle: TiptapStyle = {
   strikethrough: { color: textFaint },
   underline: { color: text },
   code: {
-    color: '#FF7B72',
-    backgroundColor: '#3D1F24',
-    borderColor: '#6E3036',
+    color: text,
+    backgroundColor: '#21262D',
+    borderColor: border,
   },
   mention: {
     color: '#93C5FD',

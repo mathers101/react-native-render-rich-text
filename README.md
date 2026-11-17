@@ -59,7 +59,7 @@ Pass a partial `TiptapStyle` as `textStyle`. Omitted keys keep the built-in defa
 
 The type is exported as `TiptapStyle`. Each node has its own block: `paragraph`, `h1` through `h6`, `blockquote`, `list`, `code`, `codeBlock`, `link`, `linkVariants`, `strong`, `em`, `strikethrough`, `underline`, `mention`, `factoid`, `highlight`, `thematicBreak`, and the table, image, math, and task-list blocks the style object still carries. Color fields take any string `processColor` accepts.
 
-With no `textStyle`, body text is `#1F2937`, headings are near-black, links are `#2563EB`, and inline code is pink on a light chip. Blockquotes use a gray bar, a light fill, and 10 points of padding. Bold and italic do not set a color, so they inherit the surrounding text. Fenced code blocks are the exception: they default to a dark background (`#1F2937`) and a GitHub-dark syntax palette.
+With no `textStyle`, body text is `#1F2937`, headings are near-black, links are `#2563EB`, and inline code is `#1F2937` on a `#F3F4F6` chip with an `#E5E7EB` border. Blockquotes use a gray bar, a light fill, and 10 points of padding. Bold and italic do not set a color, so they inherit the surrounding text. Fenced code blocks are the exception: they default to a dark background (`#1F2937`) and a GitHub-dark syntax palette.
 
 A factoid's `color`, `backgroundColor`, and `borderColor` attributes replace that one channel of `textStyle.factoid`. The other channels stay on the style.
 
